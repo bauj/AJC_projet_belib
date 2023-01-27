@@ -1,10 +1,9 @@
-# Projet Formation AJC : Récupération quotidienne de données Belib'
+# Projet Formation AJC : Traitement de données Belib'
 
 URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 
 
 ### Récupération des données 
-----
 
 + Récupération des données a l'aide d'un **shell script** construisant la requete pour l'API open data Paris
     + La requete est realisee pour les données du jour à l'aide du script `get_data.sh`.
@@ -15,7 +14,6 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 
 
 ### Traitement des données brutes et bdd sqlite
-----
 
 + **En C** : parsing du fichier .json du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
 
@@ -36,7 +34,6 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
     + Inconnu
 
 ### Lecture bdd sqlite et plotting
-----
 
 + **En Python** : lecture de la bdd via bibliothèque python sqlite3
 + Plot de deux figures (*pour l'instant*) en utilisant la bibliothèque matplotlib
@@ -45,7 +42,6 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 + Fichiers figures enregistrés au format PDF ou PNG.
 
 ### Update page HTML et CSS
----
 
 + Un peu d'HTML et de CSS pour mettre en valeur les résultats, décrire le projet, etc ...
 
