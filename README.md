@@ -11,7 +11,7 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 
 + Données enregistrées quotidiennement au format JSON dans un fichier `raw_data_belib_DDJ.json` (DDJ = Date Du Jour).
 
-+ Fichier assez lourd : 1.3Mo.
++ Fichier assez lourd : 1.3Mo. L'API limite la requete à 100 records seulement, téléchargement de l'ensemble des données nécessaire.
 
 + Les données seront récupérées tous les jours à 17h20 (**crontab**)
 
@@ -19,6 +19,8 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 ### Traitement des données brutes et bdd sqlite
 
 + **En C** : parsing du fichier .json du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
+
++ Traitement des données : on ne recupere que les records du jour.
 
 + Calcul du nombre de points de charge pour chaque `statut_pdc` (i.e. en maintenance, disponible, occupé ...)
 
