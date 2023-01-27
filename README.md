@@ -6,9 +6,12 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 ### Récupération des données 
 
 + Récupération des données a l'aide d'un **shell script** construisant la requete pour l'API open data Paris
-    + La requete est realisee pour les données du jour à l'aide du script `get_data.sh`.
+    + La requete est realisee pour l'ensemble des données (/exports) à l'aide du script `get_data.sh`.
+    + ATTENTION : retirer données 2022
 
-+ Données enregistrées quotidiennement au format JSON dans un fichier `raw_data_belib_DDJ.json` (DDJ = Date Du Jour)
++ Données enregistrées quotidiennement au format JSON dans un fichier `raw_data_belib_DDJ.json` (DDJ = Date Du Jour).
+
++ Fichier assez lourd : 1.3Mo.
 
 + Les données seront récupérées tous les jours à 17h20 (**crontab**)
 
@@ -32,6 +35,8 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
     + Supprimé
     + Réservé
     + Inconnu
+
++ Une fois le fichier json traité, on le supprime (lourd : 1.3Mo)
 
 ### Lecture bdd sqlite et plotting
 
