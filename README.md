@@ -5,24 +5,25 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 
 ### Récupération des données 
 
-+ Récupération des données a l'aide d'un **shell script** construisant la requete pour l'API open data Paris
-    + La requete est realisee pour l'ensemble des données (/exports) à l'aide du script `get_data.sh`.
-    + ATTENTION : retirer données 2022
++ Récupération des données a l'aide du **shell script** `get_data.sh` construisant la requete pour l'API open data Paris
++ Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
+    + `raw_data_tot_belib_<DDJ>.json` : L'ensemble des données (/exports) obtenu à l'aide de de la fonction : `Get_all_data()`.
+L'API limite les requetes à 100 records seulement. Le téléchargement de l'ensemble des données est nécessaire si on souhaite exploiter plus de données par la suite.
+Taille du fichier : ~1.3Mo.
 
-+ Données enregistrées quotidiennement au format JSON dans un fichier `raw_data_belib_DDJ.json` (DDJ = Date Du Jour).
+    + `raw_data_nb_bornes_belib_<DDJ>.json` : Données obtenues à l'aide de de la fonction : `Get_grouped_by_status_data()`.
+Fichier contenant les résultats de base qui seront exploités pour le moment. Taille du fichier : ~1.5Ko.
 
-+ Fichier assez lourd : 1.3Mo. L'API limite la requete à 100 records seulement, téléchargement de l'ensemble des données nécessaire.
+    + ** AJOUTER MODELE JSON ** 
 
 + Les données seront récupérées tous les jours à 17h20 (**crontab**)
 
 
 ### Traitement des données brutes et bdd sqlite
 
-+ **En C** : parsing du fichier .json du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
++ **En C** : parsing du fichier `.json` du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
 
-+ Traitement des données : on ne recupere que les records du jour.
-
-+ Calcul du nombre de points de charge pour chaque `statut_pdc` (i.e. en maintenance, disponible, occupé ...)
++ Traitement des données : Lecture et parsing du fichier `raw_data_nb_bornes_belib_<DDJ>.json`. Le champ `nb_bornes` associé à chaque type de `statut_pdc` est récupéré et stocké dans une bdd SQLite. 
 
 + Construction / Insertion bdd sqlite simple. Liste des noms de colonnes :
     + `date`  |  `nb_maintenance`  | `nb_occupe`  | `nb_disponible`  |  `nb_inconnu` ....
@@ -37,8 +38,6 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
     + Supprimé
     + Réservé
     + Inconnu
-
-+ Une fois le fichier json traité, on le supprime (lourd : 1.3Mo)
 
 ### Lecture bdd sqlite et plotting
 
