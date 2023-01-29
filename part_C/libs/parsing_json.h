@@ -93,8 +93,7 @@ char *get_token_string(const char *json, jsmntok_t *tok);
 // ----------------------------------------------------------------------------
 void print_record(record rec)
 {
-    printf("Statut           : %s \n", rec.statut_pdc);
-    printf("Nombre de bornes : %d \n", rec.nb_bornes);
+    printf("> Statut : %s | Nb bornes : %d \n", rec.statut_pdc,rec.nb_bornes);
 }
 
 // ----------------------------------------------------------------------------
