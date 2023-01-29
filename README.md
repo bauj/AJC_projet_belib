@@ -3,7 +3,7 @@
 URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 
 
-### Récupération des données 
+### Récupération des données  :heavy_check_mark:
 
 + Récupération des données a l'aide du **shell script** `get_data.sh` construisant la requete pour l'API open data Paris
 + Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
@@ -19,14 +19,14 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
 + Les données seront récupérées tous les jours à 17h20 (**crontab**)
 
 
-### Traitement des données brutes et bdd sqlite
+### Traitement des données brutes et bdd sqlite :heavy_check_mark:
 
 + **En C** : parsing du fichier `.json` du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
 
 + Traitement des données : Lecture et parsing du fichier `raw_data_nb_bornes_belib_<DDJ>.json`. Le champ `nb_bornes` associé à chaque type de `statut_pdc` est récupéré et stocké dans une bdd SQLite. 
 
-+ Construction / Insertion bdd sqlite simple. Liste des noms de colonnes :
-    + `date`  |  `nb_maintenance`  | `nb_occupe`  | `nb_disponible`  |  `nb_inconnu` ....
++ Construction / Insertion bdd sqlite. Liste des noms de colonnes :
+    + `DATERECOLTE`  |  `DISPONIBLE`  | `OCCUPE`  | `MAINTENANCE`  |  `INCONNU` ....
 
 + *INFO* -- Statuts points de charge :  
     + Disponible
