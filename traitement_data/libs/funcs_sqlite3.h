@@ -74,6 +74,7 @@ void insert_records(char* date_recolte, int nb_record, record *records, sqlite3 
     // Application du statement et fermeture de la db
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
+
 }
 
 

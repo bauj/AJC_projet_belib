@@ -119,17 +119,43 @@ int main(int arg, char *argv[])
             {
                 // Chaque record est de type JSMN_OBJECT {}
                 jsmntok_t *record_obj = record_array + 5 + j * 9;
+                int len_str=0;
                 if (record_obj->type != JSMN_OBJECT)
                 {
                     continue; // On veut que chaque record soit un object
-                }
-                char *tok_content_statut_pdc = get_token_string(json_content,
-                                                            record_obj + 2);
-                char *tok_content_nb_bornes = get_token_string(json_content,
-                                                            record_obj + 4);
+                }    
+                
+                // Essayer de mettre tout ca dans une fonction !
+                len_str = (record_obj + 2)->end - (record_obj + 2)->start;
 
-                records[j].statut_pdc = tok_content_statut_pdc;
+                char *tok_content_statut_pdc = \
+                        (char *)malloc((len_str+1) * sizeof(char));
+                
+                slice(json_content, tok_content_statut_pdc, \
+                             (record_obj + 2)->start, (record_obj + 2)->end);
+                tok_content_statut_pdc[len_str] = '\0';
+
+                len_str = (record_obj + 4)->end - (record_obj + 4)->start;
+                char *tok_content_nb_bornes = \
+                        (char *)malloc((len_str+1) * sizeof(char));
+                slice(json_content, tok_content_nb_bornes, \
+                             (record_obj + 4)->start, (record_obj + 4)->end);
+                tok_content_nb_bornes[len_str] = '\0';
+
+                /*
+                get_token_string(json_content,record_obj + 2, \
+                                        &tok_content_statut_pdc);
+
+                get_token_string(json_content, record_obj + 4, \
+                                        &tok_content_nb_bornes);
+                */
+
+                // Copie du contenu des token dans la struct record
+                strcpy(records[j].statut_pdc,tok_content_statut_pdc);
                 records[j].nb_bornes = atoi(tok_content_nb_bornes); // atoi pour transformer str -> int;
+
+                free(tok_content_nb_bornes);
+                free(tok_content_statut_pdc);
             }
         }
     }
@@ -142,8 +168,8 @@ int main(int arg, char *argv[])
     sqlite3 *db_records;
 
     // Ouverture de la db
-    int rc = sqlite3_open("./db/records_belib.db", &db_records);
-    // int rc = sqlite3_open("./db/test.db", &db_records);
+    //int rc = sqlite3_open("./db/records_belib.db", &db_records);
+    int rc = sqlite3_open("./sqlitedb/test.db", &db_records);
 
     // Test d'ouverture de la db
     if (rc != SQLITE_OK)
@@ -161,5 +187,7 @@ int main(int arg, char *argv[])
 
     // 29/01/23 : Temps d'execution pour l'ensemble du programme : 0m0,035s
     
+    free(records);
+
     return 0;
 }

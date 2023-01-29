@@ -14,7 +14,7 @@
  */
 typedef struct record {
     int nb_bornes; /**< Nombre de bornes*/
-    char *statut_pdc; /**< Statut des bornes*/
+    char statut_pdc[40]; /**< Statut des bornes*/
 } record;
 
 
@@ -86,7 +86,7 @@ void print_token(const char *json, jsmntok_t *tok);
  * @param tok Token dont le contenu est récupéré
  * @return char* String contenue dans le token
  */
-char *get_token_string(const char *json, jsmntok_t *tok);
+void get_token_string(const char *json, jsmntok_t *tok, char **tok_str);
 
 
 
@@ -106,7 +106,7 @@ void slice(const char *str_src, char *str_dest, int start, int end)
 void recup_date(const char *json_filename, char* date_recolte) 
 {
     // On recupere la fin du nom de fichier. Permet d'avoir un basename différent.
-    char *last_piece = strrchr(json_filename, '_');
+    const char *last_piece = strrchr(json_filename, '_');
     slice(last_piece, date_recolte, 1, 11); /**< le slice n'ajoute pas de \0 en fin de string*/
 }
 
@@ -167,18 +167,18 @@ void print_token(const char *json, jsmntok_t *tok)
 }
 
 // ----------------------------------------------------------------------------
-char *get_token_string(const char *json, jsmntok_t *tok) 
+void get_token_string(const char *json, jsmntok_t *tok, char **tok_str) 
 {
     int len_str = tok->end - tok->start;
     // Allocation de la chaine renvoyée
-    char *tok_str = (char *)malloc((len_str+1) * sizeof(char));
+    *tok_str = (char *)malloc((len_str+1) * sizeof(char));
 
-    slice(json, tok_str, tok->start, tok->end);
-    if (tok_str[len_str] != '\0') {
-        tok_str[len_str] = '\0'; /**< le slice n'ajoute pas de \0 en fin de string*/
-    }    
-
-    return tok_str;
+    if (*tok_str != NULL) {
+        slice(json, *tok_str, tok->start, tok->end);
+        if (*tok_str[len_str] != '\0') {
+            *tok_str[len_str] = '\0'; /**< le slice n'ajoute pas de \0 en fin de string*/
+        }    
+    }
 }
 
 #endif /* PARSING_JSON_H */
