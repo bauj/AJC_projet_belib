@@ -39,6 +39,8 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
     + Réservé
     + Inconnu
 
++ Passer un coup de Valgrind + ElectricFence
+
 ### Lecture bdd sqlite et plotting
 
 + **En Python** : lecture de la bdd via bibliothèque python sqlite3

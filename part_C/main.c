@@ -1,9 +1,15 @@
 #include "libs/parsing_json.h"
+#include <sqlite3.h>
 
 // ============================================================================
 
 int main(int arg, char* argv[])
 {
+
+    // ------------------------------------------------------------------------
+    // Lecture et recuperation du fichier json
+    // ------------------------------------------------------------------------
+
     // Recuperation du nom du fichier en argument
     char *json_filename = argv[1];
     
@@ -18,12 +24,15 @@ int main(int arg, char* argv[])
     recup_date(json_filename, date_recolte);
 
     char *json_content = lecture_contenu_json(json_filename);
-    
-    // Debut parsing du contenu -----------------------------------------------
-    int i;
-    int r;
-    jsmn_parser p;
-    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    // ------------------------------------------------------------------------
+    // Parsing du contenu du fichier json
+    // ------------------------------------------------------------------------
+
+    int i;  /**< Index utilisé à partir de la racine du json */
+    int r;  /**< Nombre de tokens dans le contenu json parsé */
+    jsmn_parser p;  /**< Parser de la library JSMN*/
+    jsmntok_t t[128]; /**< Nombre de tokens limité 128 */
 
     jsmn_init(&p);
     //int jsmn_parse(jsmn_parser *parser,               /**< le parser */
@@ -32,40 +41,44 @@ int main(int arg, char* argv[])
     //               jsmntok_t *tokens,                 /**< les tokens */
     //               const unsigned int num_tokens)     /**< num tokens */
 
+    // Parsing du contenu json
     r = jsmn_parse(&p, json_content, strlen(json_content), t,
                     sizeof(t) / sizeof(t[0]));
 
+    // Test du parsing via JSMN
     if (r < 0) {
-        printf("Failed to parse JSON: %d\n", r);
-        return 1;
+        printf("Erreur : Parsing du JSON impossible.: %d\n", r);
+        exit(EXIT_FAILURE);
     }
 
-    /* Assume the top-level element is an object */
+    // Premier objet lu doit etre de type JSMN_OBJECT {}
     if (r < 1 || t[0].type != JSMN_OBJECT) {
         printf("Erreur parsing json : Object attendu.\n");
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
-    int nb_record = 0;
+    int nb_record = 0; /**< Stockage du nombre de records*/
     // Boucle sur l'ensemble des cles de l'objet racine
     for (i = 1; i < r; i++)
     {
-        // printf("Token %d : start : %d, end : %d, size : %d\n", i, t[i].start,t[i].end,t[i].size);
+        // Recherche des "records"
         if (jsoneq(json_content, &t[i], "records") == 0) {
             jsmntok_t *record_array = &t[i + 1];
+            // Le mot-clé "records" doit etre du type JSMN_ARRAY []
             if (record_array->type != JSMN_ARRAY) {
-                continue; // On s'attend a ce que les records soit un array
+                continue;
             }
             nb_record = record_array->size;
             
             printf("+ Records : \n");
             printf("Nb record : %d \n", nb_record);
 
-            // Creation du tableau de records
+            // Creation du tableau de records (type record)
             record *records = (record *)malloc(nb_record*sizeof(record));
 
+            // Parsing des records
             for (int j = 0; j < nb_record; j++) {
-                // On va chercher les record un a un 
+                // Chaque record est de type JSMN_OBJECT {}
                 jsmntok_t *record_obj = record_array+5+j*9;
                 if (record_obj->type != JSMN_OBJECT) {
                     continue; // On veut que chaque record soit un object
@@ -84,9 +97,12 @@ int main(int arg, char* argv[])
         }
     }
 
+    free(json_content);
+
+    // ------------------------------------------------------------------------
+    // Gestion bdd SQLite
     // ------------------------------------------------------------------------
 
-    free(json_content);
 
     return 0;
 }
