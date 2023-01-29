@@ -4,16 +4,14 @@
 {\ttfamily \#include $<$stdlib.\+h$>$}\newline
 {\ttfamily \#include $<$stdio.\+h$>$}\newline
 {\ttfamily \#include $<$string.\+h$>$}\newline
-Include dependency graph for parsing\+\_\+json.\+h\+:
-\nopagebreak
+Include dependency graph for parsing\+\_\+json.\+h\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=326pt]{parsing__json_8h__incl}
 \end{center}
 \end{figure}
-This graph shows which files directly or indirectly include this file\+:
-\nopagebreak
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -43,8 +41,8 @@ char $\ast$ \mbox{\hyperlink{parsing__json_8h_a84020907a9cb5212b7d20d9a7547d0bb}
 \begin{DoxyCompactList}\small\item\em Lecture du contenu du fichier json passé en argument. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{parsing__json_8h_ae37b3b1a5df6410282bcf79e1442616c}{print\+\_\+token}} (const char $\ast$json, \mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$tok)
 \begin{DoxyCompactList}\small\item\em Affiche le contenu d\textquotesingle{}un token (string) \end{DoxyCompactList}\item 
-char $\ast$ \mbox{\hyperlink{parsing__json_8h_a7fe483ae77fb3ab79d14dee458b9a8db}{get\+\_\+token\+\_\+string}} (const char $\ast$json, \mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$tok)
-\begin{DoxyCompactList}\small\item\em Recupere le contenu (string) d\textquotesingle{}un token. \end{DoxyCompactList}\end{DoxyCompactItemize}
+void \mbox{\hyperlink{parsing__json_8h_a16b4f0243daa8784118546413f04a1fd}{get\+\_\+token\+\_\+string}} (const char $\ast$json, \mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$tok, char $\ast$$\ast$tok\+\_\+str)
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Typedef Documentation}
@@ -61,31 +59,12 @@ Structure contenant un enregistrement (record) permettant de recuperer les donne
 
 
 \doxysubsection{Function Documentation}
-\mbox{\Hypertarget{parsing__json_8h_a7fe483ae77fb3ab79d14dee458b9a8db}\label{parsing__json_8h_a7fe483ae77fb3ab79d14dee458b9a8db}} 
+\mbox{\Hypertarget{parsing__json_8h_a16b4f0243daa8784118546413f04a1fd}\label{parsing__json_8h_a16b4f0243daa8784118546413f04a1fd}} 
 \index{parsing\_json.h@{parsing\_json.h}!get\_token\_string@{get\_token\_string}}
 \index{get\_token\_string@{get\_token\_string}!parsing\_json.h@{parsing\_json.h}}
 \doxysubsubsection{\texorpdfstring{get\_token\_string()}{get\_token\_string()}}
-{\footnotesize\ttfamily char $\ast$ get\+\_\+token\+\_\+string (\begin{DoxyParamCaption}\item[{const char $\ast$}]{json,  }\item[{\mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$}]{tok }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void get\+\_\+token\+\_\+string (\begin{DoxyParamCaption}\item[{const char $\ast$}]{json,  }\item[{\mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$}]{tok,  }\item[{char $\ast$$\ast$}]{tok\+\_\+str }\end{DoxyParamCaption})}
 
-
-
-Recupere le contenu (string) d\textquotesingle{}un token. 
-
-\begin{DoxyWarning}{Warning}
-La fonction slice est utilisée, on verifie donc que la chaine finit bien par \textquotesingle{}\textbackslash{}0\textquotesingle{}. 
-
-Le pointeur tok\+\_\+str est alloué dynamiquement et doit donc etre désalloué. 
-\end{DoxyWarning}
-
-\begin{DoxyParams}{Parameters}
-{\em json} & Contenu du fichier json \\
-\hline
-{\em tok} & Token dont le contenu est récupéré \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-char$\ast$ String contenue dans le token 
-\end{DoxyReturn}
 $<$ le slice n\textquotesingle{}ajoute pas de \textbackslash{}0 en fin de string\mbox{\Hypertarget{parsing__json_8h_a84020907a9cb5212b7d20d9a7547d0bb}\label{parsing__json_8h_a84020907a9cb5212b7d20d9a7547d0bb}} 
 \index{parsing\_json.h@{parsing\_json.h}!lecture\_contenu\_json@{lecture\_contenu\_json}}
 \index{lecture\_contenu\_json@{lecture\_contenu\_json}!parsing\_json.h@{parsing\_json.h}}

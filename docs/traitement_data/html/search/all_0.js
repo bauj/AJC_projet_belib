@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['disponible_0',['DISPONIBLE',['../funcs__sqlite3_8h.html#a388f9b1012e1491b8b91f6b5d99a40f6abc0174239017eeca117757851ef39c5f',1,'funcs_sqlite3.h']]]
+  ['basename_5fjsonfile_0',['basename_jsonfile',['../namespaceprettify__json.html#a0d302da199c7c1054c8a88b9404618b4',1,'prettify_json']]],
+  ['basename_5fjsonfile_5fpretty_1',['basename_jsonfile_pretty',['../namespaceprettify__json.html#a23a7b2e4e2ff2f711aab05d6aabfeb81',1,'prettify_json']]]
 ];

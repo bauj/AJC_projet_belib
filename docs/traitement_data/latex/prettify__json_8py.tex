@@ -1,0 +1,26 @@
+\hypertarget{prettify__json_8py}{}\doxysection{/home/hjuba/\+Documents/1.Dev/5.projet\+\_\+ajc/traitement\+\_\+data/data/prettify\+\_\+json.py File Reference}
+\label{prettify__json_8py}\index{/home/hjuba/Documents/1.Dev/5.projet\_ajc/traitement\_data/data/prettify\_json.py@{/home/hjuba/Documents/1.Dev/5.projet\_ajc/traitement\_data/data/prettify\_json.py}}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceprettify__json}{prettify\+\_\+json}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+string \mbox{\hyperlink{namespaceprettify__json_a277476690e1c3c761f15847be7c9f422}{ddj}} = \char`\"{}2023-\/01-\/28\char`\"{}
+\item 
+string \mbox{\hyperlink{namespaceprettify__json_a0d302da199c7c1054c8a88b9404618b4}{basename\+\_\+jsonfile}} = f\char`\"{}raw\+\_\+data\+\_\+nb\+\_\+bornes\+\_\+belib\+\_\+\char`\"{}+ddj
+\item 
+string \mbox{\hyperlink{namespaceprettify__json_a23a7b2e4e2ff2f711aab05d6aabfeb81}{basename\+\_\+jsonfile\+\_\+pretty}} = f\char`\"{}pretty\+\_\+data\+\_\+nb\+\_\+bornes\+\_\+belib\+\_\+\char`\"{}+ddj
+\item 
+string \mbox{\hyperlink{namespaceprettify__json_aa3996f8cc5caae2e23e864937410b48f}{path\+\_\+to\+\_\+jsonfile}} = \char`\"{}./\char`\"{}+basename\+\_\+jsonfile+\char`\"{}.json\char`\"{}
+\item 
+string \mbox{\hyperlink{namespaceprettify__json_a0601d74b26709d6c3a4e0bb953f956ab}{path\+\_\+to\+\_\+pretty\+\_\+jsonfile}} = \char`\"{}./\char`\"{}+basename\+\_\+jsonfile\+\_\+pretty+\char`\"{}.json\char`\"{}
+\item 
+\mbox{\hyperlink{namespaceprettify__json_a6858851eee0e05f318897984757b59dc}{content}} = data\+\_\+file.\+read()
+\item 
+\mbox{\hyperlink{namespaceprettify__json_a3cddcb245f758a37325faff9130f9f8b}{data\+\_\+json}} = json.\+loads(content)
+\item 
+\mbox{\hyperlink{namespaceprettify__json_a59a6028af838a395d5b3f709ebad2bd5}{pretty\+\_\+content}} = json.\+dumps(data\+\_\+json, indent=4)
+\end{DoxyCompactItemize}

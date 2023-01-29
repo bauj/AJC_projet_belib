@@ -150,9 +150,8 @@ Functions</h2></td></tr>
 <tr class="memitem:ae37b3b1a5df6410282bcf79e1442616c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="parsing__json_8h.html#ae37b3b1a5df6410282bcf79e1442616c">print_token</a> (const char *json, <a class="el" href="jsmn_8h.html#aaa6246f56bd6f4c9d0e57ae6778616b7">jsmntok_t</a> *tok)</td></tr>
 <tr class="memdesc:ae37b3b1a5df6410282bcf79e1442616c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Affiche le contenu d'un token (string)  <a href="parsing__json_8h.html#ae37b3b1a5df6410282bcf79e1442616c">More...</a><br /></td></tr>
 <tr class="separator:ae37b3b1a5df6410282bcf79e1442616c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fe483ae77fb3ab79d14dee458b9a8db"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="parsing__json_8h.html#a7fe483ae77fb3ab79d14dee458b9a8db">get_token_string</a> (const char *json, <a class="el" href="jsmn_8h.html#aaa6246f56bd6f4c9d0e57ae6778616b7">jsmntok_t</a> *tok)</td></tr>
-<tr class="memdesc:a7fe483ae77fb3ab79d14dee458b9a8db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recupere le contenu (string) d'un token.  <a href="parsing__json_8h.html#a7fe483ae77fb3ab79d14dee458b9a8db">More...</a><br /></td></tr>
-<tr class="separator:a7fe483ae77fb3ab79d14dee458b9a8db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16b4f0243daa8784118546413f04a1fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="parsing__json_8h.html#a16b4f0243daa8784118546413f04a1fd">get_token_string</a> (const char *json, <a class="el" href="jsmn_8h.html#aaa6246f56bd6f4c9d0e57ae6778616b7">jsmntok_t</a> *tok, char **tok_str)</td></tr>
+<tr class="separator:a16b4f0243daa8784118546413f04a1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="ac4b59fe1f66e3a8c792dbc1360529300"></a>
@@ -172,14 +171,14 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a7fe483ae77fb3ab79d14dee458b9a8db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7fe483ae77fb3ab79d14dee458b9a8db">&#9670;&nbsp;</a></span>get_token_string()</h2>
+<a id="a16b4f0243daa8784118546413f04a1fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16b4f0243daa8784118546413f04a1fd">&#9670;&nbsp;</a></span>get_token_string()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char * get_token_string </td>
+          <td class="memname">void get_token_string </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>json</em>, </td>
@@ -188,7 +187,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="jsmn_8h.html#aaa6246f56bd6f4c9d0e57ae6778616b7">jsmntok_t</a> *&#160;</td>
-          <td class="paramname"><em>tok</em>&#160;</td>
+          <td class="paramname"><em>tok</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>tok_str</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -197,19 +202,6 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Recupere le contenu (string) d'un token. </p>
-<dl class="section warning"><dt>Warning</dt><dd>La fonction slice est utilisée, on verifie donc que la chaine finit bien par '\0'. </dd>
-<dd>
-Le pointeur tok_str est alloué dynamiquement et doit donc etre désalloué. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">json</td><td>Contenu du fichier json </td></tr>
-    <tr><td class="paramname">tok</td><td>Token dont le contenu est récupéré </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>char* String contenue dans le token </dd></dl>
 <p>&lt; le slice n'ajoute pas de \0 en fin de string</p>
 
 </div>
