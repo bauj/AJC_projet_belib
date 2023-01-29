@@ -1,0 +1,1 @@
+sh /home/<user>/projet_ajc/get_data.sh /home/<user>/projet_ajc/traitement_data/data/

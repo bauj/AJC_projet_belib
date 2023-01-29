@@ -169,7 +169,7 @@ int main(int arg, char *argv[])
 
     // Ouverture de la db
     //int rc = sqlite3_open("./db/records_belib.db", &db_records);
-    int rc = sqlite3_open("./sqlitedb/test.db", &db_records);
+    int rc = sqlite3_open("./sqlitedb/records_belib.db", &db_records);
 
     // Test d'ouverture de la db
     if (rc != SQLITE_OK)
