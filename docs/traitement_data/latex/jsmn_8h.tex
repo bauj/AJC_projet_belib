@@ -1,0 +1,157 @@
+\hypertarget{jsmn_8h}{}\doxysection{/home/hjuba/\+Documents/1.Dev/5.projet\+\_\+ajc/traitement\+\_\+data/libs/jsmn.h File Reference}
+\label{jsmn_8h}\index{/home/hjuba/Documents/1.Dev/5.projet\_ajc/traitement\_data/libs/jsmn.h@{/home/hjuba/Documents/1.Dev/5.projet\_ajc/traitement\_data/libs/jsmn.h}}
+{\ttfamily \#include $<$stddef.\+h$>$}\newline
+Include dependency graph for jsmn.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{jsmn_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=276pt]{jsmn_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structjsmntok}{jsmntok}}
+\item 
+struct \mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}{JSMN\+\_\+\+API}}~extern
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{structjsmntok}{jsmntok}} \mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}}
+\item 
+typedef struct \mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}} \mbox{\hyperlink{jsmn_8h_a5e8a350ca5d7833d7e3f080cc612bdd9}{jsmn\+\_\+parser}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802f}{jsmntype\+\_\+t}} \{ \newline
+\mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802fa7bc5faeddd33197250cf352af984f185}{JSMN\+\_\+\+UNDEFINED}} = 0
+, \mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802fa416d6e733082bedc1166f0d66f571867}{JSMN\+\_\+\+OBJECT}} = 1 $<$$<$ 0
+, \mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802fabc4c47216dacf36bd4f64ac3d649d471}{JSMN\+\_\+\+ARRAY}} = 1 $<$$<$ 1
+, \mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802fad4ea6277c135d9d3377bf8b719779539}{JSMN\+\_\+\+STRING}} = 1 $<$$<$ 2
+, \newline
+\mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802fa2550c93fe929f81f30ea9b629ed98742}{JSMN\+\_\+\+PRIMITIVE}} = 1 $<$$<$ 3
+ \}
+\item 
+enum \mbox{\hyperlink{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80ea}{jsmnerr}} \{ \mbox{\hyperlink{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaafa350a2c19cc5fddbfb7c90309d3fe41}{JSMN\+\_\+\+ERROR\+\_\+\+NOMEM}} = -\/1
+, \mbox{\hyperlink{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaa3297b1c54d926ce497b7a20530689171}{JSMN\+\_\+\+ERROR\+\_\+\+INVAL}} = -\/2
+, \mbox{\hyperlink{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaa851a0e75343c14a13c6893b3727ead16}{JSMN\+\_\+\+ERROR\+\_\+\+PART}} = -\/3
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}{JSMN\+\_\+\+API}} void \mbox{\hyperlink{jsmn_8h_ac18a603f0737ecb4e953b4335d9652bb}{jsmn\+\_\+init}} (\mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}} $\ast$parser)
+\item 
+\mbox{\hyperlink{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}{JSMN\+\_\+\+API}} int \mbox{\hyperlink{jsmn_8h_a5e34c2b99133f3b538bf8a12a6313184}{jsmn\+\_\+parse}} (\mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}} $\ast$parser, const char $\ast$js, const size\+\_\+t len, \mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$tokens, const unsigned int num\+\_\+tokens)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}\label{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}} 
+\index{jsmn.h@{jsmn.h}!JSMN\_API@{JSMN\_API}}
+\index{JSMN\_API@{JSMN\_API}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{JSMN\_API}{JSMN\_API}}
+{\footnotesize\ttfamily \#define JSMN\+\_\+\+API~extern}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{jsmn_8h_a5e8a350ca5d7833d7e3f080cc612bdd9}\label{jsmn_8h_a5e8a350ca5d7833d7e3f080cc612bdd9}} 
+\index{jsmn.h@{jsmn.h}!jsmn\_parser@{jsmn\_parser}}
+\index{jsmn\_parser@{jsmn\_parser}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{jsmn\_parser}{jsmn\_parser}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}} \mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}}}
+
+JSON parser. Contains an array of token blocks available. Also stores the string being parsed now and current position in that string. \mbox{\Hypertarget{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}\label{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}} 
+\index{jsmn.h@{jsmn.h}!jsmntok\_t@{jsmntok\_t}}
+\index{jsmntok\_t@{jsmntok\_t}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{jsmntok\_t}{jsmntok\_t}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structjsmntok}{jsmntok}} \mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}}}
+
+JSON token description. type type (object, array, string etc.) start start position in JSON data string end end position in JSON data string 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80ea}\label{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80ea}} 
+\index{jsmn.h@{jsmn.h}!jsmnerr@{jsmnerr}}
+\index{jsmnerr@{jsmnerr}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{jsmnerr}{jsmnerr}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80ea}{jsmnerr}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_ERROR\_NOMEM@{JSMN\_ERROR\_NOMEM}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_ERROR\_NOMEM@{JSMN\_ERROR\_NOMEM}}}\mbox{\Hypertarget{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaafa350a2c19cc5fddbfb7c90309d3fe41}\label{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaafa350a2c19cc5fddbfb7c90309d3fe41}} 
+JSMN\+\_\+\+ERROR\+\_\+\+NOMEM&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_ERROR\_INVAL@{JSMN\_ERROR\_INVAL}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_ERROR\_INVAL@{JSMN\_ERROR\_INVAL}}}\mbox{\Hypertarget{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaa3297b1c54d926ce497b7a20530689171}\label{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaa3297b1c54d926ce497b7a20530689171}} 
+JSMN\+\_\+\+ERROR\+\_\+\+INVAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_ERROR\_PART@{JSMN\_ERROR\_PART}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_ERROR\_PART@{JSMN\_ERROR\_PART}}}\mbox{\Hypertarget{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaa851a0e75343c14a13c6893b3727ead16}\label{jsmn_8h_afbbe22e63007677ec9e7837b5c1b80eaa851a0e75343c14a13c6893b3727ead16}} 
+JSMN\+\_\+\+ERROR\+\_\+\+PART&\\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{jsmn_8h_a065320719769f9dc1fbe30094e52802f}\label{jsmn_8h_a065320719769f9dc1fbe30094e52802f}} 
+\index{jsmn.h@{jsmn.h}!jsmntype\_t@{jsmntype\_t}}
+\index{jsmntype\_t@{jsmntype\_t}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{jsmntype\_t}{jsmntype\_t}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{jsmn_8h_a065320719769f9dc1fbe30094e52802f}{jsmntype\+\_\+t}}}
+
+JSON type identifier. Basic types are\+: o Object o Array o String o Other primitive\+: number, boolean (true/false) or null \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_UNDEFINED@{JSMN\_UNDEFINED}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_UNDEFINED@{JSMN\_UNDEFINED}}}\mbox{\Hypertarget{jsmn_8h_a065320719769f9dc1fbe30094e52802fa7bc5faeddd33197250cf352af984f185}\label{jsmn_8h_a065320719769f9dc1fbe30094e52802fa7bc5faeddd33197250cf352af984f185}} 
+JSMN\+\_\+\+UNDEFINED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_OBJECT@{JSMN\_OBJECT}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_OBJECT@{JSMN\_OBJECT}}}\mbox{\Hypertarget{jsmn_8h_a065320719769f9dc1fbe30094e52802fa416d6e733082bedc1166f0d66f571867}\label{jsmn_8h_a065320719769f9dc1fbe30094e52802fa416d6e733082bedc1166f0d66f571867}} 
+JSMN\+\_\+\+OBJECT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_ARRAY@{JSMN\_ARRAY}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_ARRAY@{JSMN\_ARRAY}}}\mbox{\Hypertarget{jsmn_8h_a065320719769f9dc1fbe30094e52802fabc4c47216dacf36bd4f64ac3d649d471}\label{jsmn_8h_a065320719769f9dc1fbe30094e52802fabc4c47216dacf36bd4f64ac3d649d471}} 
+JSMN\+\_\+\+ARRAY&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_STRING@{JSMN\_STRING}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_STRING@{JSMN\_STRING}}}\mbox{\Hypertarget{jsmn_8h_a065320719769f9dc1fbe30094e52802fad4ea6277c135d9d3377bf8b719779539}\label{jsmn_8h_a065320719769f9dc1fbe30094e52802fad4ea6277c135d9d3377bf8b719779539}} 
+JSMN\+\_\+\+STRING&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSMN\_PRIMITIVE@{JSMN\_PRIMITIVE}!jsmn.h@{jsmn.h}}\index{jsmn.h@{jsmn.h}!JSMN\_PRIMITIVE@{JSMN\_PRIMITIVE}}}\mbox{\Hypertarget{jsmn_8h_a065320719769f9dc1fbe30094e52802fa2550c93fe929f81f30ea9b629ed98742}\label{jsmn_8h_a065320719769f9dc1fbe30094e52802fa2550c93fe929f81f30ea9b629ed98742}} 
+JSMN\+\_\+\+PRIMITIVE&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{jsmn_8h_ac18a603f0737ecb4e953b4335d9652bb}\label{jsmn_8h_ac18a603f0737ecb4e953b4335d9652bb}} 
+\index{jsmn.h@{jsmn.h}!jsmn\_init@{jsmn\_init}}
+\index{jsmn\_init@{jsmn\_init}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{jsmn\_init()}{jsmn\_init()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}{JSMN\+\_\+\+API}} void jsmn\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}} $\ast$}]{parser }\end{DoxyParamCaption})}
+
+Create JSON parser over an array of tokens
+
+Creates a new parser based over a given buffer with an array of tokens available. \mbox{\Hypertarget{jsmn_8h_a5e34c2b99133f3b538bf8a12a6313184}\label{jsmn_8h_a5e34c2b99133f3b538bf8a12a6313184}} 
+\index{jsmn.h@{jsmn.h}!jsmn\_parse@{jsmn\_parse}}
+\index{jsmn\_parse@{jsmn\_parse}!jsmn.h@{jsmn.h}}
+\doxysubsubsection{\texorpdfstring{jsmn\_parse()}{jsmn\_parse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{jsmn_8h_acc2ead0c277738a32734a4b5a09cf8cc}{JSMN\+\_\+\+API}} int jsmn\+\_\+parse (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structjsmn__parser}{jsmn\+\_\+parser}} $\ast$}]{parser,  }\item[{const char $\ast$}]{js,  }\item[{const size\+\_\+t}]{len,  }\item[{\mbox{\hyperlink{jsmn_8h_aaa6246f56bd6f4c9d0e57ae6778616b7}{jsmntok\+\_\+t}} $\ast$}]{tokens,  }\item[{const unsigned int}]{num\+\_\+tokens }\end{DoxyParamCaption})}
+
+Run JSON parser. It parses a JSON data string into and array of tokens, each describing a single JSON object.
+
+Parse JSON string and fill tokens. 
