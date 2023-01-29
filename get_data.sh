@@ -40,4 +40,4 @@ Get_grouped_by_status_data () {
 ## Il est défini afin de pouvoir faire un crontab quelque soit la machine 
 ## utilisee
 Get_all_data $1
-Get_all_data $1
+Get_grouped_by_status_data $1
