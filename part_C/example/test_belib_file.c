@@ -41,7 +41,50 @@ void recup_date(const char *json_filename, char* date_recolte) {
     slice(last_piece, date_recolte, 1, 11);
 }
 
+/**
+ * @brief Lecture du contenu du fichier json passé en argument.
+ * 
+ * @warning Une allocation memoire de taille (nb_char*sizeof(char)) est faite sur json_content, avec nb_char le nombre de char dans le fichier.
+ * @param json_filename Nom du fichier json a lire.
+ * @return char* Renvoie la chaine de caracteres contenue dans le fichier.
+ */
+char *lecture_contenu_json(char *json_filename) {
+    // Ouverture du fichier json
+    FILE *json_file = fopen(json_filename, "r");
+    
+    // Test d'ouverture du fichier
+    if (json_file == NULL) {
+        printf("Erreur : Impossible d'ouvrir le fichier. Vérifiez si le fichier existe.\n");
+        exit(EXIT_FAILURE);
+    }
 
+    // Comptage du nombre de caracteres dans le fichier
+    int nb_char = 1; /**< Initialisation en comptant le \0*/
+    while (fgetc(json_file) != EOF) {
+        nb_char++;
+    }
+    rewind(json_file);
+
+    // // Lecture du contenu du fichier json dans le tableau json-content
+    char *json_content = (char *)malloc(nb_char * sizeof(char)); /**< Initialisation de la taille du tableau a partir du compteur nb_char*/
+
+    // // Initialisation à 0 d'un objet de taille variable avec memset
+    memset(json_content, 0, nb_char);
+    
+    // // Recuperation du contenu du fichier
+    fgets(json_content,nb_char,json_file);
+
+    // // Fermeture du fichier
+    fclose(json_file);
+
+    // Test contenu du fichier
+    if (json_content[0] == '\0') {
+        printf("Erreur : Le contenu du fichier json `%s` est vide.\n", json_filename);
+        exit(EXIT_FAILURE);
+    }
+
+    return json_content;
+}
 
 int main(int arg, char* argv[])
 {
@@ -58,47 +101,16 @@ int main(int arg, char* argv[])
     char date_recolte[11] = ""; /**< le format de la date est YYYY-MM-DD, i.e. 10 char + \0 */
     recup_date(json_filename, date_recolte);
     
-    printf("> Nom du fichier json en argument : %s \n", json_filename);
-    printf("> Date de recolte lue : %s \n", date_recolte);
+    // printf("> Nom du fichier json en argument : %s \n", json_filename);
+    // printf("> Date de recolte lue : %s \n", date_recolte);
 
-    // Ouverture du fichier json
-    FILE *json_file = fopen(json_filename, "r");
-
-    // Test d'ouverture du fichier
-    if (json_file == NULL) {
-        printf("Erreur : Impossible d'ouvrir le fichier.");
-        exit(EXIT_FAILURE);
-    }
-
-    // Comptage du nombre de caracteres dans le fichier
-    int nb_char = 1; /**< Initialisation en comptant le \0*/
-    while (fgetc(json_file) != EOF) {
-        nb_char++;
-    }
-    rewind(json_file);
-
-    // Lecture du contenu du fichier json dans le tableau json-content
-    char json_content[nb_char]; /**< Initialisation de la taille du tableau a partir du compteur nb_char*/
-
-    // Initialisation à 0 d'un objet de taille variable avec memset
-    memset(json_content, 0, sizeof(json_content));
+    char *json_content = lecture_contenu_json(json_filename);
     
-    // Recuperation du contenu du fichier
-    fgets(json_content,nb_char,json_file);
-    
-    // Fermeture du fichier
-    fclose(json_file);
-
-    // Test contenu du fichier
-    if (json_content == NULL) {
-        printf("Erreur : Le contenu du fichier json est vide.");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("> Taille du contenu :\n %lu \n", sizeof(json_content));
     printf("> Contenu du json :\n %s \n", json_content);
 
-    // 
+    // Debut parsing du contenu
+
+    free(json_content);
 
     return 0;
 }
