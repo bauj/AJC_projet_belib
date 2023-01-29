@@ -3,16 +3,29 @@
 #include <stdio.h>
 #include <string.h>
 
+// ----------------------------------------------------------------------------
 /**
  * @brief Structure contenant un enregistrement (record) permettant de recuperer les donnees du fichier json
  * 
  */
 typedef struct record {
-    char *statut_pdc; /**< Statut des borne*/
     int nb_bornes; /**< Nombre de bornes*/
+    char *statut_pdc; /**< Statut des bornes*/
 } record;
 
+// ----------------------------------------------------------------------------
+/**
+ * @brief Fonction d'affichage du contenu d'un record
+ * 
+ * @param rec Record à afficher
+ */
+void print_record(record rec)
+{
+    printf("Statut           : %s \n", rec.statut_pdc);
+    printf("Nombre de bornes : %d \n", rec.nb_bornes);
+}
 
+// ----------------------------------------------------------------------------
 /**
  * @brief Fonction permettant de slicer une chaine de caractères
  * 
@@ -26,6 +39,7 @@ void slice(const char *str_src, char *str_dest, int start, int end)
     strncpy(str_dest, str_src + start, end - start);
 }
 
+// ----------------------------------------------------------------------------
 /**
  * @brief Recuperation de la date de collecte a partir du nom du fichier
  * Un nom de fichier finit par la date du jour de collecte :
@@ -38,9 +52,10 @@ void slice(const char *str_src, char *str_dest, int start, int end)
 void recup_date(const char *json_filename, char* date_recolte) {
     // On recupere la fin du nom de fichier. Permet d'avoir un basename différent.
     char *last_piece = strrchr(json_filename, '_');
-    slice(last_piece, date_recolte, 1, 11);
+    slice(last_piece, date_recolte, 1, 11); /**< le slice n'ajoute pas de \0 en fin de string*/
 }
 
+// ----------------------------------------------------------------------------
 /**
  * @brief Lecture du contenu du fichier json passé en argument.
  * 
@@ -48,7 +63,7 @@ void recup_date(const char *json_filename, char* date_recolte) {
  * @param json_filename Nom du fichier json a lire.
  * @return char* Renvoie la chaine de caracteres contenue dans le fichier.
  */
-char *lecture_contenu_json(char *json_filename) {
+char *lecture_contenu_json(const char *json_filename) {
     // Ouverture du fichier json
     FILE *json_file = fopen(json_filename, "r");
     
@@ -86,6 +101,58 @@ char *lecture_contenu_json(char *json_filename) {
     return json_content;
 }
 
+// ----------------------------------------------------------------------------
+/**
+ * @brief Verifie que le contenu de la chaine parsée et du token recupéré est le même.
+ * Ce qui est vérifié : Type du token, longueur du token, et contenu du token
+ * 
+ * @param json Chaine de caractère parsée
+ * @param tok Token en cours d'analyse
+ * @param s Chaine de caractère à lire
+ * @return int 0 si OK, -1 si KO
+ */
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+  if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+      strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
+    return 0;
+  }
+  return -1;
+}
+
+/**
+ * @brief Affiche le contenu d'un token (string)
+ * 
+ * @param json Contenu du fichier json
+ * @param tok Token a afficher
+ */
+void print_token(const char *json, jsmntok_t *tok) {
+    printf("%.*s \n", tok->end - tok->start, json + tok->start);
+}
+
+/**
+ * @brief Recupere le contenu (string) d'un token.
+ * 
+ * @warning La fonction slice est utilisée, on verifie donc que la chaine finit bien par '\0'.
+ * @warning Le pointeur tok_str est alloué dynamiquement et doit donc etre désalloué.
+ * @param json Contenu du fichier json
+ * @param tok Token dont le contenu est récupéré
+ * @return char* String contenue dans le token
+ */
+char *get_token_string(const char *json, jsmntok_t *tok) {
+    int len_str = tok->end - tok->start;
+    // Allocation de la chaine renvoyée
+    char *tok_str = (char *)malloc((len_str+1) * sizeof(char));
+
+    slice(json, tok_str, tok->start, tok->end);
+    if (tok_str[len_str] != '\0') {
+        tok_str[len_str] = '\0'; /**< le slice n'ajoute pas de \0 en fin de string*/
+    }    
+
+    return tok_str;
+}
+
+// ============================================================================
+
 int main(int arg, char* argv[])
 {
     // Recuperation du nom du fichier en argument
@@ -100,15 +167,75 @@ int main(int arg, char* argv[])
     // Recuperation de la date de recolte a partir du nom du fichier
     char date_recolte[11] = ""; /**< le format de la date est YYYY-MM-DD, i.e. 10 char + \0 */
     recup_date(json_filename, date_recolte);
-    
-    // printf("> Nom du fichier json en argument : %s \n", json_filename);
-    // printf("> Date de recolte lue : %s \n", date_recolte);
 
     char *json_content = lecture_contenu_json(json_filename);
     
-    printf("> Contenu du json :\n %s \n", json_content);
+    // Debut parsing du contenu -----------------------------------------------
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
 
-    // Debut parsing du contenu
+    jsmn_init(&p);
+    //int jsmn_parse(jsmn_parser *parser,               /**< le parser */
+    //               const char *js,                    /**< chaine parsee */
+    //               const size_t len,                  /**< len(chaine) */
+    //               jsmntok_t *tokens,                 /**< les tokens */
+    //               const unsigned int num_tokens)     /**< num tokens */
+
+    r = jsmn_parse(&p, json_content, strlen(json_content), t,
+                    sizeof(t) / sizeof(t[0]));
+
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
+        return 1;
+    }
+
+    /* Assume the top-level element is an object */
+    if (r < 1 || t[0].type != JSMN_OBJECT) {
+        printf("Erreur parsing json : Object attendu.\n");
+        return 1;
+    }
+
+    int nb_record = 0;
+    // Boucle sur l'ensemble des cles de l'objet racine
+    for (i = 1; i < r; i++)
+    {
+        // printf("Token %d : start : %d, end : %d, size : %d\n", i, t[i].start,t[i].end,t[i].size);
+        if (jsoneq(json_content, &t[i], "records") == 0) {
+            jsmntok_t *record_array = &t[i + 1];
+            if (record_array->type != JSMN_ARRAY) {
+                continue; // On s'attend a ce que les records soit un array
+            }
+            nb_record = record_array->size;
+            
+            printf("+ Records : \n");
+            printf("Nb record : %d \n", nb_record);
+
+            // Creation du tableau de records
+            record *records = (record *)malloc(nb_record*sizeof(record));
+
+            for (int j = 0; j < nb_record; j++) {
+                // On va chercher les record un a un 
+                jsmntok_t *record_obj = record_array+5+j*9;
+                if (record_obj->type != JSMN_OBJECT) {
+                    continue; // On veut que chaque record soit un object
+                }
+                char *tok_content_statut_pdc = get_token_string(json_content, \
+                                                         record_obj+2);    
+                char *tok_content_nb_bornes = get_token_string(json_content, \
+                                                         record_obj+4);
+                
+                records[j].statut_pdc = tok_content_statut_pdc;
+                records[j].nb_bornes = atoi(tok_content_nb_bornes); //atoi pour transformer str -> int;
+                
+                print_record(records[j]);
+
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
 
     free(json_content);
 
