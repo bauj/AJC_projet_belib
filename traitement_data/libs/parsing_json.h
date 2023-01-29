@@ -77,16 +77,16 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s);
 void print_token(const char *json, jsmntok_t *tok);
 
 
-/**
- * @brief Recupere le contenu (string) d'un token.
- * 
- * @warning La fonction slice est utilisée, on verifie donc que la chaine finit bien par '\0'.
- * @warning Le pointeur tok_str est alloué dynamiquement et doit donc etre désalloué.
- * @param json Contenu du fichier json
- * @param tok Token dont le contenu est récupéré
- * @return char* String contenue dans le token
- */
-void get_token_string(const char *json, jsmntok_t *tok, char **tok_str);
+// /**
+//  * @brief Recupere le contenu (string) d'un token.
+//  * 
+//  * @warning La fonction slice est utilisée, on verifie donc que la chaine finit bien par '\0'.
+//  * @warning Le pointeur tok_str est alloué dynamiquement et doit donc etre désalloué.
+//  * @param json Contenu du fichier json
+//  * @param tok Token dont le contenu est récupéré
+//  * @return char* String contenue dans le token
+//  */
+// void get_token_string(const char *json, jsmntok_t *tok, char **tok_str);
 
 
 
