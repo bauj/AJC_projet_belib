@@ -7,6 +7,7 @@
 # Author : Juba Hamma
 # ===========================================================================
 
+date_recolte=`date +%Y-%m-%dT%H-%mTZD`
 date_du_jour=`date +%Y-%m-%d`
 date_veille=`date -d "-1 day" +%Y-%m-%d`
 
@@ -28,7 +29,7 @@ Get_grouped_by_status_data () {
 	## + WHERE   : last_updated >  date'${date_veille} AND 
 	##             last_updated <= date'${date_du_jour}
 	## + GROUPBY : statut_pdc
-	file_output_nb_bornes="raw_data_nb_bornes_belib_${date_du_jour}.json"
+	file_output_nb_bornes="raw_data_nb_bornes_belib_${date_recolte}.json"
 	curl -X "GET" \
 	  "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28%2A%29%20as%20nb_bornes&where=last_updated%20%3E%20date%27${date_veille}%27%20AND%20last_updated%20%3C%3D%20date%27${date_du_jour}%27&group_by=statut_pdc&limit=100&offset=0&timezone=UTC" \
 	  -H "accept: application/json; charset=utf-8" > $1${file_output_nb_bornes}

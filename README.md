@@ -16,7 +16,7 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
 
     + ** AJOUTER MODELE JSON ** 
 
-+ Les données seront récupérées tous les jours à 17h20 (**crontab**)
++ Les données seront récupérées tous les jours à 9h40, 12h30, 17h20 (**crontab**)
 
 
 ### Traitement des données brutes et bdd sqlite :heavy_check_mark:
