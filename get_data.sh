@@ -31,21 +31,31 @@ Get_grouped_by_status_data () {
 	## + GROUPBY : statut_pdc
 	file_output_nb_bornes="raw_data_nb_bornes_belib_${date_recolte}.json"
 	curl -X "GET" \
-	  "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28%2A%29%20as%20nb_bornes&where=last_updated%20%3E%20date%27${date_veille}%27%20AND%20last_updated%20%3C%3D%20date%27${date_du_jour}%27&group_by=statut_pdc&limit=100&offset=0&timezone=UTC" \
+	  "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated%20%3E%20date%27${date_veille}%27%20AND%20last_updated%20%3C%3D%20date%27${date_du_jour}%27&group_by=statut_pdc&limit=100&offset=0&timezone=UTC" \
 	  -H "accept: application/json; charset=utf-8" > $1${file_output_nb_bornes}
 }
 
 # ----------------------------------------------------------------------------
-## Appel des deux fonctions de recuperation des donnees
+Get_bornes_in_perimeter () {
+	## On recupere le resultat de la requete :
+	## + SELECT : count(*) as nb_bornes
+	## + WHERE  : last_updated >  date'${date_veille} AND 
+	##            last_updated <= date'${date_du_jour} AND
+	##				  distance(coordonneesxy, GEOM'POINT(GPS_LONG GPS_LAT)', 0.5km)
+	## + GROUPBY : adresse_station, coordonneesxy, statut_pdc 
+	GPS_LAT="48.843507"
+	GPS_LONG="2.280672" 
+	DIST="0.5km" 
+	curl -X "GET" \
+	  "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated%20%3E%20date%27${date_veille}%27%20AND%20last_updated%20%3C%3D%20date%27${date_du_jour}%27%20AND%20distance%28coordonneesxy%2C%20GEOM%27POINT%28${GPS_LONG}%20${GPS_LAT}%29%27%2C%20${DIST}%29&group_by=adresse_station%2C%20coordonneesxy%2Cstatut_pdc&limit=100&offset=0&timezone=UTC" \
+	  -H "accept: application/json; charset=utf-8" > $1${file_output_nb_bornes}
+}
+
+# ----------------------------------------------------------------------------
+## Appel des trois fonctions de recuperation des donnees
 ## L'argument $1 correspond au chemin vers le dossier de sauvegarde des data
 ## Il est défini afin de pouvoir faire un crontab quelque soit la machine 
 ## utilisee
 Get_all_data $1
 Get_grouped_by_status_data $1
-
-# Maj avec data des stations autour de ma position : 
-#mapos ="48.843507, 2.280672" 
-#distance(coordonneesxy, GEOM'POINT(2.280672 48.843507)', 0.5km)
-#curl -X 'GET' \
-#  'https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28%2A%29%20as%20nb_bornes&where=distance%28coordonneesxy%2C%20GEOM%27POINT%282.280672%2048.843507%29%27%2C%200.5km%29&group_by=statut_pdc%2C%20adresse_station%2Ccoordonneesxy&limit=100&offset=0&timezone=UTC' \
-#  -H 'accept: application/json; charset=utf-8'
+Get_bornes_in_perimeter $1 
