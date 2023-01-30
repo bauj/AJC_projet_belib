@@ -55,7 +55,7 @@ int main(int arg, char *argv[])
     }
 
     // Recuperation de la date de recolte a partir du nom du fichier
-    char date_recolte[11] = ""; /**< le format de la date est YYYY-MM-DD, i.e. 10 char + \0 */
+    char date_recolte[20] = ""; /**< le format de la date est YYYY-MM-DDTHH-mmTZD, i.e. 19 char + \0 */
     recup_date(json_filename, date_recolte);
 
     char *json_content = lecture_contenu_json(json_filename);

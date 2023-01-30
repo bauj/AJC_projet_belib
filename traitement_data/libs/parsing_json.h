@@ -107,7 +107,7 @@ void recup_date(const char *json_filename, char* date_recolte)
 {
     // On recupere la fin du nom de fichier. Permet d'avoir un basename différent.
     const char *last_piece = strrchr(json_filename, '_');
-    slice(last_piece, date_recolte, 1, 11); /**< le slice n'ajoute pas de \0 en fin de string*/
+    slice(last_piece, date_recolte, 1, 20); /**< le slice n'ajoute pas de \0 en fin de string*/
 }
 
 // ----------------------------------------------------------------------------
