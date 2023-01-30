@@ -42,3 +42,10 @@ Get_grouped_by_status_data () {
 ## utilisee
 Get_all_data $1
 Get_grouped_by_status_data $1
+
+# Maj avec data des stations autour de ma position : 
+#mapos ="48.843507, 2.280672" 
+#distance(coordonneesxy, GEOM'POINT(2.280672 48.843507)', 0.5km)
+#curl -X 'GET' \
+#  'https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28%2A%29%20as%20nb_bornes&where=distance%28coordonneesxy%2C%20GEOM%27POINT%282.280672%2048.843507%29%27%2C%200.5km%29&group_by=statut_pdc%2C%20adresse_station%2Ccoordonneesxy&limit=100&offset=0&timezone=UTC' \
+#  -H 'accept: application/json; charset=utf-8'

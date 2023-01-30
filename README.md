@@ -3,7 +3,9 @@
 URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 
 
-### Récupération des données  :heavy_check_mark:
+** README A MAJ ** : Nouvelle problematique : on se situe sur un point (coord GPS) et on souhaite connaitre l'état des bornes dans un rayon de 500m.
+
+### Récupération des données  <!-- :heavy_check_mark: -->
 
 + Récupération des données a l'aide du **shell script** `get_data.sh` construisant la requete pour l'API open data Paris
 + Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
@@ -19,7 +21,7 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
 + Les données seront récupérées tous les jours à 9h40, 12h30, 17h20 (**crontab**)
 
 
-### Traitement des données brutes et bdd sqlite :heavy_check_mark:
+### Traitement des données brutes et bdd sqlite <!-- :heavy_check_mark: -->
 
 + **En C** : parsing du fichier `.json` du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
 
@@ -39,7 +41,7 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
     + Réservé
     + Inconnu
 
-+ Passer un coup de Valgrind + ElectricFence :heavy_check_mark:
++ Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
 
 ### Lecture bdd sqlite et plotting      :soon:
  
