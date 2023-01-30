@@ -7,7 +7,7 @@
 # Author : Juba Hamma
 # ===========================================================================
 
-date_recolte=`date +%Y-%m-%dT%H-%mTZD`
+date_recolte=`date +%Y-%m-%dT%H-%MTZD`
 date_du_jour=`date +%Y-%m-%d`
 date_veille=`date -d "-1 day" +%Y-%m-%d`
 
