@@ -193,5 +193,5 @@ if __name__ == "__main__":
                  ha='right', va='bottom',
                  fontsize=11, fontstyle='oblique', color='white')
     plt.tight_layout()
-    plt.show()
+    plt.savefig("test_figure2.png")
 
