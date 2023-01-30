@@ -46,8 +46,9 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
 + **En Python** : lecture de la bdd via bibliothèque python sqlite3
 + Plot de deux figures (*pour l'instant*) en utilisant la bibliothèque matplotlib
     + Fig 1 : Evolution temporelle (quotidienne) du nombre de points de charge en maintenance, disponibles et occupés
-    + Fig 2 : Répartition des statuts des points de charge du jour.
-+ Fichiers figures enregistrés au format PDF ou PNG.
+    + Fig 2 : Evolution temporelle (quotidienne) du taux d'occupation, taux de maintenance, etc ... 
+    + Fig 3 : Répartition des statuts des points de charge du jour.
++ Fichiers figures enregistrés au format PNG.
 
 ### Update page HTML et CSS      :soon:
 
