@@ -39,7 +39,7 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
     + Réservé
     + Inconnu
 
-+ Passer un coup de Valgrind + ElectricFence
++ Passer un coup de Valgrind + ElectricFence :heavy_check_mark:
 
 ### Lecture bdd sqlite et plotting      :soon:
  
@@ -56,5 +56,5 @@ Fichier contenant les résultats de base qui seront exploités pour le moment. T
 ### Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)     :soon:
 
 + Prendre en compte la compilation des librairies si non déjà disponibles dans buildroot.
-+ Bibliotheques utilisees : matplotlib, pysqlite (PYTHON), jsmn, sqlite3 (C).
++ Bibliotheques utilisees : matplotlib, sqlite3 (PYTHON), jsmn, sqlite3 (C).
 
