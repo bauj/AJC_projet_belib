@@ -11,8 +11,28 @@ CREATE TABLE "Bornes" (
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 
--- Tableau Pref pour les stations autour de la position enregistree
-CREATE TABLE "Pref" (
+-- Tableau Stations_favf pour les stations en favori  autour de la position
+-- enregistree
+CREATE TABLE "Stations_fav" (
+	"ID" INTEGER NOT NULL UNIQUE, 
+	"date_recolte" TEXT NOT NULL, 
+	"adresse_station" TEXT NOT NULL,
+	"lon" REAL NOT NULL,
+	"lat" REAL NOT NULL,
+	"disponible" INTEGER NOT NULL, 
+	"occupe" INTEGER NOT NULL, 
+	"en_maintenance" INTEGER NOT NULL, 
+	"inconnu" INTEGER NOT NULL, 
+	"supprime" INTEGER NOT NULL, 
+	"reserve" INTEGER NOT NULL, 
+	"en_cours_mes" INTEGER NOT NULL, 
+	"mes_planifiee" INTEGER NOT NULL, 
+	"non_implemente" INTEGER NOT NULL, 
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+-- Tableau Stations_live pour les stations autour de la position demandee
+CREATE TABLE "Stations_live" (
 	"ID" INTEGER NOT NULL UNIQUE, 
 	"date_recolte" TEXT NOT NULL, 
 	"adresse_station" TEXT NOT NULL,
