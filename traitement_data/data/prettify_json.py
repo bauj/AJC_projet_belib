@@ -1,11 +1,11 @@
 import json
+import sys
 
-ddj="2023-01-28"
-basename_jsonfile=f"raw_data_nb_bornes_belib_"+ddj
-basename_jsonfile_pretty=f"pretty_data_nb_bornes_belib_"+ddj
+basename_jsonfile=sys.argv[1]
+basename_jsonfile_pretty=f"pretty_{basename_jsonfile}"
 
-path_to_jsonfile = "./"+basename_jsonfile+".json"
-path_to_pretty_jsonfile = "./"+basename_jsonfile_pretty+".json"
+path_to_jsonfile = "./"+basename_jsonfile
+path_to_pretty_jsonfile = "./"+basename_jsonfile_pretty
 
 with open(path_to_jsonfile, 'r') as data_file:
     content = data_file.read()

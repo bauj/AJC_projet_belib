@@ -7,6 +7,8 @@
 # Author : Juba Hamma
 # ===========================================================================
 
+## L'argument $1 correspond au chemin vers le dossier de sauvegarde des data
+
 date_recolte=`date +%Y-%m-%dT%H-%MTZD`
 date_du_jour=`date +%Y-%m-%d`
 date_veille=`date -d "-1 day" +%Y-%m-%d`
@@ -46,9 +48,10 @@ Get_bornes_in_perimeter () {
 	GPS_LAT="48.843507"
 	GPS_LONG="2.280672" 
 	DIST="0.5km" 
+	file_output_bornes_perimetre="raw_data_bornes_perimetre_belib_${date_recolte}.json"
 	curl -X "GET" \
 	  "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated%20%3E%20date%27${date_veille}%27%20AND%20last_updated%20%3C%3D%20date%27${date_du_jour}%27%20AND%20distance%28coordonneesxy%2C%20GEOM%27POINT%28${GPS_LONG}%20${GPS_LAT}%29%27%2C%20${DIST}%29&group_by=adresse_station%2C%20coordonneesxy%2Cstatut_pdc&limit=100&offset=0&timezone=UTC" \
-	  -H "accept: application/json; charset=utf-8" > $1${file_output_nb_bornes}
+	  -H "accept: application/json; charset=utf-8" > $1${file_output_bornes_perimetre}
 }
 
 # ----------------------------------------------------------------------------
