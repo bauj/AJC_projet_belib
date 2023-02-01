@@ -1,42 +1,68 @@
 #!/usr/bin/python3
 
+
+# ===========================================================================
+# Script de récupération des données Belib sur l'OpenDataParis.
+# La récupération des données se fait via l'API OpenDataSoft utilisée par 
+# OpenDataParis. 
+# Nom du dataset : 
+# `belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel`
+#
+# La base de données `belib_paris.db` est mise à jour après lancement du script :
+#
+# + Table Bornes : Contient l'ensemble des données des bornes, mise à jour 
+# quotidiennement. En tête :
+# | ID | last_updated | id_pdc | statut_pdc | adresse_station | lon | lat |
+#
+# + Table Stations_fav : Contient les données des stations en 
+# favoris, mise à jour 3x par jour. En tête :
+# | ID | date_recolte | adresse_station | lon | lat | disponible | occupe | ...
+# 
+# + Table Stations_live : Contient les données des stations les plus proches de 
+# la position entrée par un utilisateur. En tête :
+#  | ID | date_recolte | adresse_station | lon | lat | disponible | occupe | ...
+#
+# Author : Juba Hamma. 2023.
+# ===========================================================================
+
+
 import urllib3
 import ujson
 import sqlite3
 import argparse
 from datetime import date, timedelta, datetime
 
+# -----------------------------------------------------------------------------
 def iterator_data_global(n, raw_data_all_bornes):
     for i in range(n):
-        yield raw_data_all_bornes[i]["last_updated"],\
-                raw_data_all_bornes[i]["id_pdc"], \
-                raw_data_all_bornes[i]["statut_pdc"], \
-                raw_data_all_bornes[i]["adresse_station"],\
-                raw_data_all_bornes[i]['coordonneesxy']['lon'],\
-                raw_data_all_bornes[i]['coordonneesxy']['lat']
+        yield \
+            raw_data_all_bornes[i]["last_updated"],\
+            raw_data_all_bornes[i]["id_pdc"], \
+            raw_data_all_bornes[i]["statut_pdc"], \
+            raw_data_all_bornes[i]["adresse_station"],\
+            raw_data_all_bornes[i]['coordonneesxy']['lon'],\
+            raw_data_all_bornes[i]['coordonneesxy']['lat']
 
+# -----------------------------------------------------------------------------
 def iterator_data_stations(n, list_stations_pref):
     for i in range(n):
-        yield list_stations_pref[i]["date_recolte"],\
-                list_stations_pref[i]["adresse_station"], \
-                list_stations_pref[i]["lon"], \
-                list_stations_pref[i]["lat"], \
-                list_stations_pref[i]["disponible"], \
-                list_stations_pref[i]["occupe"],\
-                list_stations_pref[i]['en_maintenance'],\
-                list_stations_pref[i]['inconnu'],\
-                list_stations_pref[i]['supprime'],\
-                list_stations_pref[i]['reserve'],\
-                list_stations_pref[i]['en_cours_mes'],\
-                list_stations_pref[i]['mes_planifiee'],\
-                list_stations_pref[i]['non_implemente']
-                
+        yield \
+            list_stations_pref[i]["date_recolte"],\
+            list_stations_pref[i]["adresse_station"], \
+            list_stations_pref[i]["lat"], \
+            list_stations_pref[i]["lon"], \
+            list_stations_pref[i]["disponible"], \
+            list_stations_pref[i]["occupe"],\
+            list_stations_pref[i]['en_maintenance'],\
+            list_stations_pref[i]['inconnu'],\
+            list_stations_pref[i]['supprime'],\
+            list_stations_pref[i]['reserve'],\
+            list_stations_pref[i]['en_cours_mes'],\
+            list_stations_pref[i]['mes_planifiee'],\
+            list_stations_pref[i]['non_implemente']
+
+# -----------------------------------------------------------------------------              
 def create_connection(db_file):
-    """ create a database connection to the SQLite database
-        specified by the db_file
-    :param db_file: database file
-    :return: Connection object or None
-    """
     conn = None
     try:
         conn = sqlite3.connect(db_file)
@@ -45,13 +71,15 @@ def create_connection(db_file):
 
     return conn
 
+# -----------------------------------------------------------------------------
 def update_global():
 
     http = urllib3.PoolManager()
 
-    url_req = "https://parisdata.opendatasoft.com/api/explore/v2.1/catalog/datasets/"+\
-                "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"+\
-                    "exports/json?lang=fr&timezone=Europe%2FParis"
+    url_req = \
+        "https://parisdata.opendatasoft.com/api/explore/v2.1/catalog/datasets/"+\
+        "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"+\
+        "exports/json?lang=fr&timezone=Europe%2FParis"
 
     resp = http.request("GET", url_req)
     
@@ -73,6 +101,7 @@ def update_global():
 
     return
 
+# -----------------------------------------------------------------------------
 def get_lon_lat_from_coordxy(str_coordxy):
     #'[48.84621396660805, 2.27988394908607]'
     
@@ -83,6 +112,7 @@ def get_lon_lat_from_coordxy(str_coordxy):
     return lon, lat
 
 
+# -----------------------------------------------------------------------------
 def def_station(daterecolte_, adr, lon, lat, n_dispo, n_occup, n_inc, n_main, \
             n_del=0, n_res=0, n_encours_mes=0, n_mes_plan=0, n_nonimp=0):
 
@@ -93,7 +123,7 @@ def def_station(daterecolte_, adr, lon, lat, n_dispo, n_occup, n_inc, n_main, \
             "mes_planifiee" : n_mes_plan, "non_implemente" : n_nonimp,
         }
 
-
+# -----------------------------------------------------------------------------
 def transform_dict_station(list_records):
 
     dict_labels = {
@@ -142,7 +172,7 @@ def transform_dict_station(list_records):
 
     return list_dict_station  
 
-
+# -----------------------------------------------------------------------------
 def update_bornes_around_pos(table, pos_lat, pos_lon, dist):
 
     http = urllib3.PoolManager()
@@ -185,7 +215,7 @@ def update_bornes_around_pos(table, pos_lat, pos_lon, dist):
 
     return 
 
-
+# -----------------------------------------------------------------------------
 def adresse_to_lon_lat(adr):
 
     http = urllib3.PoolManager()
@@ -205,6 +235,7 @@ def adresse_to_lon_lat(adr):
 
     return lon, lat
 
+# -----------------------------------------------------------------------------
 def clean_table(table):
 
     conn = create_connection("belib_data.db")
@@ -214,7 +245,7 @@ def clean_table(table):
         cur.execute(sql_req)
         conn.commit()
 
-
+# -----------------------------------------------------------------------------
 def update_bornes_around_adresse_live(adr, dist):
 
     lon_adr, lat_adr = adresse_to_lon_lat(adr)
@@ -225,31 +256,35 @@ def update_bornes_around_adresse_live(adr, dist):
     
     return
 
+# =============================================================================
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-                    prog = 'GetBelibData',
-                    description = 'Ce script recupere les donnees Belib en OpenData a Paris et stocke'+\
-                    'les donnees qui nous interessent dans une base de donnees sqlite.',
-                    epilog = '-- Juba Hamma, 2023.')
+        prog = 'GetBelibData',
+        description = 'Ce script recupere les donnees Belib en OpenData a Paris'+\
+            ' et stocke les donnees qui nous interessent dans une base de donnees'+\
+            ' sqlite.',
+        epilog = '-- Juba Hamma, 2023.')
     
     parser.add_argument('-g', '--all', action = 'store_true',
-         help = "Mise a jour de l'ensemble des donnees dans la table 'Bornes'.")
-    parser.add_argument('-f', '--favoris', action = 'store_true',
-         help = "Mise a jour des donnees relatives aux stations en favoris dans la table 'Stations_fav'.")
+        help = "Mise a jour de l'ensemble des donnees dans la table 'Bornes'.")
+    parser.add_argument('-f', '--favoris', action = 'store_true',\
+        help = "Mise a jour des donnees relatives aux stations en favoris dans "+\
+                "la table 'Stations_fav'.")
     parser.add_argument('-l', '--live', action = 'store_true', 
-         help = "Mise a jour des donnees relatives aux stations autour d'une position specifiee via une adresse"+\
-            " et le rayon de recherche, dans la table 'Stations_live'.")
+        help = "Mise a jour des donnees relatives aux stations autour d'une "+\
+                "position specifiee via une adresse et le rayon de recherche, "+\
+                "dans la table 'Stations_live'.")
     parser.add_argument('-a', '--adresse', type=str, nargs=1, default="",
-         help ="Adresse a entrer dans le cas de l'option --live.")    
+        help ="Adresse a entrer dans le cas de l'option --live.")    
     parser.add_argument('-d', '--distance', type=str, nargs=1, default="",
-         help ="Rayon de recherche a entrer sous la forme '0.5km' dans le cas de l'option --live.")      
+        help ="Rayon de recherche a entrer sous la forme '0.5km' dans le cas "+\
+            "de l'option --live.")      
 
     args = parser.parse_args()
     glob = args.all
     fav = args.favoris
     live = args.live
-
 
     if (glob and not fav and not live) :
         update_global()
