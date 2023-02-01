@@ -3,13 +3,16 @@
 URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 
 
-### Récupération et traitement des données brutes :heavy_check_mark: 
+## Récupération et traitement des données brutes :heavy_check_mark: 
 
-+ Création d'une base de données SQLite3 `belib_data.db` comprenant 3 tables :
+### Création d'une base de données SQLite3 `belib_data.db` comprenant 3 tables
+
     + **Table Bornes** : contient l'ensemble des données des bornes Belib. 
 Cette table est mise à jour quotidiennement à 17h20. Il s'agit d'une **table 
 temporaire**, sauvegardée dans le cas où l'on souhaite exploiter plus de 
-données dans la suite du projet. Elle n'est pas mise à jour sur la carte.  
+données dans la suite du projet. Elle n'est pas mise à jour sur la carte. 
+En-tête de la table : 
+  
 
     + **Table General** : contient le nombre total de bornes associées à chaque
 statut : disponible, occupé, en maintenance, etc ... Cette table est utilisée 
@@ -29,9 +32,11 @@ trouvées suite à la requête d'un utilisateur. Elle est nettoyée au lancement
 d'une requête pour ne garder que les résultats voulus.
 *[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
 
-+ Récupération des données dans l'ensemble des Tables de la BDD (Base de 
-Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`. 
-Bibliothèques python (modules) utilisées : 
+### Récupération et injection des données dans la BDD (Base de Données) 
+
++ Récupération et injection des données `belib_data.db` dans chaque table de la 
+bdd à l'aide du script python `recuperation_data_belib.py`. Bibliothèques 
+python (modules) utilisées : 
     + **urllib3** : pour effectuer les requêtes GET sur les API [OpenDatasoft 
 de ParisData](https://parisdata.opendatasoft.com/api/v2/console), [Adresse de 
 data gouv](https://adresse.data.gouv.fr/api-doc/adresse), et [Static Images de 
@@ -45,6 +50,8 @@ les requêtes. Bibliothèque de traitement de JSON ultrarapide et légère.
     + **datetime** : pour des traitements de chaines de type `date`.  
 
     + **argparse** : pour parser simplement les arguments entré via appel CLI.
+
+### Options de récupération des données
 
 + Quatre options de récupération sont possibles avec le script 
 `recuperation_data_belib.py` en fonction de la table de la bdd visée :
@@ -65,30 +72,10 @@ la forme d'une chaine de caractères.
         + `-d` `--distance` <distance> : permet d'entrer une `<distance>` sous
  la forme d'une chaine de caractères (de type "0.5km").
 
-### Traitement des données brutes et bdd sqlite <!-- :heavy_check_mark: -->
-
-+ **En C** : parsing du fichier `.json` du jour à l'aide d'une bibliothèque faite pour (voir [librairie JSMN](https://github.com/zserge/jsmn)). 
-
-+ Traitement des données : Lecture et parsing du fichier `raw_data_nb_bornes_belib_<DDJ>.json`. Le champ `nb_bornes` associé à chaque type de `statut_pdc` est récupéré et stocké dans une bdd SQLite. 
-
-+ Construction / Insertion bdd sqlite. Liste des noms de colonnes :
-    + `DATERECOLTE`  |  `DISPONIBLE`  | `OCCUPE`  | `MAINTENANCE`  |  `INCONNU` ....
-
-+ *INFO* -- Statuts points de charge :  
-    + Disponible
-    + Pas implémenté
-    + Occupé (en charge)
-    + En cours de mise en service
-    + En maintenance
-    + Mise en service planifiée
-    + Supprimé
-    + Réservé
-    + Inconnu
-
-+ Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
 
 ### Lecture bdd sqlite et plotting      :soon:
  
++ Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
 + **En Python** : lecture de la bdd via bibliothèque python sqlite3
 + Plot de deux figures (*pour l'instant*) en utilisant la bibliothèque matplotlib
     + Fig 1 : Evolution temporelle (quotidienne) du nombre de points de charge en maintenance, disponibles et occupés
