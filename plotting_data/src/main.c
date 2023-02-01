@@ -17,30 +17,33 @@
 #include <gdfontl.h>
 #include <gdfontg.h>
 
+#define PI 3.141592
+#define DEG2RAD(x) ((x)*PI/180.)
+
 int main(int argc, char* argv[])
 {
     // ------------------------------------------------------------------------
     // Gestion bdd SQLite
     // ------------------------------------------------------------------------
-    sqlite3 *db_belib;
+    // sqlite3 *db_belib;
 
-    // Ouverture de la db
+    // // Ouverture de la db
     
-    const char path_to_db[] = "../db_sqlite/belib_data.db";
+    // const char path_to_db[] = "../db_sqlite/belib_data.db";
 
-    int rc = sqlite3_open(path_to_db, &db_belib);
+    // int rc = sqlite3_open(path_to_db, &db_belib);
 
-    // Test d'ouverture de la db
-    if (rc != SQLITE_OK)
-    {
-        fprintf(stderr, "Err: %s\n", sqlite3_errmsg(db_belib));
-        sqlite3_close(db_belib);
-        exit(EXIT_FAILURE);
-    }
+    // // Test d'ouverture de la db
+    // if (rc != SQLITE_OK)
+    // {
+    //     fprintf(stderr, "Err: %s\n", sqlite3_errmsg(db_belib));
+    //     sqlite3_close(db_belib);
+    //     exit(EXIT_FAILURE);
+    // }
 
 
-    // Fermeture de la db
-    sqlite3_close(db_belib);
+    // // Fermeture de la db
+    // sqlite3_close(db_belib);
 
 
     // ------------------------------------------------------------------------
@@ -116,8 +119,57 @@ int main(int argc, char* argv[])
     gdImageString(im, fontptrmb, 110, 110, "SALUT !!", rouge_fonce);
     gdImageString(im, fontptrs, 140, 140, "SALUT !!", rouge_fonce);
     gdImageString(im, fontptrt, 170, 170, "SALUT !!", rouge_fonce);
+    // gdImageString(im, fontptrt, 500, 400, "SALUT !!", rouge_fonce);
+    int brect[8] = {0};
+    char* f1 = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf";
+    char* f2 = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    char* f3 = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
+    char* err;
+    err = gdImageStringFT(im, brect, rouge_fonce, f1, 26, 0., 500, 300, "TEEEEST");
+    err = gdImageStringFT(im, brect, rouge_fonce, f2, 26, 0., 500, 250, "TEEEEST");
+    err = gdImageStringFT(im, brect, rouge_fonce, f3, 26, 0., 500, 200, "TEEEEST");
+    err = gdImageStringFT(im, brect, rouge_fonce, f1, 26, 0., 500, 150, "Teeest");
+    err = gdImageStringFT(im, brect, rouge_fonce, f2, 26, 0., 500, 100, "Teeest");
+    err = gdImageStringFT(im, brect, rouge_fonce, f3, 26, 0., 500, 50, "Teeest");
 
+    for (int i =0; i < 360;i=i+20) {
+        err = gdImageStringFT(im, brect, rouge_fonce, f2, 26, DEG2RAD(i), 200, 450, "TEEEEST");
+    }
 
+    err = gdImageStringFT(im, brect, rouge_fonce, f2, 16, DEG2RAD(55), 450, 550, "Test test");
+    err = gdImageStringFT(im, brect, rouge_fonce, f2, 16, DEG2RAD(55), 500, 550, "Test test");
+    err = gdImageStringFT(im, brect, rouge_fonce, f2, 16, DEG2RAD(55), 550, 550, "Test test blabli bla");
+    
+    int upper_lim = brect[5]-5;
+    gdImageDashedLine(im, Nx/2,    upper_lim, Nx-1, upper_lim, orange_fonce); // verticale
+
+    printf("%s \n", err);
+
+/**
+ * Function: gdImageStringFT
+ *
+ * Render an UTF-8 string onto a gd image.
+ *
+ * Parameters:
+ *	im       - The image to draw onto.
+ *  brect    - The bounding rectangle as array of 8 integers where each pair
+ *             represents the x- and y-coordinate of a point. The points
+ *             specify the lower left, lower right, upper right and upper left
+ *             corner.
+ *	fg       - The font color.
+ *	fontlist - The semicolon delimited list of font filenames to look for.
+ *	ptsize   - The height of the font in typographical points (pt).
+ *	angle    - The angle in radian to rotate the font counter-clockwise.
+ *	x        - The x-coordinate of the basepoint (roughly the lower left corner) of the first letter.
+ *	y        - The y-coordinate of the basepoint (roughly the lower left corner) of the first letter.
+ *	string   - The string to render.
+ *
+ * Variant:
+ *  - <gdImageStringFTEx>
+ *
+ * See also:
+ *  - <gdImageString>
+ */
     
     /* FIG GRILLE*/
     /* Declare the image */
@@ -138,7 +190,7 @@ int main(int argc, char* argv[])
     // gdImageFilledRectangle(im2, 100, 100, 300, 300, violet_clair);
 
     /*TEST COPIE*/
-    gdImageCopy(im, im2, 200, 300, 0, 0, Nx2-1, Ny2-1);
+    // gdImageCopy(im, im2, 100, 100, 0, 0, Nx2-1, Ny2-1);
 
     /* Open a file for writing. "wb" means "write binary", important
         under MSDOS, harmless under Unix. */
