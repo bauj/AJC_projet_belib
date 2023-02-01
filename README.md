@@ -10,8 +10,10 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 + **Table Bornes** : contient l'ensemble des données des bornes Belib. 
 Cette table est mise à jour quotidiennement à 17h20. Il s'agit d'une **table 
 temporaire**, sauvegardée dans le cas où l'on souhaite exploiter plus de 
-données dans la suite du projet. Elle n'est pas mise à jour sur la carte. 
-En-tête de la table : 
+données dans la suite du projet. Elle n'est pas mise à jour sur la carte.  
+En-tête de la table :  
+| ID | last_updated | id_pdc | statut_pdc | adresse_station | lon | lat |
+|---|---|---|---|---|---|---|
   
 
 + **Table General** : contient le nombre total de bornes associées à chaque
