@@ -318,7 +318,7 @@ def adresse_to_lon_lat(adr):
     return lon, lat
 
 # -----------------------------------------------------------------------------
-def clean_table(table, path_db):
+def clean_table(path_db, table):
 
     conn = create_connection(path_db)
 
@@ -389,7 +389,7 @@ if __name__ == "__main__":
         update_general(path_db)
 
     if (not bornes and not general and fav and not live) :
-        pos_lat, pos_lon=48.84, 2.28
+        pos_lat, pos_lon = 48.84, 2.28
         dist="0.5km"
         table = "Stations_fav"
         update_bornes_around_pos(path_db,table, pos_lat, pos_lon, dist)

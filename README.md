@@ -94,6 +94,8 @@ la forme d'une chaine de caractères.
 ## Lecture bdd sqlite et plotting      :soon:
  
 + Section réalisée en C avec les bibliothèques sqlite3 et libgd. 
++ Proof of concept : Exec cross-compilé avec ouverture et fermetude de db 
+sqlite + plot tracé et sauvegarde d'une image en png 
 + Plot de deux figures (*pour l'instant*) en utilisant la bibliothèque matplotlib
     + Fig 1 : Evolution temporelle du nombre de points de charge disponibles, 
 occupés et en maintenance (courbes) pour les stations en favoris.
@@ -110,7 +112,9 @@ moment de la derniere recolte.
 
 ## Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)     :soon:
 
-+ Recuperation des data :heavy_check_mark:
++ Recuperation des data : :heavy_check_mark:
+    + environ 4 secs  par appel.
+    + bdd de faible taille : incrément inférieur à 1ko pour les favoris (5 stations)
 
 + Bibliotheques utilisees :
     + **Python** : sqlite3, urllib3 (ssl et CA Certificates), ujson, sqlite3.
