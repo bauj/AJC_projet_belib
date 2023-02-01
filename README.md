@@ -32,20 +32,21 @@ d'une requête pour ne garder que les résultats voulus.
 Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`.  
 Quatre options de récupération possibles en fonction de la table de la BDD 
 visée :
-    + `-b` ou `--bornes` : récupération des données de l'ensemble des bornes et 
-injection  dans la table `Bornes`.  
+    + `-b` `--bornes` : récupération des données de l'ensemble des bornes et 
+injection  dans la table Bornes de la bdd.  
 
-    + `-g` ou `--general` : récupération des données de l'ensemble des bornes 
-groupées par statut et injection  dans la table `General`.  
+    + `-g` `--general` : récupération des données de l'ensemble des bornes 
+groupées par statut et injection  dans la table General de la bdd.  
 
-    + `-f` ou `--favori` : récupération des données des stations en favori et 
-injection  dans la table `Stations_fav`.  
+    + `-f` `--favori` : récupération des données des stations en favori et 
+injection  dans la table Stations_fav de la bdd.  
 
-    + `-l` ou `--live` : récupération des données des stations situées dans un 
-rayon `<distance>` de l'adresse entrée `<adresse>`
-        + `-a` ou `--adresse` <adresse>   : permet d'entrer une `<adresse>` sous 
+    + `-l` `--live` : récupération des données des stations situées dans un 
+rayon `<distance>` de l'adresse entrée `<adresse>` et injection dans la table 
+Stations_live de la bdd.
+        + `-a` `--adresse` <adresse>   : permet d'entrer une `<adresse>` sous 
 la forme d'une chaine de caractères. 
-        + `-d` ou `--distance` <distance> : permet d'entrer une `<distance>` sous
+        + `-d` `--distance` <distance> : permet d'entrer une `<distance>` sous
  la forme d'une chaine de caractères (de type "0.5km").
 
 + Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
