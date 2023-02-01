@@ -34,7 +34,7 @@ d'une requête pour ne garder que les résultats voulus.
 
 + Récupération des données dans l'ensemble des Tables de la BDD (Base de 
 Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`. 
-Bibliothèques python utilisées : 
+Bibliothèques python (modules) utilisées : 
     + **urllib3** : pour effectuer les requêtes GET sur les API [OpenDatasoft 
 de ParisData](https://parisdata.opendatasoft.com/api/v2/console), [Adresse de 
 data gouv](https://adresse.data.gouv.fr/api-doc/adresse), et [Static Images de 
@@ -47,10 +47,10 @@ les requêtes. Bibliothèque de traitement de JSON ultrarapide et légère.
 
     + **datetime** : pour des traitements de chaines de type `date`.  
 
-    + **argparse** : pour parser simplement les arguments entré via appel CLI.  
+    + **argparse** : pour parser simplement les arguments entré via appel CLI.
 
-Quatre options de récupération sont possibles en fonction de la table de la BDD 
-visée :
++ Quatre options de récupération sont possibles avec le script 
+`recuperation_data_belib.py`en fonction de la table de la bdd visée :
     + `-b` `--bornes` : récupération des données de l'ensemble des bornes et 
 injection dans la **table Bornes** de la bdd.  
 
