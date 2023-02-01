@@ -1,9 +1,6 @@
 # Projet Formation AJC : Traitement de données Belib'
 
-URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.\
-opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-\
-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&\
-disjunctive.arrondissement)
+URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 
 
 ### Récupération et traitement des données brutes :heavy_check_mark: 
@@ -50,7 +47,7 @@ les requêtes. Bibliothèque de traitement de JSON ultrarapide et légère.
     + **argparse** : pour parser simplement les arguments entré via appel CLI.
 
 + Quatre options de récupération sont possibles avec le script 
-`recuperation_data_belib.py`en fonction de la table de la bdd visée :
+`recuperation_data_belib.py` en fonction de la table de la bdd visée :
     + `-b` `--bornes` : récupération des données de l'ensemble des bornes et 
 injection dans la **table Bornes** de la bdd.  
 
