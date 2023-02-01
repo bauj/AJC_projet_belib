@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sqlite3.h>
 #include <gd.h>
 
@@ -36,13 +37,20 @@ int main(int argc, char* argv[])
     // Fermeture de la db
     sqlite3_close(db_belib);
 
+
+    // ------------------------------------------------------------------------
+    // Essais gd
+    // ------------------------------------------------------------------------
+
     /* Declare the image */
     gdImagePtr im;
     /* Declare output files */
     FILE *pngout_evolution;
+
     /* Declare color indexes */
     int black;
     int white;
+    char dir_figures[] = "./figures/";
 
     /* Allocate the image: 800 pixels across by 600 pixels tall */
     im = gdImageCreate(800, 600);
@@ -61,7 +69,11 @@ int main(int argc, char* argv[])
 
     /* Open a file for writing. "wb" means "write binary", important
         under MSDOS, harmless under Unix. */
-    pngout_evolution = fopen("test.png", "wb");
+    char filename_figEvolution[] = "test.png";
+    
+    printf("%ld\n", strlen(strcat(dir_figures, filename_figEvolution)));
+
+    pngout_evolution = fopen(strcat(dir_figures, filename_figEvolution), "wb");
 
     /* Output the image to the disk file in PNG format. */
     gdImagePng(im, pngout_evolution);
