@@ -5,7 +5,7 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 
 ## Récupération et traitement des données brutes :heavy_check_mark: 
 
-### Création d'une base de données SQLite3 `belib_data.db` comprenant 3 tables
+### Création d'une base de données SQLite3 `belib_data.db` comprenant 4 tables
 
 + **Table Bornes** : contient l'ensemble des données des bornes Belib. 
 Cette table est mise à jour quotidiennement à 17h20. Il s'agit d'une **table 
@@ -89,7 +89,7 @@ la forme d'une chaine de caractères.
  la forme d'une chaine de caractères (de type "0.5km").
 
 
-### Lecture bdd sqlite et plotting      :soon:
+## Lecture bdd sqlite et plotting      :soon:
  
 + Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
 + **En Python** : lecture de la bdd via bibliothèque python sqlite3
@@ -99,12 +99,15 @@ la forme d'une chaine de caractères.
     + Fig 3 : Répartition des statuts des points de charge du jour.
 + Fichiers figures enregistrés au format PNG.
 
-### Update page HTML et CSS      :soon:
+## Update page HTML et CSS      :soon:
 
 + Un peu d'HTML et de CSS pour mettre en valeur les résultats, décrire le projet, etc ...
 
-### Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)     :soon:
+## Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)     :soon:
 
-+ Prendre en compte la compilation des librairies si non déjà disponibles dans buildroot.
-+ Bibliotheques utilisees : matplotlib, sqlite3 (PYTHON), jsmn, sqlite3 (C).
++ Recuperation des data :heavy_check_mark:
+
++ Bibliotheques utilisees :
+    + **Python** : sqlite3, urllib3 (ssl et CA Certificates), ujson, sqlite3.
+    + **C** : libgd, sqlite3.
 

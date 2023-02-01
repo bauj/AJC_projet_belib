@@ -62,17 +62,17 @@ def iterator_data_stations(n, list_stations_pref):
             list_stations_pref[i]['non_implemente']
 
 # -----------------------------------------------------------------------------              
-def create_connection(db_file):
+def create_connection(path_db):
     conn = None
     try:
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(path_db)
     except Error as e:
         print(e)
 
     return conn
 
 # -----------------------------------------------------------------------------
-def update_global():
+def update_all_bornes(path_db):
 
     http = urllib3.PoolManager()
 
@@ -88,7 +88,8 @@ def update_global():
     
     wanted_keys = ["last_updated", "id_pdc", "statut_pdc", "adresse_station", "lon", "lat"]
     
-    conn = sqlite3.connect("belib_data.db")
+    conn = create_connection(path_db)
+
     cur = conn.cursor()
     table = "Bornes"
     insert_query = f"INSERT INTO {table} ("+", ".join(wanted_keys)+") VALUES ("+\
@@ -126,7 +127,7 @@ def def_station(daterecolte_, adr, lon, lat, n_dispo, n_occup, n_inc, n_main, \
 # -----------------------------------------------------------------------------
 def transform_dict_station(list_records):
 
-    dict_labels = {
+    dict_labels_statuts = {
         'Disponible'                  :   "disponible"          ,
         'Occupé (en charge)'          :   "occupe"              ,
         'Inconnu'                     :   "inconnu"             ,
@@ -150,7 +151,7 @@ def transform_dict_station(list_records):
     adresse_record0 = rec0["adresse_station"] 
     lon0,lat0 = get_lon_lat_from_coordxy(rec0["coordonneesxy"])
     dict_station = def_station(date_recolte, adresse_record0, lon0, lat0, 0, 0, 0, 0)
-    statut_record0 = dict_labels[rec0['statut_pdc']]
+    statut_record0 = dict_labels_statuts[rec0['statut_pdc']]
     dict_station[statut_record0] = rec0["nb_bornes"]
 
     # Saut du 1er record
@@ -158,7 +159,7 @@ def transform_dict_station(list_records):
         rec = dico_record["record"]["fields"]
 
         if (dict_station["adresse_station"] == rec["adresse_station"]) :
-            statut_record = dict_labels[rec['statut_pdc']]
+            statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
         else :
             list_dict_station.append(dict_station)
@@ -167,13 +168,33 @@ def transform_dict_station(list_records):
             lon,lat = get_lon_lat_from_coordxy(rec["coordonneesxy"])
             dict_station = def_station(date_recolte, adresse_record, lon, lat, 0, 0, 0, 0)
 
-            statut_record = dict_labels[rec['statut_pdc']]
+            statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
 
     return list_dict_station  
 
 # -----------------------------------------------------------------------------
-def update_bornes_around_pos(table, pos_lat, pos_lon, dist):
+def update_general(path_db):
+
+    http = urllib3.PoolManager()
+
+    date_du_jour = date.today().strftime("%Y-%m-%d")
+    date_veille = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    url_req = "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/"+\
+        "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"\
+            "records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated"+\
+                f"%20%3E%20date%27{date_veille}%27%20AND%20last_updated%20%3C%3D%20date"+\
+                    f"%27{date_du_jour}%27&group_by=statut_pdc&limit=100&offset=0&timezone=UTC"
+    
+    resp = http.request("GET", url_req)
+    raw_data = ujson.loads(resp.data)["records"] 
+
+    test = ujson.dumps(raw_data, indent=4)
+    print(test)
+
+# -----------------------------------------------------------------------------
+def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
 
     http = urllib3.PoolManager()
 
@@ -197,7 +218,8 @@ def update_bornes_around_pos(table, pos_lat, pos_lon, dist):
 
     wanted_keys = list(list_stations[0].keys())
     
-    conn = sqlite3.connect("belib_data.db")
+    conn = create_connection(path_db)
+
     cur = conn.cursor()
     insert_query = f"INSERT INTO {table} ("+", ".join(wanted_keys)+") VALUES ("+\
                                 ", ".join(len(wanted_keys)*['?']) + ");"
@@ -236,23 +258,26 @@ def adresse_to_lon_lat(adr):
     return lon, lat
 
 # -----------------------------------------------------------------------------
-def clean_table(table):
+def clean_table(table, path_db):
 
-    conn = create_connection("belib_data.db")
+    conn = create_connection(path_db)
+
     sql_req = f"DELETE FROM {table}"
+
     with conn :
         cur = conn.cursor()
         cur.execute(sql_req)
         conn.commit()
 
 # -----------------------------------------------------------------------------
-def update_bornes_around_adresse_live(adr, dist):
+def update_bornes_around_adresse_live(path_db, adr, dist):
 
     lon_adr, lat_adr = adresse_to_lon_lat(adr)
 
     table="Stations_live"
-    clean_table(table)
-    update_bornes_around_pos(table, lat_adr, lon_adr, dist)
+
+    clean_table(path_db, table)
+    update_bornes_around_pos(path_db, table, lat_adr, lon_adr, dist)
     
     return
 
@@ -266,8 +291,10 @@ if __name__ == "__main__":
             ' sqlite.',
         epilog = '-- Juba Hamma, 2023.')
     
-    parser.add_argument('-g', '--all', action = 'store_true',
+    parser.add_argument('-b', '--bornes', action = 'store_true',
         help = "Mise a jour de l'ensemble des donnees dans la table 'Bornes'.")
+    parser.add_argument('-g', '--general', action = 'store_true',
+        help = "Mise a jour de l'ensemble des donnees dans la table 'General'.")
     parser.add_argument('-f', '--favoris', action = 'store_true',\
         help = "Mise a jour des donnees relatives aux stations en favoris dans "+\
                 "la table 'Stations_fav'.")
@@ -276,27 +303,35 @@ if __name__ == "__main__":
                 "position specifiee via une adresse et le rayon de recherche, "+\
                 "dans la table 'Stations_live'.")
     parser.add_argument('-a', '--adresse', type=str, nargs=1, default="",
-        help ="Adresse a entrer dans le cas de l'option --live.")    
+        help ="Adresse a entrer dans le cas de l'option --live.")
     parser.add_argument('-d', '--distance', type=str, nargs=1, default="",
         help ="Rayon de recherche a entrer sous la forme '0.5km' dans le cas "+\
-            "de l'option --live.")      
+            "de l'option --live.")
 
     args = parser.parse_args()
-    glob = args.all
+    bornes = args.bornes
+    general = args.general
     fav = args.favoris
     live = args.live
 
-    if (glob and not fav and not live) :
-        update_global()
+    dir_db = "../db_sqlite/"
+    filename_db = "belib_data.db"
+    path_db = dir_db + filename_db
 
-    if (not glob and fav and not live) :
+    if (bornes and not general and not fav and not live) :
+        update_all_bornes(path_db)
+
+    if (not bornes and general and not fav and not live) :
+        update_general(path_db)
+
+    if (not bornes and not general and fav and not live) :
         pos_lat, pos_lon=48.84, 2.28
         dist="0.5km"
         table = "Stations_fav"
-        update_bornes_around_pos(table, pos_lat, pos_lon, dist)
+        update_bornes_around_pos(path_db,table, pos_lat, pos_lon, dist)
 
-    if (not glob and not fav and live) :
+    if (not bornes and not general and not fav and live) :
         adresse_live = args.adresse[0]
         dist_live = args.distance[0]
         if (adresse_live and dist_live) :
-            update_bornes_around_adresse_live(adresse_live, dist_live)
+            update_bornes_around_adresse_live(path_db, adresse_live, dist_live)
