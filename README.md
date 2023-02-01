@@ -25,9 +25,23 @@ trouvées suite à la requête d'un utilisateur. Elle est nettoyée au lancement
 d'une requête pour ne garder que les résultats voulus.
 *[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
 
-+ Récupération des données dans l'ensemble des Tables de la base de données à
- l'aide du script python `recuperation_data_belib.py`.
-+ 
++ Récupération des données dans l'ensemble des Tables de la base de données 
+`belib_data.db`à l'aide du script python `recuperation_data_belib.py`.  
+Quatre options de récupération possibles en fonction de la table de la de BDD 
+(Base De Données) visée :
+    + `-b`, `--bornes` : récupération des données de l'ensemble des bornes et 
+injection  dans la table `Bornes`.
+    + `-g`, `--general` : récupération des données de l'ensemble des bornes 
+groupées par statut et injection  dans la table `General`.
+    + `-f`, `--favori` : récupération des données des stations en favori et 
+injection  dans la table `Stations_fav`.
+    + `-l`, `--live` : récupération des données des stations situées dans un 
+rayon `<distance>` de l'adresse entrée `<adresse>`
+        + `-a`, `--adresse` <adresse>   : permet d'entrer une `<adresse>` sous 
+la forme d'une chaine de caractères. 
+        + `-d`, `--distance` <distance> : permet d'entrer une `<distance>` sous
+ la forme d'une chaine de caractères (de type "0.5km").
+
 + Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
     + `raw_data_tot_belib_<DDJ>.json` : L'ensemble des données (/exports) obtenu à l'aide de de la fonction : `Get_all_data()`.
 L'API limite les requetes à 100 records seulement. Le téléchargement de l'ensemble des données est nécessaire si on souhaite exploiter plus de données par la suite.
