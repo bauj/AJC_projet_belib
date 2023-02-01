@@ -25,11 +25,11 @@ trouvées suite à la requête d'un utilisateur. Elle est nettoyée au lancement
 d'une requête pour ne garder que les résultats voulus.
 *[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
 
-+ Récupération des données dans l'ensemble des Tables de la base de données 
-`belib_data.db`à l'aide du script python `recuperation_data_belib.py`.  
-Quatre options de récupération possibles en fonction de la table de la de BDD 
-(Base De Données) visée :
-    + `-b`, `--bornes` : récupération des données de l'ensemble des bornes et 
++ Récupération des données dans l'ensemble des Tables de la BDD (Base de 
+Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`.  
+Quatre options de récupération possibles en fonction de la table de la BDD 
+visée :
+    + -b, --bornes : récupération des données de l'ensemble des bornes et 
 injection  dans la table `Bornes`.
     + `-g`, `--general` : récupération des données de l'ensemble des bornes 
 groupées par statut et injection  dans la table `General`.
