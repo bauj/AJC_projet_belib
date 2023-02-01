@@ -3,7 +3,7 @@
 URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 
 
-### Récupération des données  <!-- :heavy_check_mark: -->
+### Récupération et traitement des données brutes :heavy_check_mark: 
 
 + Création d'une base de données SQLite3 `belib_data.db` comprenant 3 tables :
     + **Table Bornes** : contient l'ensemble des données des bornes Belib. 
@@ -17,8 +17,9 @@ pour un affichage qui permet un aperçu global du service.
 
     + **Table Stations_fav** : contient les données de stations Belib 
 enregistrées autour d'un lieu favori inséré dans l'application. Les données 
-sont récupérées 3x par jour (9h40, 12h, 17h20) et permettent de tracer une 
-évolution temporelle du statut de ces bornes pour ces 3 moments de la journée.  
+sont récupérées 3x par jour (9h40, 12h, 17h20) via **crontab** et permettent de
+ tracer une évolution temporelle du statut de ces bornes pour ces 3 moments de 
+la journée.  
 *[Perspectives] Ajout de la possibilite d'ajouter des favoris.*  
 *[Perspectives] On pourrait penser à inclure la possibilite de modifier les 
 horaires de recuperation.*  
@@ -48,19 +49,6 @@ Stations_live** de la bdd.
 la forme d'une chaine de caractères. 
         + `-d` `--distance` <distance> : permet d'entrer une `<distance>` sous
  la forme d'une chaine de caractères (de type "0.5km").
-
-+ Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
-    + `raw_data_tot_belib_<DDJ>.json` : L'ensemble des données (/exports) obtenu à l'aide de de la fonction : `Get_all_data()`.
-L'API limite les requetes à 100 records seulement. Le téléchargement de l'ensemble des données est nécessaire si on souhaite exploiter plus de données par la suite.
-Taille du fichier : ~1.3Mo.
-
-    + `raw_data_nb_bornes_belib_<DDJ>.json` : Données obtenues à l'aide de de la fonction : `Get_grouped_by_status_data()`.
-Fichier contenant les résultats de base qui seront exploités pour le moment. Taille du fichier : ~1.5Ko.
-
-    + ** AJOUTER MODELE JSON ** 
-
-+ Les données seront récupérées tous les jours à 9h40, 12h30, 17h20 (**crontab**)
-
 
 ### Traitement des données brutes et bdd sqlite <!-- :heavy_check_mark: -->
 
