@@ -50,6 +50,8 @@ En-tête de la table :
 
 ### Récupération et injection des données dans la BDD (Base de Données) 
 
+** DOC PYTHON A COMPLETER !! **
+
 + Récupération et injection des données `belib_data.db` dans chaque table de la 
 bdd à l'aide du script python `recuperation_data_belib.py`. Bibliothèques 
 python (modules) utilisées : 
@@ -77,7 +79,7 @@ injection dans la **table Bornes** de la bdd.
     + `-g` `--general` : récupération des données de l'ensemble des bornes 
 groupées par statut et injection dans la **table General** de la bdd.  
 
-    + `-f` `--favori` : récupération des données des stations en favori et 
+    + `-f` `--favoris` : récupération des données des stations en favori et 
 injection  dans la **table Stations_fav** de la bdd.  
 
     + `-l` `--live` : récupération des données des stations situées dans un 
@@ -91,13 +93,14 @@ la forme d'une chaine de caractères.
 
 ## Lecture bdd sqlite et plotting      :soon:
  
-+ Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
-+ **En Python** : lecture de la bdd via bibliothèque python sqlite3
++ Section réalisée en C avec les bibliothèques sqlite3 et libgd. 
 + Plot de deux figures (*pour l'instant*) en utilisant la bibliothèque matplotlib
-    + Fig 1 : Evolution temporelle (quotidienne) du nombre de points de charge en maintenance, disponibles et occupés
-    + Fig 2 : Evolution temporelle (quotidienne) du taux d'occupation, taux de maintenance, etc ... 
-    + Fig 3 : Répartition des statuts des points de charge du jour.
+    + Fig 1 : Evolution temporelle du nombre de points de charge disponibles, 
+occupés et en maintenance (courbes) pour les stations en favoris.
+    + Fig 2 : Histogramme des statuts des points de charge des stations favs.
 + Fichiers figures enregistrés au format PNG.
+
++ Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
 
 ## Update page HTML et CSS      :soon:
 
