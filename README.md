@@ -6,21 +6,21 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 ### Récupération des données  <!-- :heavy_check_mark: -->
 
 + Création d'une base de données SQLite3 `belib_data.db` comprenant 3 tables :
-    + Table **Bornes** : contient l'ensemble des données des bornes Belib. 
+    + **Table Bornes** : contient l'ensemble des données des bornes Belib. 
 Cette table est mise à jour quotidiennement à 17h20. Il s'agit d'une **table 
 temporaire**, sauvegardée dans le cas où l'on souhaite exploiter plus de 
 données dans la suite du projet. Elle n'est pas mise à jour sur la carte.
-    + Table **General** : contient le nombre total de bornes associées à chaque
+    + **Table General** : contient le nombre total de bornes associées à chaque
 statut : disponible, occupé, en maintenance, etc ... Cette table est utilisée 
 pour un affichage qui permet un aperçu global du service.
-    + Table **Stations_fav** : contient les données de stations Belib 
+    + **Table Stations_fav** : contient les données de stations Belib 
 enregistrées autour d'un lieu favori inséré dans l'application. Les données 
 sont récupérées 3x par jour (9h40, 12h, 17h20) et permettent de tracer une 
 évolution temporelle du statut de ces bornes pour ces 3 moments de la journée.
 *[Perspectives] Ajout de la possibilite d'ajouter des favoris* 
 *[Perspectives] On pourrait penser à inclure la possibilite de modifier les 
 horaires de recuperation.*
-    + Table **Stations_live** : contient les données de stations Belib 
+    + **Table Stations_live** : contient les données de stations Belib 
 trouvées suite à la requête d'un utilisateur. Elle est nettoyée au lancement 
 d'une requête pour ne garder que les résultats voulus.
 *[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
