@@ -14,6 +14,18 @@
 
 #define PI 3.141592
 
+float deg2rad(float angle);
+void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
+                                            const char *filename_fig);
+void make_background(gdImagePtr im_fig, const int padX, const int padY,\
+                             const int couleur[3]);
+void make_support_axes(gdImagePtr im_fig, const int orig[2], const int couleur[3]);
+void ImageLineEpaisseur(gdImagePtr im_fig, \
+            const int x1, const int y1, const int x2, const int y2,\
+             const int couleur[3], const int w);
+void PlotPoint(gdImagePtr im_fig, const int x1, const int y1, const int couleur[3], const int ms);
+void PlotLine(gdImagePtr im_fig, const int nb_pts, \
+                const int ptx[], const int pty[], const int couleur[3], const int w, const int ms);
 
 /**
  * @brief Transforme les degrés en radians.
@@ -21,13 +33,15 @@
  * @param angle Angle en degrés
  * @return float Angle en radians
  */
-float deg2rad(float angle) {
+float deg2rad(float angle) 
+{
     return angle*PI/180;
 }
 
 
 void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
-                                            const char *filename_fig) {
+                                            const char *filename_fig)
+{
 
     FILE *pngout_fig;
 
@@ -138,6 +152,13 @@ int main(int argc, char* argv[])
     PlotLine(im_fig1, lenArr, ptx, pty2, couleur_trait2, w_lines, ms);
     PlotLine(im_fig1, lenArr, ptx, pty3, couleur_trait3, w_lines, ms);
 
+    /* Ecriture xlabel */
+
+    /* Ecriture ylabel */
+
+    /* Dessiner les ticks */
+
+    /* Valeurs des ticks  */
 
     /* Creation des axes au bord de la zone de dessin*/
     make_support_axes(im_fig1, origin_axes, couleur_axes);
