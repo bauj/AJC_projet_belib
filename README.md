@@ -1,6 +1,9 @@
 # Projet Formation AJC : Traitement de données Belib'
 
-URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
+URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.\
+opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-\
+electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&\
+disjunctive.arrondissement)
 
 
 ### Récupération et traitement des données brutes :heavy_check_mark: 
@@ -30,8 +33,23 @@ d'une requête pour ne garder que les résultats voulus.
 *[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
 
 + Récupération des données dans l'ensemble des Tables de la BDD (Base de 
-Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`.  
-Quatre options de récupération possibles en fonction de la table de la BDD 
+Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`. 
+Bibliothèques python utilisées : 
+    + **urllib3** : pour effectuer les requêtes GET sur les API [OpenDatasoft 
+de ParisData](https://parisdata.opendatasoft.com/api/v2/console), [Adresse de 
+data gouv](https://adresse.data.gouv.fr/api-doc/adresse), et [Static Images de 
+mapbox](https://docs.mapbox.com/playground/static/).  
+
+    + **ujson** : UltraJSON, pour le traitement des contenus JSON renvoyés par 
+les requêtes. Bibliothèque de traitement de JSON ultrarapide et légère.  
+
+    + **sqlite3**  : pour l'interfaçage avec la bdd `belib_data.db`.  
+
+    + **datetime** : pour des traitements de chaines de type `date`.  
+
+    + **argparse** : pour parser simplement les arguments entré via appel CLI.  
+
+Quatre options de récupération sont possibles en fonction de la table de la BDD 
 visée :
     + `-b` `--bornes` : récupération des données de l'ensemble des bornes et 
 injection dans la **table Bornes** de la bdd.  
