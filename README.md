@@ -97,7 +97,9 @@ la forme d'une chaine de caractères.
 + Plot de deux figures (*pour l'instant*) en utilisant la bibliothèque matplotlib
     + Fig 1 : Evolution temporelle du nombre de points de charge disponibles, 
 occupés et en maintenance (courbes) pour les stations en favoris.
-    + Fig 2 : Histogramme des statuts des points de charge des stations favs.
+    + Fig 2 : Histogramme des statuts des points de charge des stations favs au
+moment de la derniere recolte.
+
 + Fichiers figures enregistrés au format PNG.
 
 + Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
