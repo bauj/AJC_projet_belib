@@ -33,17 +33,17 @@ Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`
 Quatre options de récupération possibles en fonction de la table de la BDD 
 visée :
     + `-b` `--bornes` : récupération des données de l'ensemble des bornes et 
-injection  dans la table Bornes de la bdd.  
+injection dans la **table Bornes** de la bdd.  
 
     + `-g` `--general` : récupération des données de l'ensemble des bornes 
-groupées par statut et injection  dans la table General de la bdd.  
+groupées par statut et injection dans la **table General** de la bdd.  
 
     + `-f` `--favori` : récupération des données des stations en favori et 
-injection  dans la table Stations_fav de la bdd.  
+injection  dans la **table Stations_fav** de la bdd.  
 
     + `-l` `--live` : récupération des données des stations situées dans un 
-rayon `<distance>` de l'adresse entrée `<adresse>` et injection dans la table 
-Stations_live de la bdd.
+rayon `<distance>` de l'adresse `<adresse>` entrée et injection dans la **table 
+Stations_live** de la bdd.
         + `-a` `--adresse` <adresse>   : permet d'entrer une `<adresse>` sous 
 la forme d'une chaine de caractères. 
         + `-d` `--distance` <distance> : permet d'entrer une `<distance>` sous
