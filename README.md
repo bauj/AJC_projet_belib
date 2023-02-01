@@ -29,7 +29,7 @@ En-tête de la table :
 enregistrées autour d'un lieu favori inséré dans l'application. Les données 
 sont récupérées 3x par jour (9h40, 12h, 17h20) via **crontab** et permettent de
  tracer une évolution temporelle du statut de ces bornes pour ces 3 moments de 
-la journée.  
+la journée.   
 *[Perspectives] Ajout de la possibilite d'ajouter des favoris.*  
 *[Perspectives] On pourrait penser à inclure la possibilite de modifier les 
 horaires de recuperation.*  
@@ -40,8 +40,8 @@ En-tête de la table :
 
 + **Table Stations_live** : contient les données de stations Belib 
 trouvées suite à la requête d'un utilisateur. Elle est nettoyée au lancement 
-d'une requête pour ne garder que les résultats voulus.
-*[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
+d'une requête pour ne garder que les résultats voulus.  
+*[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*  
 En-tête de la table :  
 
 | ID | date_recolte | adresse_station | lon | lat | disponible | occupe | ... |
