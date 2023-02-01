@@ -18,7 +18,7 @@ pour un affichage qui permet un aperçu global du service.
     + **Table Stations_fav** : contient les données de stations Belib 
 enregistrées autour d'un lieu favori inséré dans l'application. Les données 
 sont récupérées 3x par jour (9h40, 12h, 17h20) et permettent de tracer une 
-évolution temporelle du statut de ces bornes pour ces 3 moments de la journéei.  
+évolution temporelle du statut de ces bornes pour ces 3 moments de la journée.  
 *[Perspectives] Ajout de la possibilite d'ajouter des favoris.*  
 *[Perspectives] On pourrait penser à inclure la possibilite de modifier les 
 horaires de recuperation.*  
@@ -32,17 +32,20 @@ d'une requête pour ne garder que les résultats voulus.
 Données) `belib_data.db`à l'aide du script python `recuperation_data_belib.py`.  
 Quatre options de récupération possibles en fonction de la table de la BDD 
 visée :
-    + *-b, --bornes* : récupération des données de l'ensemble des bornes et 
-injection  dans la table `Bornes`.
-    + `-g`, `--general` : récupération des données de l'ensemble des bornes 
-groupées par statut et injection  dans la table `General`.
-    + `-f`, `--favori` : récupération des données des stations en favori et 
-injection  dans la table `Stations_fav`.
-    + `-l`, `--live` : récupération des données des stations situées dans un 
+    + `-b, --bornes` : récupération des données de l'ensemble des bornes et 
+injection  dans la table `Bornes`.  
+
+    + `-g` `--general` : récupération des données de l'ensemble des bornes 
+groupées par statut et injection  dans la table `General`.  
+
+    + `-f` `--favori` : récupération des données des stations en favori et 
+injection  dans la table `Stations_fav`.  
+
+    + `-l` `--live` : récupération des données des stations situées dans un 
 rayon `<distance>` de l'adresse entrée `<adresse>`
-        + `-a`, `--adresse` <adresse>   : permet d'entrer une `<adresse>` sous 
+        + `-a` `--adresse` <adresse>   : permet d'entrer une `<adresse>` sous 
 la forme d'une chaine de caractères. 
-        + `-d`, `--distance` <distance> : permet d'entrer une `<distance>` sous
+        + `-d` `--distance` <distance> : permet d'entrer une `<distance>` sous
  la forme d'une chaine de caractères (de type "0.5km").
 
 + Deux fichiers de données au format `JSON` sont récupérés quotidiennement :
