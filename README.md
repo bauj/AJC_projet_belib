@@ -10,7 +10,7 @@ URL dataset : [Statut des bornes Belib' parisiennes](https://parisdata.opendatas
 + **Table Bornes** : contient l'ensemble des données des bornes Belib. 
 Cette table est mise à jour quotidiennement à 17h20. Il s'agit d'une **table 
 temporaire**, sauvegardée dans le cas où l'on souhaite exploiter plus de 
-données dans la suite du projet. Elle n'est pas mise à jour sur la carte.  
+données dans la suite du projet. Elle n'est pas mise à jour sur la carte qemu.  
 En-tête de la table :  
 
 | ID | last_updated | id_pdc | statut_pdc | adresse_station | lon | lat |
@@ -19,6 +19,7 @@ En-tête de la table :
 + **Table General** : contient le nombre total de bornes associées à chaque
 statut : disponible, occupé, en maintenance, etc ... Cette table est utilisée 
 pour un affichage qui permet un aperçu global du service.  
+En-tête de la table :  
 
 | ID | date_recolte | disponible | occupe | en_maintenance | ... |
 | --- | --- | --- | --- | --- | --- |
@@ -32,11 +33,20 @@ la journée.
 *[Perspectives] Ajout de la possibilite d'ajouter des favoris.*  
 *[Perspectives] On pourrait penser à inclure la possibilite de modifier les 
 horaires de recuperation.*  
+En-tête de la table :  
+
+| ID | date_recolte | adresse_station | lon | lat | disponible | occupe | ... |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 + **Table Stations_live** : contient les données de stations Belib 
 trouvées suite à la requête d'un utilisateur. Elle est nettoyée au lancement 
 d'une requête pour ne garder que les résultats voulus.
 *[Perspectives] Tracer l'historique des bornes trouvées ? est-ce utile ?*
+En-tête de la table :  
+
+| ID | date_recolte | adresse_station | lon | lat | disponible | occupe | ... |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
 
 ### Récupération et injection des données dans la BDD (Base de Données) 
 
