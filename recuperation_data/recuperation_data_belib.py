@@ -33,7 +33,40 @@ import argparse
 from datetime import date, timedelta, datetime
 
 # -----------------------------------------------------------------------------
-def iterator_data_global(n, raw_data_all_bornes):
+# Parametres globaux
+# -----------------------------------------------------------------------------
+
+dict_labels_statuts = {
+        'Disponible'                  :   "disponible"          ,
+        'Occupé (en charge)'          :   "occupe"              ,
+        'Inconnu'                     :   "inconnu"             ,
+        'En maintenance'              :   "en_maintenance"      ,
+        'Supprimée'                   :   "supprime"            ,
+        'Réservée'                    :   "reserve"             ,
+        'En cours de mise en service' :   "en_cours_mes"        ,
+        'Mise en service planifiée'   :   "mes_planifiee"       ,
+        'Pas implémentée'             :   "non_implemente"      ,
+    }
+
+# -----------------------------------------------------------------------------
+# Fonctions
+# -----------------------------------------------------------------------------
+
+def iterator_data_general(data_general):
+    yield \
+        data_general["date_recolte"],\
+        data_general["disponible"], \
+        data_general["occupe"],\
+        data_general['en_maintenance'],\
+        data_general['inconnu'],\
+        data_general['supprime'],\
+        data_general['reserve'],\
+        data_general['en_cours_mes'],\
+        data_general['mes_planifiee'],\
+        data_general['non_implemente']
+
+# -----------------------------------------------------------------------------
+def iterator_data_bornes(n, raw_data_all_bornes):
     for i in range(n):
         yield \
             raw_data_all_bornes[i]["last_updated"],\
@@ -42,6 +75,7 @@ def iterator_data_global(n, raw_data_all_bornes):
             raw_data_all_bornes[i]["adresse_station"],\
             raw_data_all_bornes[i]['coordonneesxy']['lon'],\
             raw_data_all_bornes[i]['coordonneesxy']['lat']
+
 
 # -----------------------------------------------------------------------------
 def iterator_data_stations(n, list_stations_pref):
@@ -95,7 +129,7 @@ def update_all_bornes(path_db):
     insert_query = f"INSERT INTO {table} ("+", ".join(wanted_keys)+") VALUES ("+\
                                 ", ".join(len(wanted_keys)*['?']) + ");"
     
-    cur.executemany(insert_query, iterator_data_global(nb_bornes, raw_data_all_bornes))
+    cur.executemany(insert_query, iterator_data_bornes(nb_bornes, raw_data_all_bornes))
     
     conn.commit()
     conn.close()
@@ -125,19 +159,17 @@ def def_station(daterecolte_, adr, lon, lat, n_dispo, n_occup, n_inc, n_main, \
         }
 
 # -----------------------------------------------------------------------------
-def transform_dict_station(list_records):
+def def_row_general(daterecolte_, n_dispo, n_occup, n_inc, n_main, \
+            n_del=0, n_res=0, n_encours_mes=0, n_mes_plan=0, n_nonimp=0):
 
-    dict_labels_statuts = {
-        'Disponible'                  :   "disponible"          ,
-        'Occupé (en charge)'          :   "occupe"              ,
-        'Inconnu'                     :   "inconnu"             ,
-        'En maintenance'              :   "en_maintenance"      ,
-        'Supprimée'                   :   "supprime"            ,
-        'Réservée'                    :   "reserve"             ,
-        'En cours de mise en service' :   "en_cours_mes"        ,
-        'Mise en service planifiée'   :   "mes_planifiee"       ,
-        'Pas implémentée'             :   "non_implemente"      ,
-    }
+    return {"date_recolte": daterecolte_, "disponible": n_dispo, 
+        "occupe": n_occup, "inconnu" : n_inc, "en_maintenance" : n_main, 
+        "supprime" : n_del, "reserve" : n_res, "en_cours_mes" : n_encours_mes, 
+        "mes_planifiee" : n_mes_plan, "non_implemente" : n_nonimp,
+        }
+
+# -----------------------------------------------------------------------------
+def transform_dict_station(list_records):
 
     now = datetime.now()
     date_recolte = now.strftime("%Y-%m-%dT%H-%MTZD")
@@ -173,25 +205,6 @@ def transform_dict_station(list_records):
 
     return list_dict_station  
 
-# -----------------------------------------------------------------------------
-def update_general(path_db):
-
-    http = urllib3.PoolManager()
-
-    date_du_jour = date.today().strftime("%Y-%m-%d")
-    date_veille = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
-
-    url_req = "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/"+\
-        "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"\
-            "records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated"+\
-                f"%20%3E%20date%27{date_veille}%27%20AND%20last_updated%20%3C%3D%20date"+\
-                    f"%27{date_du_jour}%27&group_by=statut_pdc&limit=100&offset=0&timezone=UTC"
-    
-    resp = http.request("GET", url_req)
-    raw_data = ujson.loads(resp.data)["records"] 
-
-    test = ujson.dumps(raw_data, indent=4)
-    print(test)
 
 # -----------------------------------------------------------------------------
 def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
@@ -228,14 +241,61 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
     
     conn.commit()
 
-    search_query = f"SELECT MIN(lon),MIN(lat),MAX(lon),MAX(lat) FROM {table}"
-    cur.execute(search_query)
-    test = list(cur.fetchall()[0])
-    print(test)
+    # mapbox api
+    # search_query = f"SELECT MIN(lon),MIN(lat),MAX(lon),MAX(lat) FROM {table}"
+    # cur.execute(search_query)
+    # test = list(cur.fetchall()[0])
+    # print(test)
 
     conn.close()
 
     return 
+
+# -----------------------------------------------------------------------------
+def update_general(path_db):
+
+    http = urllib3.PoolManager()
+
+    date_du_jour = date.today().strftime("%Y-%m-%d")
+    date_veille = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    url_req = "https://parisdata.opendatasoft.com/api/v2/catalog/datasets/"+\
+        "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"\
+            "records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated"+\
+                f"%20%3E%20date%27{date_veille}%27%20AND%20last_updated%20%3C%3D%20date"+\
+                    f"%27{date_du_jour}%27&group_by=statut_pdc&limit=100&offset=0&timezone=UTC"
+    
+    resp = http.request("GET", url_req)
+    raw_data_general = ujson.loads(resp.data)["records"] 
+
+    now = datetime.now()
+    date_recolte = now.strftime("%Y-%m-%dT%H-%MTZD")
+
+    data_general = def_row_general(date_recolte, *[0]*9)
+
+    for dico_record in raw_data_general:
+        dico_fields = dico_record["record"]["fields"]
+        data_general[dict_labels_statuts[dico_fields["statut_pdc"]]] = dico_fields["nb_bornes"]
+
+    print(data_general)
+    
+    wanted_keys = list(data_general.keys())
+
+
+    conn = create_connection(path_db)
+
+    cur = conn.cursor()
+    table = "General"
+    insert_query = f"INSERT INTO {table} ("+", ".join(wanted_keys)+") VALUES ("+\
+                                ", ".join(len(wanted_keys)*['?']) + ");"
+    
+    cur.executemany(insert_query, iterator_data_general(data_general))
+    
+    conn.commit()
+    conn.close()
+
+    return
+
 
 # -----------------------------------------------------------------------------
 def adresse_to_lon_lat(adr):
@@ -280,6 +340,10 @@ def update_bornes_around_adresse_live(path_db, adr, dist):
     update_bornes_around_pos(path_db, table, lat_adr, lon_adr, dist)
     
     return
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
 
 # =============================================================================
 if __name__ == "__main__":
