@@ -13,9 +13,12 @@ temporaire**, sauvegardée dans le cas où l'on souhaite exploiter plus de
 données dans la suite du projet. Elle n'est pas mise à jour sur la carte.  
 En-tête de la table :  
 
+<center>
+
 | ID | last_updated | id_pdc | statut_pdc | adresse_station | lon | lat |
 | --- | --- | --- | --- | --- | --- | --- |
-  
+
+</center>
 
 + **Table General** : contient le nombre total de bornes associées à chaque
 statut : disponible, occupé, en maintenance, etc ... Cette table est utilisée 
