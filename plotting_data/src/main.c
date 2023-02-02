@@ -15,6 +15,28 @@
 
 #define PI 3.141592
 
+/* --------------------------------------------------------------------------- */
+// Structures
+/* --------------------------------------------------------------------------- */
+
+struct LineStyle_s {
+    char style;
+
+} LineStyle_default = {'-'};
+
+typedef struct LineStyle_s LineStyle;
+
+typedef struct Figure {
+    gdImage *img; /**< Pointeur sur objet gdImage*/
+
+
+} Figure;
+
+
+/* --------------------------------------------------------------------------- */
+// Declaration fonctions
+/* --------------------------------------------------------------------------- */
+
 /**
  * @brief Transforme les degrés en radians.
  * 
@@ -71,7 +93,11 @@ void Make_ylabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
                             char* label, int labelSize, \
                             char *fontpath, int couleur[3], \
                                 int posX, int posY);
-                                
+
+/* --------------------------------------------------------------------------- */
+// Fonctions
+/* --------------------------------------------------------------------------- */
+
 /* --------------------------------------------------------------------------- */
 int maxval_array(const int x_array[], size_t n)
 {
@@ -252,6 +278,16 @@ int *Transform_data_to_plot(gdImagePtr im_fig, const int orig[2],\
     
     return pts_dessin;
 }
+
+void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
+                            char* label, int labelSize, \
+                            char *fontpath, int couleur[3], \
+                                int posX, int posY);
+
+void Make_ylabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
+                            char* label, int labelSize, \
+                            char *fontpath, int couleur[3], \
+                                int posX, int posY);
 
 /* --------------------------------------------------------------------------- */
 int getCouleur(gdImagePtr im_fig, int couleur[3])
