@@ -20,16 +20,39 @@
 /* --------------------------------------------------------------------------- */
 
 struct LineStyle_s {
-    char style;
-
-} LineStyle_default = {'-'};
-
+    char style;     /**< Style de plot : '-' : line, ':' dashed,
+                                          '' : point seulement */
+    int  w;         /**< Epaisseur du trait*/
+    char marker;    /**< Type de marker : 's' : carré, 'o' : cercle,
+                                           '' : pas de marker */
+    int  ms;        /**< Markersize*/
+    int  color[3];  /**< Couleur rgb*/
+} LineStyle_default = {'-', 3, 'o', 8, {255,255,255}};
 typedef struct LineStyle_s LineStyle;
 
+/* --------------------------------------------------------------------------- */
+struct LineData_s {
+    size_t len_data;      /**< Taille du vecteur de data */
+    int *x;               /**< Vecteur de data X */
+    int *y;               /**< Vecteur de data Y */
+    int max_X;            /**< Maximum des valeurs X */
+    int max_Y;            /**< Maximum des valeurs Y */
+    LineStyle linestyle;  /**< LineStyle */
+} LineData_default = {0, 0, 0, 0, 0, {'-', 3, 'o', 8, {255,255,255}}};
+typedef struct LineData_s LineData;
+
+/* --------------------------------------------------------------------------- */
 typedef struct Figure {
-    gdImage *img; /**< Pointeur sur objet gdImage*/
-
-
+    gdImage *img;        /**< Pointeur sur objet gdImage */
+    LineData *linedata;  /**< Vecteur de LineData */
+    int max_X;           /**< max de l'ensemble des max_X de linedata[] */
+    int max_Y;           /**< max de l'ensemble des max_Y de linedata[] */
+    int pad[2];          /**< Padding pour definir canvas (cvs) et orig */
+    int orig[2];         /**< Coordonnees de l'origine des plots */    
+    int margin[2];       /**< Marge droite et haut (evite de toucher les bords)*/    
+    int color_bg[3];     /**< Couleur du fond de la figure */
+    int color_cvs_bg[3]; /**< Couleur du fond du canvas */
+    int color_axes[3];   /**< Couleur des axes*/
 } Figure;
 
 
@@ -51,7 +74,7 @@ void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
                             const char *filename_fig);
 
 void make_background(gdImagePtr im_fig, const int padX, const int padY,\
-                            const int couleur[3]);
+                        const int couleur_bg[3], const int couleur_canvas_bg[3]);
 
 void make_support_axes(gdImagePtr im_fig, \
                             const int orig[2], const int couleur[3]);
@@ -117,8 +140,7 @@ float deg2rad(float angle)
 }
 
 /* --------------------------------------------------------------------------- */
-void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
-                                            const char *filename_fig)
+void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
 {
     FILE *pngout_fig;
 
@@ -128,7 +150,7 @@ void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
     pngout_fig = fopen(path_outputFig, "wb");
 
     /* Output the image to the disk file in PNG format. */
-    gdImagePng(im_fig, pngout_fig);
+    gdImagePng(fig->img, pngout_fig);
 
     /* Close the files. */
     fclose(pngout_fig);
@@ -137,16 +159,26 @@ void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
 
 /* --------------------------------------------------------------------------- */
 void make_background(gdImagePtr im_fig, const int padX, const int padY,\
-                             const int couleur[3])
+                        const int color_bg[3], const int color_canvas_bg[3])
 {
     /* Fond bleu gris */
-    gdImageColorAllocate(im_fig, couleur[0], couleur[1], couleur[2]);
+    // gdImageColorAllocate(im_fig, color_bg[0], color_bg[1], color_bg[2]);
 
-    int black = gdImageColorAllocate(im_fig, 0, 0, 0);
+    gdImageFilledRectangle(im_fig,\
+                            0, 0,\
+                            im_fig->sx-1, im_fig->sy-1,
+                            gdImageColorAllocate(im_fig,\
+                                            color_bg[0],\
+                                            color_bg[1],\
+                                            color_bg[2]));
 
     /* Fond noir a l'interieur : rectangle defini par 2 pts*/
     gdImageFilledRectangle(im_fig, padX, 0,\
-                                   im_fig->sx-1, im_fig->sy-1 - padY, black);
+                        im_fig->sx-1, im_fig->sy-1 - padY,\
+                        gdImageColorAllocate(im_fig,\
+                                    color_canvas_bg[0],\
+                                    color_canvas_bg[1],\ 
+                                    color_canvas_bg[2]));
 }
 
 /* --------------------------------------------------------------------------- */
@@ -279,11 +311,13 @@ int *Transform_data_to_plot(gdImagePtr im_fig, const int orig[2],\
     return pts_dessin;
 }
 
+/* --------------------------------------------------------------------------- */
 void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
                             char* label, int labelSize, \
                             char *fontpath, int couleur[3], \
                                 int posX, int posY);
 
+/* --------------------------------------------------------------------------- */
 void Make_ylabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
                             char* label, int labelSize, \
                             char *fontpath, int couleur[3], \
@@ -295,101 +329,103 @@ int getCouleur(gdImagePtr im_fig, int couleur[3])
     return gdImageColorAllocate(im_fig, couleur[0], couleur[1], couleur[2]);
 }
 
+/* --------------------------------------------------------------------------- */
+void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]) {
+
+    /* Initialisation de tous les parametres*/
+
+    fig->img = gdImageCreate(figsize[0],figsize[1]);
+    fig->pad[0] = pad[0];
+    fig->pad[1] = pad[1];
+    fig->orig[0] = fig->pad[0];
+    fig->orig[1] = fig->img->sy - fig->pad[1] -1;
+    fig->margin[0] = margin[0];
+    fig->margin[1] = margin[1];
+
+    int col_fond[3]   = {37, 44, 56};     // bleu-gris
+    int col_cvs[3] = {0, 0, 0}; 
+    int col_axes[3] = {255, 255, 255}; 
+
+    for (int i = 0; i < 3; i++)
+    {
+        fig->color_bg[i] = col_fond[i];
+        fig->color_cvs_bg[i] = col_cvs[i];        
+        fig->color_axes[i] = col_axes[i];
+    }
+    fig->linedata = &LineData_default;
+    
+    make_background(fig->img,fig->pad[0],fig->pad[1],\
+                    fig->color_bg, fig->color_cvs_bg);
+
+}
+
+/* --------------------------------------------------------------------------- */
+void Change_fig_bg(Figure *fig, int color[3]) 
+{
+    for (int i = 0; i < 3; i++)
+    {
+        fig->color_bg[i] = color[i];
+    }
+    make_background(fig->img,fig->pad[0],fig->pad[1],\
+                    fig->color_bg, fig->color_cvs_bg);                                            
+}
+
+/* --------------------------------------------------------------------------- */
+void Change_fig_cvs_bg(Figure *fig, int color[3]) 
+{
+    for (int i = 0; i < 3; i++)
+    {
+        fig->color_cvs_bg[i] = color[i];        
+    }
+    make_background(fig->img,fig->pad[0],fig->pad[1],\
+                fig->color_bg, fig->color_cvs_bg); 
+}
+
+/* --------------------------------------------------------------------------- */
+void Change_fig_axes_color(Figure *fig, int color[3]) 
+{
+    for (int i = 0; i < 3; i++)
+    {
+        fig->color_axes[i] = color[i];
+    }
+    make_background(fig->img,fig->pad[0],fig->pad[1],\
+                    fig->color_bg, fig->color_cvs_bg);     
+}
+
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
 {
     // data = get_data_from_db(db_path);
 
     // Parametres generaux
-    const char *dir_figures= "./figures/";
-    const int w_lines = 3;
-    const int ms = 8;
-    const int pad[2] = {90,70}; /**< pad zone de dessin*/
-    const int margin[2] = {10,10}; /**< margin zone de dessin*/
+    int figsize[2] = {800, 600};
+    char *dir_figures= "./figures/";
+    int w_lines = 3;
+    int ms = 8;
+    int pad[2] = {90,70}; /**< pad zone de dessin*/
+    int margin[2] = {10,10}; /**< margin zone de dessin*/
     // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf";
     char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
     const int labelSize = 18;
     char* errStringFT;
-
-    /* Couleurs dans la figure*/
-    const int coul_fond[3]   = {37, 44, 56};     // bleu-gris
-    const int coul_axes[3]   = {255, 255, 255};  // white
-    const int coul_trait[3]  = {51, 160,  44};   //vert_fonce
-    const int coul_trait2[3] = {253, 191, 111};  //orange_clair
-    const int coul_trait3[3] = {31, 120, 180};   //bleu_fonce
-    const int coul_trait4[3] = {227,  26,  28};  //rouge_fonce
-
-    gdImagePtr im_fig1; /**< Image figure evolution stations en favoris*/
-    int w = 800, h = 600;  
-    im_fig1 = gdImageCreate(w, h);
-    printf("Figsize : %dpx x %dpx \n", im_fig1->sx, im_fig1->sy);
-
-    /* Creation du fond et de la zone de dessin a fond noir*/
-    make_background(im_fig1, pad[0], pad[1], coul_fond);
-
-    /* Zero des axes*/
-    const int origin_axes[2] = {pad[0], im_fig1->sy-1-pad[1]};
-
-    /* Quelques donnees*/
-    // Limites zone de dessin :
-    // Gauche : padX      (orig[0])
-    // Droite : Nx-1 - margX
-    // Bas    : Ny-padY-1 (orig[1])
-    // Haut   : 0 + margY
-    
-    const int ptx[] = {0, 100, 200, 300, 400};
-    const int pty[] = {3, 8, 2, 1, 6};
-    const int pty2[] = {1, 4, 7, 3, 6};
-    const int pty3[] = {5, 1, 4, 9, 6};
-
-    /* Recupere nombre de points*/
-    size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
-
-    /* Plot de quelques tracés*/
-    PlotLine(im_fig1, origin_axes, margin,\
-                len_data, ptx,  pty,  coul_trait, w_lines, ms);
-    PlotLine(im_fig1, origin_axes, margin,\
-                len_data, ptx, pty2, coul_trait2, w_lines, ms);
-    PlotLine(im_fig1, origin_axes, margin,\
-                len_data, ptx, pty3, coul_trait3, w_lines, ms);
-
-    /* Ecriture xlabel */
+    int coul_trait[3]  = {51, 160,  44};   //vert_fonce
+    int coul_trait2[3] = {253, 191, 111};  //orange_clair
+    int coul_trait3[3] = {31, 120, 180};   //bleu_fonce
 
 
-    int brect[8] = {0};
-    char *xlabel = "Date";
-    int posX_xlabel = origin_axes[0]+ (w-pad[0])/2;
-    int posY_xlabel = origin_axes[1]+(pad[1]/2) + pad[1]/3;
-    printf("Pos xlabel : %d, %d \n", posX_xlabel, posY_xlabel);
+    Figure fig1;
+    Init_figure(&fig1, figsize, pad, margin);
 
-    errStringFT = gdImageStringFT(im_fig1, brect,\
-                        getCouleur(im_fig1, coul_axes), fontLabels,\
-                            labelSize, 0., posX_xlabel, posY_xlabel, xlabel);
-    
-    printf("%s \b", errStringFT);
-
-    // /* Ecriture ylabel */
-    // char *ylabel = "Nb bornes";
-    // int posX_ylabel = pad[0]/2;
-    // int posY_ylabel = origin_axes[1]/2;    
-    // errStringFT = gdImageStringFT(im_fig1, brect, coul_axes, fontLabels,\
-    //                  26, 90., posX_ylabel, posY_ylabel, xlabel);
-
-    // printf("%s \b", errStringFT);
-
-    /* Dessiner les ticks */
-
-    /* Valeurs des ticks  */
-
-    /* Creation des axes au bord de la zone de dessin*/
-    make_support_axes(im_fig1, origin_axes, coul_axes);
+    Change_fig_bg(&fig1, coul_trait);
+    Change_fig_cvs_bg(&fig1, coul_trait2);
+    Change_fig_axes_color(&fig1, coul_trait3);
 
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
-    save_to_png(im_fig1, dir_figures, filename_fig1);
+    Save_to_png(&fig1, dir_figures, filename_fig1);
 
     /* Destroy the image in memory. */
-    gdImageDestroy(im_fig1);
+    gdImageDestroy(fig1.img);
 
     return 0;
 }
