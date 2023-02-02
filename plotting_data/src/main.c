@@ -19,7 +19,7 @@
 // Structures
 /* --------------------------------------------------------------------------- */
 
-struct LineStyle_s {
+typedef struct LineStyle_s {
     char style;     /**< Style de plot : '-' : line, ':' dashed,
                                           '' : point seulement */
     int  w;         /**< Epaisseur du trait*/
@@ -27,19 +27,19 @@ struct LineStyle_s {
                                            '' : pas de marker */
     int  ms;        /**< Markersize*/
     int  color[3];  /**< Couleur rgb*/
-} LineStyle_default = {'-', 3, 'o', 8, {255,255,255}};
-typedef struct LineStyle_s LineStyle;
+} LineStyle; // = {'-', 3, 'o', 8, {255,255,255}};
+// typedef struct LineStyle_s LineStyle;
 
 /* --------------------------------------------------------------------------- */
-struct LineData_s {
+typedef struct LineData_s {
     size_t len_data;      /**< Taille du vecteur de data */
     int *x;               /**< Vecteur de data X */
     int *y;               /**< Vecteur de data Y */
     int max_X;            /**< Maximum des valeurs X */
     int max_Y;            /**< Maximum des valeurs Y */
-    LineStyle linestyle;  /**< LineStyle */
-} LineData_default = {0, 0, 0, 0, 0, {'-', 3, 'o', 8, {255,255,255}}};
-typedef struct LineData_s LineData;
+    LineStyle *linestyle;  /**< LineStyle */
+} LineData; // = {0, 0, 0, 0, 0, {'-', 3, 'o', 8, {255,255,255}}};
+// typedef struct LineData_s LineData;
 
 /* --------------------------------------------------------------------------- */
 typedef struct Figure {
@@ -70,49 +70,58 @@ float deg2rad(float angle);
 
 int maxval_array(const int x_array[], size_t n);
 
+int getCouleur(gdImagePtr im_fig, const int couleur[3]);
+
 void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
-                            const char *filename_fig);
+                const char *filename_fig);
 
 void Make_background(Figure *fig,\
-                        const int couleur_bg[3], const int couleur_canvas_bg[3]);
+                const int couleur_bg[3], const int couleur_canvas_bg[3]);
 
 void Make_support_axes(Figure *fig, const int couleur[3]);
 
 void ImageLineEpaisseur(gdImagePtr im_fig, \
-                            const int x1, const int y1, \
-                                const int x2, const int y2,\
-                                    const int couleur[3], const int w);
+                const int x1, const int y1, const int x2, const int y2,\
+                    LineStyle *linestyle);
 
 void PlotPoint(gdImagePtr im_fig, const int x1, const int y1,\
-                    const int couleur[3], const int ms);
+                LineStyle *linestyle);
                     
-void PlotLine(gdImagePtr im_fig,\
-                     const int orig[2], const int margin[2],\
-                        const int nb_pts, const int ptx[],\
-                            const int pty[], const int couleur[3],\
-                                const int w, const int ms);
+void PlotLine(Figure *fig, LineData *linedata);
 
 void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
-                                    const int pts[], int* pts_dessin);
+                const int pts[], int* pts_dessin);
 
 void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
-                                    const int pts[], int* pts_dessin);
+                const int pts[], int* pts_dessin);
 
 int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
-                                  const int pts[], char direction);
+                const int pts[], char direction);
 
+void Init_linestyle(LineStyle *linestyle, char style,\
+        const int color[3], int width, char marker, int ms);
 
+void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[]);
 
-void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
-                            char* label, int labelSize, \
-                            char *fontpath, int couleur[3], \
-                                int posX, int posY);
+void Change_fig_axes_color(Figure *fig, int color[3]);
 
-void Make_ylabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
-                            char* label, int labelSize, \
-                            char *fontpath, int couleur[3], \
-                                int posX, int posY);
+void Change_fig_cvs_bg(Figure *fig, int color[3]);
 
+void Change_fig_bg(Figure *fig, int color[3]);
+
+void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]);
+
+/*
+// void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
+//                             char* label, int labelSize, \
+//                             char *fontpath, int couleur[3], \
+//                                 int posX, int posY);
+
+// void Make_ylabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
+//                             char* label, int labelSize, \
+//                             char *fontpath, int couleur[3], \
+//                                 int posX, int posY);
+*/
 /* --------------------------------------------------------------------------- */
 // Fonctions
 /* --------------------------------------------------------------------------- */
@@ -172,65 +181,67 @@ void Make_background(Figure *fig,\
 /* --------------------------------------------------------------------------- */
 void Make_support_axes(Figure *fig, const int couleur[3])
 {
-    int w_axes = 3;
+    // int w_axes = 3;
+    LineStyle linestyle_axe;
+    Init_linestyle(&linestyle_axe, '-', couleur, 3, ' ', 0);
+
     // axe vertical
     ImageLineEpaisseur(fig->img, fig->orig[0], fig->orig[1],\
-                            fig->orig[0],   0, couleur, w_axes); 
+                            fig->orig[0],   0,\
+                            &linestyle_axe); 
 
     // axe horizontal
     ImageLineEpaisseur(fig->img,  fig->orig[0],  fig->orig[1],\
-                            fig->img->sx-1,  fig->orig[1], couleur, w_axes); 
+                            fig->img->sx-1,  fig->orig[1],
+                            &linestyle_axe); 
 }
 /* --------------------------------------------------------------------------- */
 void ImageLineEpaisseur(gdImagePtr im_fig, \
-                const int x1, const int y1, const int x2, const int y2,\
-                    const int couleur[3], const int w)
+                        const int x1, const int y1, const int x2, const int y2,\
+                            LineStyle *linestyle)
 {
-    int couleur_trait = gdImageColorAllocate(im_fig,\
-                              couleur[0], couleur[1],  couleur[2]);
-
-    gdImageSetThickness(im_fig, w);
-    gdImageLine(im_fig, x1,   y1,   x2,   y2,   couleur_trait);
+                    
+    gdImageSetThickness(im_fig, linestyle->w);
+    gdImageLine(im_fig, x1,   y1,   x2,   y2,   getCouleur(im_fig, linestyle->color));
     gdImageSetThickness(im_fig, 1);
 }
 
 /* --------------------------------------------------------------------------- */
 void PlotPoint(gdImagePtr im_fig, const int x1, const int y1,\
-                               const int couleur[3], const int ms)
+                               LineStyle *linestyle)
 {
-    int coul = gdImageColorAllocate(im_fig,\
-                    couleur[0], couleur[1],  couleur[2]);
-    gdImageFilledEllipse(im_fig, x1, y1, ms, ms, coul);
+    gdImageFilledEllipse(im_fig, x1, y1,\
+                    linestyle->ms, linestyle->ms, getCouleur(im_fig, linestyle->color));
 }
 
 /* --------------------------------------------------------------------------- */
-void PlotLine(gdImagePtr im_fig, const int orig[2], const int margin[2],\
-                                    const int nb_pts, const int ptx[],\
-                                        const int pty[], const int couleur[3],\
-                                            const int w, const int ms)
+void PlotLine(Figure *fig, LineData *linedata)
 {
-
-    int *ptx_plot = Transform_data_to_plot(im_fig,\
-                        orig, margin, nb_pts, ptx, 'x');
-    int *pty_plot = Transform_data_to_plot(im_fig,\
-                        orig, margin, nb_pts, pty, 'y');   
+    int *x_plot = Transform_data_to_plot(fig, linedata->len_data, linedata->x, 'x');
+    int *y_plot = Transform_data_to_plot(fig, linedata->len_data, linedata->y, 'y');   
 
     // Prise en compte du decalage de l'origine
     // printf("Orig = %d, %d \n", orig[0], orig[1]);
-    for (int i=0; i < nb_pts-1; i++) 
+    for (int i=0; i < linedata->len_data-1; i++) 
     {
-        ImageLineEpaisseur(im_fig, ptx_plot[i]  +orig[0],   pty_plot[i]+orig[1],\
-                                   ptx_plot[i+1]+orig[0], pty_plot[i+1]+orig[1],\
-                                   couleur, w);
-        PlotPoint(im_fig, ptx_plot[i]+orig[0], pty_plot[i]+orig[1], couleur, ms);
-        if (i == nb_pts-2) {
-            PlotPoint(im_fig, ptx_plot[i+1]+orig[0], pty_plot[i+1]+orig[1],\
-                         couleur, ms);
+        ImageLineEpaisseur(fig->img,\
+                x_plot[i]   + fig->orig[0],   y_plot[i] + fig->orig[1],\
+                x_plot[i+1] + fig->orig[0], y_plot[i+1] + fig->orig[1],\
+                linedata->linestyle);
+
+        PlotPoint(fig->img,\
+            x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
+
+        if (i == linedata->len_data-2) {
+            PlotPoint(fig->img,\
+                            x_plot[i+1] + fig->orig[0],\
+                            y_plot[i+1] + fig->orig[1],\
+                            linedata->linestyle);
         }
     }
 
-    free(ptx_plot);
-    free(pty_plot);
+    free(x_plot);
+    free(y_plot);
 }
 
 /* --------------------------------------------------------------------------- */
@@ -295,13 +306,14 @@ int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
 }
 
 /* --------------------------------------------------------------------------- */
-int getCouleur(gdImagePtr im_fig, int couleur[3])
+int getCouleur(gdImagePtr im_fig, const int couleur[3])
 {
     return gdImageColorAllocate(im_fig, couleur[0], couleur[1], couleur[2]);
 }
 
 /* --------------------------------------------------------------------------- */
-void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]) {
+void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2])
+{
 
     /* Initialisation de tous les parametres*/
 
@@ -323,12 +335,13 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]) {
         fig->color_cvs_bg[i] = col_cvs[i];        
         fig->color_axes[i] = col_axes[i];
     }
-    fig->linedata = &LineData_default;
+    fig->linedata = NULL;
     
     Make_background(fig, fig->color_bg, fig->color_cvs_bg);
-
     Make_support_axes(fig, fig->color_axes);
 
+    fig->max_X = 0;
+    fig->max_Y = 0;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -362,9 +375,38 @@ void Change_fig_axes_color(Figure *fig, int color[3])
 }
 
 /* --------------------------------------------------------------------------- */
-void Init_linedata(Figure *fig, int len_data, int ptx[], int pty[]) {
-    int *ptx_plot = Transform_data_to_plot(fig, len_data, ptx, 'x');
-    int *pty_plot = Transform_data_to_plot(fig, len_data, pty, 'y');  
+void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[])
+{
+    // int *ptx_plot = Transform_data_to_plot(fig, len_data, ptx, 'x');
+    // int *pty_plot = Transform_data_to_plot(fig, len_data, pty, 'y');
+    linedata->len_data = len_data;
+    linedata->x = ptx;
+    linedata->y = pty;
+    linedata->max_X = maxval_array(linedata->x, linedata->len_data);
+    linedata->max_X = maxval_array(linedata->y, linedata->len_data);
+}
+
+/* --------------------------------------------------------------------------- */
+void Init_linestyle(LineStyle *linestyle, char style,\
+        const int color[3], int width, char marker, int ms)
+{
+    linestyle->style = style;
+    for (int i = 0; i < 3; i++)
+    {
+        linestyle->color[i] = color[i];
+    }    
+    linestyle->w = width;
+    linestyle->marker = marker;
+    linestyle->ms = ms;
+}
+
+void Def_line(LineData *linedata, int len_data, int ptx[], int pty[],\
+                char style, int color[3], int width, char marker, int ms)
+{
+    Init_linedata(linedata, len_data, ptx, pty);
+    LineStyle linestyle;
+    Init_linestyle(&linestyle, style, color, width, marker, ms);
+    linedata->linestyle = &linestyle;
 }
 
 /* =========================================================================== */
@@ -404,9 +446,34 @@ int main(int argc, char* argv[])
 
     LineData line1;
     Init_linedata(&line1, len_data, ptx, pty);
+    LineStyle linestyle1;
+    Init_linestyle(&linestyle1, '-', coul_trait, w_lines,'o', ms);
+    line1.linestyle = &linestyle1;
 
+    LineData line2;
+    Init_linedata(&line2, len_data, ptx, pty2);
+    LineStyle linestyle2;
+    Init_linestyle(&linestyle2, '-', coul_trait2, w_lines,'o', ms);
+    line2.linestyle = &linestyle2;
 
+    LineData line3;
+    Init_linedata(&line3, len_data, ptx, pty3);
+    LineStyle linestyle3;
+    Init_linestyle(&linestyle3, '-', coul_trait3, w_lines,'o', ms);
+    line3.linestyle = &linestyle3;
     
+    // Def_line(&line1, len_data, ptx, pty, '-', coul_trait, w_lines, 'o', 8);
+
+    // LineData line2;
+    // Def_line(&line2, len_data, ptx, pty, '-', coul_trait2, w_lines, 'o', 8);
+
+    // LineData line3;
+    // Def_line(&line3, len_data, ptx, pty, '-', coul_trait3, w_lines, 'o', 8);
+
+    PlotLine(&fig1, &line1);
+    PlotLine(&fig1, &line2);
+    PlotLine(&fig1, &line3);
+
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
