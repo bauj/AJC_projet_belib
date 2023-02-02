@@ -67,14 +67,13 @@ typedef struct Figure {
  * @param angle Angle en degrés
  * @return float Angle en radians
  */
-float deg2rad(float angle);
+float Deg2rad(float angle);
 
-int maxval_array(const int x_array[], size_t n);
+int Maxval_array(const int x_array[], size_t n);
 
-int getCouleur(gdImagePtr im_fig, const int couleur[3]);
+int GetCouleur(gdImagePtr im_fig, const int couleur[3]);
 
-void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
-                const char *filename_fig);
+void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig);
 
 void Make_background(Figure *fig,\
                 const int couleur_bg[3], const int couleur_canvas_bg[3]);
@@ -179,12 +178,12 @@ void Make_background(Figure *fig,\
     gdImageFilledRectangle(fig->img,\
                         0, 0,\
                         fig->img->sx-1, fig->img->sy-1,
-                        getCouleur(fig->img, color_bg));
+                        GetCouleur(fig->img, color_bg));
 
     /* Remplissage du canvas */
     gdImageFilledRectangle(fig->img, fig->pad[0], 0,\
                         fig->img->sx-1, fig->img->sy-1 - fig->pad[1],\
-                        getCouleur(fig->img, color_canvas_bg));
+                        GetCouleur(fig->img, color_canvas_bg));
 }
 
 /* --------------------------------------------------------------------------- */
@@ -211,7 +210,7 @@ void ImageLineEpaisseur(gdImagePtr im_fig, \
 {
                     
     gdImageSetThickness(im_fig, linestyle->w);
-    gdImageLine(im_fig, x1,   y1,   x2,   y2,   getCouleur(im_fig, linestyle->color));
+    gdImageLine(im_fig, x1,   y1,   x2,   y2,   GetCouleur(im_fig, linestyle->color));
     gdImageSetThickness(im_fig, 1);
 }
 
@@ -220,7 +219,7 @@ void PlotPoint(gdImagePtr im_fig, const int x1, const int y1,\
                                LineStyle *linestyle)
 {
     gdImageFilledEllipse(im_fig, x1, y1,\
-                    linestyle->ms, linestyle->ms, getCouleur(im_fig, linestyle->color));
+                    linestyle->ms, linestyle->ms, GetCouleur(im_fig, linestyle->color));
 }
 
 /* --------------------------------------------------------------------------- */
@@ -312,7 +311,7 @@ int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
 }
 
 /* --------------------------------------------------------------------------- */
-int getCouleur(gdImagePtr im_fig, const int couleur[3])
+int GetCouleur(gdImagePtr im_fig, const int couleur[3])
 {
     return gdImageColorAllocate(im_fig, couleur[0], couleur[1], couleur[2]);
 }
