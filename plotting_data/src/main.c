@@ -112,6 +112,10 @@ void Change_fig_bg(Figure *fig, int color[3]);
 
 void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]);
 
+void Print_debug_ls(LineStyle *linestyle);
+
+void Print_debug_ld(LineData *linedata);
+
 /*
 // void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
 //                             char* label, int labelSize, \
@@ -122,7 +126,7 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]);
 //                             char* label, int labelSize, \
 //                             char *fontpath, int couleur[3], \
 //                                 int posX, int posY);
-*/
+
 /* --------------------------------------------------------------------------- */
 // Fonctions
 /* --------------------------------------------------------------------------- */
@@ -403,7 +407,7 @@ void Init_linestyle(LineStyle *linestyle, char style,\
     linestyle->ms = ms;
 }
 
-
+/* --------------------------------------------------------------------------- */
 void Print_debug_ls(LineStyle *linestyle)
 {
     printf("*** Debug linestyle\n");
@@ -417,6 +421,7 @@ void Print_debug_ls(LineStyle *linestyle)
     printf("*** End linestyle\n");
 }
 
+/* --------------------------------------------------------------------------- */
 void Print_debug_ld(LineData *linedata)
 {
     printf("*** Debug linedata\n");
@@ -447,7 +452,7 @@ int main(int argc, char* argv[])
     char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
     const int labelSize = 18;
     char* errStringFT;
-    int coul_trait[3]  = {51, 160,  44};   //vert_fonce
+    int coul_trait1[3]  = {51, 160,  44};   //vert_fonce
     int coul_trait2[3] = {253, 191, 111};  //orange_clair
     int coul_trait3[3] = {31, 120, 180};   //bleu_fonce
 
@@ -463,7 +468,7 @@ int main(int argc, char* argv[])
     size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
 
     LineStyle linestyle1;
-    Init_linestyle(&linestyle1, '-', coul_trait, w_lines,'o', ms);
+    Init_linestyle(&linestyle1, '-', coul_trait1, w_lines,'o', ms);
 
     LineStyle linestyle2;
     Init_linestyle(&linestyle2, '-', coul_trait2, w_lines,'o', ms);
@@ -478,31 +483,8 @@ int main(int argc, char* argv[])
     LineData line3;
     Init_linedata(&line3, len_data, ptx, pty3, &linestyle3);    
 
-    // LineData line1;
-    // Init_linedata(&line1, len_data, ptx, pty);
-    // LineStyle linestyle1;
-    // Init_linestyle(&linestyle1, '-', coul_trait, w_lines,'o', ms);
-    // line1.linestyle = &linestyle1;
-
-    // LineData line2;
-    // Init_linedata(&line2, len_data, ptx, pty2);
-    // LineStyle linestyle2;
-    // Init_linestyle(&linestyle2, '-', coul_trait2, w_lines,'o', ms);
-    // line2.linestyle = &linestyle2;
-
-    // LineData line3;
-    // Init_linedata(&line3, len_data, ptx, pty3);
-    // LineStyle linestyle3;
-    // Init_linestyle(&linestyle3, '-', coul_trait3, w_lines,'o', ms);
-    // line3.linestyle = &linestyle3;
-
-    // Def_line(&line1, len_data, ptx, pty, '-', coul_trait, w_lines, 'o', 8);
-
-    // LineData line2;
-    // Def_line(&line2, len_data, ptx, pty, '-', coul_trait2, w_lines, 'o', 8);
-
-    // LineData line3;
-    // Def_line(&line3, len_data, ptx, pty, '-', coul_trait3, w_lines, 'o', 8);
+    // Ajouter les lines dans Fig->linedata, plotline bouclera sur les 
+    // lignes et calculera le max tot
 
     PlotLine(&fig1, &line1);
     PlotLine(&fig1, &line2);
