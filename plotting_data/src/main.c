@@ -73,11 +73,10 @@ int maxval_array(const int x_array[], size_t n);
 void save_to_png(gdImagePtr im_fig, const char *dir_figures,\
                             const char *filename_fig);
 
-void make_background(gdImagePtr im_fig, const int padX, const int padY,\
+void Make_background(Figure *fig,\
                         const int couleur_bg[3], const int couleur_canvas_bg[3]);
 
-void make_support_axes(gdImagePtr im_fig, \
-                            const int orig[2], const int couleur[3]);
+void Make_support_axes(Figure *fig, const int couleur[3]);
 
 void ImageLineEpaisseur(gdImagePtr im_fig, \
                             const int x1, const int y1, \
@@ -93,16 +92,13 @@ void PlotLine(gdImagePtr im_fig,\
                             const int pty[], const int couleur[3],\
                                 const int w, const int ms);
 
-void Transform_dataX_to_plot(gdImagePtr im_fig, const int orig[2],\
-                                 const int margin[2], size_t len_pts,\
+void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
                                     const int pts[], int* pts_dessin);
 
-void Transform_dataY_to_plot(gdImagePtr im_fig, const int orig[2],\
-                                 const int margin[2], size_t len_pts, \
+void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
                                     const int pts[], int* pts_dessin);
 
-int *Transform_data_to_plot(gdImagePtr im_fig, const int orig[2],\
-                                 const int margin[2], size_t len_pts,\
+int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
                                   const int pts[], char direction);
 
 
@@ -158,40 +154,32 @@ void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
 
 
 /* --------------------------------------------------------------------------- */
-void make_background(gdImagePtr im_fig, const int padX, const int padY,\
+void Make_background(Figure *fig,\
                         const int color_bg[3], const int color_canvas_bg[3])
 {
-    /* Fond bleu gris */
-    // gdImageColorAllocate(im_fig, color_bg[0], color_bg[1], color_bg[2]);
+    /* Remplissage du fond */
+    gdImageFilledRectangle(fig->img,\
+                        0, 0,\
+                        fig->img->sx-1, fig->img->sy-1,
+                        getCouleur(fig->img, color_bg));
 
-    gdImageFilledRectangle(im_fig,\
-                            0, 0,\
-                            im_fig->sx-1, im_fig->sy-1,
-                            gdImageColorAllocate(im_fig,\
-                                            color_bg[0],\
-                                            color_bg[1],\
-                                            color_bg[2]));
-
-    /* Fond noir a l'interieur : rectangle defini par 2 pts*/
-    gdImageFilledRectangle(im_fig, padX, 0,\
-                        im_fig->sx-1, im_fig->sy-1 - padY,\
-                        gdImageColorAllocate(im_fig,\
-                                    color_canvas_bg[0],\
-                                    color_canvas_bg[1],\ 
-                                    color_canvas_bg[2]));
+    /* Remplissage du canvas */
+    gdImageFilledRectangle(fig->img, fig->pad[0], 0,\
+                        fig->img->sx-1, fig->img->sy-1 - fig->pad[1],\
+                        getCouleur(fig->img, color_canvas_bg));
 }
 
 /* --------------------------------------------------------------------------- */
-void make_support_axes(gdImagePtr im_fig,\
-                            const int orig[2], const int couleur[3])
+void Make_support_axes(Figure *fig, const int couleur[3])
 {
-    int w = 3;
+    int w_axes = 3;
     // axe vertical
-    ImageLineEpaisseur(im_fig, orig[0],   orig[1], orig[0],   0, couleur, w); 
+    ImageLineEpaisseur(fig->img, fig->orig[0], fig->orig[1],\
+                            fig->orig[0],   0, couleur, w_axes); 
 
     // axe horizontal
-    ImageLineEpaisseur(im_fig, orig[0], orig[1],
-                               im_fig->sx-1, orig[1],   couleur, w); 
+    ImageLineEpaisseur(fig->img,  fig->orig[0],  fig->orig[1],\
+                            fig->img->sx-1,  fig->orig[1], couleur, w_axes); 
 }
 /* --------------------------------------------------------------------------- */
 void ImageLineEpaisseur(gdImagePtr im_fig, \
@@ -246,12 +234,11 @@ void PlotLine(gdImagePtr im_fig, const int orig[2], const int margin[2],\
 }
 
 /* --------------------------------------------------------------------------- */
-void Transform_dataX_to_plot(gdImagePtr im_fig, const int orig[2],\
-                                 const int margin[2], size_t len_pts,\
+void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
                                     const int pts[], int* pts_dessin)
 {
     // Taile de la zone de dessin
-    const int w_dessin = im_fig->sx - orig[0] - margin[0] - 1;
+    const int w_dessin = fig->img->sx - fig->orig[0] - fig->margin[0] - 1;
     const int max_pts = maxval_array(pts, len_pts);
 
     for (int i = 0; i < len_pts; i++)
@@ -264,13 +251,12 @@ void Transform_dataX_to_plot(gdImagePtr im_fig, const int orig[2],\
 
 
 /* --------------------------------------------------------------------------- */
-void Transform_dataY_to_plot(gdImagePtr im_fig, const int orig[2],\
-                                 const int margin[2], size_t len_pts, \
+void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
                                     const int pts[], int* pts_dessin)
 {
     // Taile de la zone de dessin
 
-    const int h_dessin = orig[1] - margin[1];
+    const int h_dessin = fig->orig[1] - fig->margin[1];
     const int max_pts = maxval_array(pts, len_pts);
    
     for (int i = 0; i < len_pts; i++)
@@ -282,8 +268,7 @@ void Transform_dataY_to_plot(gdImagePtr im_fig, const int orig[2],\
 }
 
 /* --------------------------------------------------------------------------- */
-int *Transform_data_to_plot(gdImagePtr im_fig, const int orig[2],\
-                                 const int margin[2], size_t len_pts,\
+int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
                                   const int pts[], char direction)
 {
     int *pts_dessin = malloc(len_pts * sizeof(int));
@@ -294,12 +279,10 @@ int *Transform_data_to_plot(gdImagePtr im_fig, const int orig[2],\
 
     // Taile de la zone de dessin
     if (direction == 'x') {
-        Transform_dataX_to_plot(im_fig, orig,\
-                                 margin,len_pts, pts, pts_dessin);
+        Transform_dataX_to_plot(fig, len_pts, pts, pts_dessin);
     } else if (direction == 'y')
     {
-        Transform_dataY_to_plot(im_fig, orig,\
-                                 margin,len_pts, pts, pts_dessin);
+        Transform_dataY_to_plot(fig, len_pts, pts, pts_dessin);
     }
     else 
     {
@@ -310,18 +293,6 @@ int *Transform_data_to_plot(gdImagePtr im_fig, const int orig[2],\
     
     return pts_dessin;
 }
-
-/* --------------------------------------------------------------------------- */
-void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
-                            char* label, int labelSize, \
-                            char *fontpath, int couleur[3], \
-                                int posX, int posY);
-
-/* --------------------------------------------------------------------------- */
-void Make_ylabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
-                            char* label, int labelSize, \
-                            char *fontpath, int couleur[3], \
-                                int posX, int posY);
 
 /* --------------------------------------------------------------------------- */
 int getCouleur(gdImagePtr im_fig, int couleur[3])
@@ -354,8 +325,9 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]) {
     }
     fig->linedata = &LineData_default;
     
-    make_background(fig->img,fig->pad[0],fig->pad[1],\
-                    fig->color_bg, fig->color_cvs_bg);
+    Make_background(fig, fig->color_bg, fig->color_cvs_bg);
+
+    Make_support_axes(fig, fig->color_axes);
 
 }
 
@@ -366,8 +338,7 @@ void Change_fig_bg(Figure *fig, int color[3])
     {
         fig->color_bg[i] = color[i];
     }
-    make_background(fig->img,fig->pad[0],fig->pad[1],\
-                    fig->color_bg, fig->color_cvs_bg);                                            
+    Make_background(fig, fig->color_bg, fig->color_cvs_bg);                                           
 }
 
 /* --------------------------------------------------------------------------- */
@@ -377,8 +348,7 @@ void Change_fig_cvs_bg(Figure *fig, int color[3])
     {
         fig->color_cvs_bg[i] = color[i];        
     }
-    make_background(fig->img,fig->pad[0],fig->pad[1],\
-                fig->color_bg, fig->color_cvs_bg); 
+    Make_background(fig, fig->color_bg, fig->color_cvs_bg);
 }
 
 /* --------------------------------------------------------------------------- */
@@ -388,14 +358,23 @@ void Change_fig_axes_color(Figure *fig, int color[3])
     {
         fig->color_axes[i] = color[i];
     }
-    make_background(fig->img,fig->pad[0],fig->pad[1],\
-                    fig->color_bg, fig->color_cvs_bg);     
+    Make_support_axes(fig, fig->color_axes);
+}
+
+/* --------------------------------------------------------------------------- */
+void Init_linedata(Figure *fig, int len_data, int ptx[], int pty[]) {
+    int *ptx_plot = Transform_data_to_plot(fig, len_data, ptx, 'x');
+    int *pty_plot = Transform_data_to_plot(fig, len_data, pty, 'y');  
 }
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
 {
     // data = get_data_from_db(db_path);
+
+    // Change_fig_bg(&fig1, coul_trait);
+    // Change_fig_cvs_bg(&fig1, coul_trait2);
+    // Change_fig_axes_color(&fig1, coul_trait3);
 
     // Parametres generaux
     int figsize[2] = {800, 600};
@@ -416,10 +395,18 @@ int main(int argc, char* argv[])
     Figure fig1;
     Init_figure(&fig1, figsize, pad, margin);
 
-    Change_fig_bg(&fig1, coul_trait);
-    Change_fig_cvs_bg(&fig1, coul_trait2);
-    Change_fig_axes_color(&fig1, coul_trait3);
+    int ptx[] = {0, 100, 200, 300, 400};
+    int pty[] = {3, 8, 2, 1, 6};
+    int pty2[] = {1, 4, 7, 3, 6};
+    int pty3[] = {5, 1, 4, 9, 6};
 
+    size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
+
+    LineData line1;
+    Init_linedata(&line1, len_data, ptx, pty);
+
+
+    
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
