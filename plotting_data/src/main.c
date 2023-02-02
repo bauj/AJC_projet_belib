@@ -101,7 +101,8 @@ int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
 void Init_linestyle(LineStyle *linestyle, char style,\
         const int color[3], int width, char marker, int ms);
 
-void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[]);
+void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],\
+        LineStyle *linestyle);
 
 void Change_fig_axes_color(Figure *fig, int color[3]);
 
@@ -375,7 +376,8 @@ void Change_fig_axes_color(Figure *fig, int color[3])
 }
 
 /* --------------------------------------------------------------------------- */
-void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[])
+void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
+                    LineStyle *linestyle)
 {
     // int *ptx_plot = Transform_data_to_plot(fig, len_data, ptx, 'x');
     // int *pty_plot = Transform_data_to_plot(fig, len_data, pty, 'y');
@@ -384,6 +386,7 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[])
     linedata->y = pty;
     linedata->max_X = maxval_array(linedata->x, linedata->len_data);
     linedata->max_X = maxval_array(linedata->y, linedata->len_data);
+    linedata->linestyle = linestyle;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -400,13 +403,28 @@ void Init_linestyle(LineStyle *linestyle, char style,\
     linestyle->ms = ms;
 }
 
-void Def_line(LineData *linedata, int len_data, int ptx[], int pty[],\
-                char style, int color[3], int width, char marker, int ms)
+
+void Print_debug_ls(LineStyle *linestyle)
 {
-    Init_linedata(linedata, len_data, ptx, pty);
-    LineStyle linestyle;
-    Init_linestyle(&linestyle, style, color, width, marker, ms);
-    linedata->linestyle = &linestyle;
+    printf("*** Debug linestyle\n");
+    printf("* Style        = %c \n", linestyle->style);
+    printf("* Width        = %d \n", linestyle->w);
+    printf("* Marker       = %c \n", linestyle->marker);
+    printf("* MarkerSize   = %d \n", linestyle->ms);
+    printf("* Color        = %d,%d,%d \n", linestyle->color[0],\
+                                           linestyle->color[1],\
+                                           linestyle->color[2]);
+    printf("*** End linestyle\n");
+}
+
+void Print_debug_ld(LineData *linedata)
+{
+    printf("*** Debug linedata\n");
+    printf("* Len data = %d \n", linedata->len_data);
+    printf("* Max X    = %d \n", linedata->max_X);
+    printf("* Max Y    = %d \n", linedata->max_Y);
+    Print_debug_ls(linedata->linestyle);
+    printf("*** End linedata\n\n");
 }
 
 /* =========================================================================== */
@@ -444,24 +462,40 @@ int main(int argc, char* argv[])
 
     size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
 
-    LineData line1;
-    Init_linedata(&line1, len_data, ptx, pty);
     LineStyle linestyle1;
     Init_linestyle(&linestyle1, '-', coul_trait, w_lines,'o', ms);
-    line1.linestyle = &linestyle1;
 
-    LineData line2;
-    Init_linedata(&line2, len_data, ptx, pty2);
     LineStyle linestyle2;
     Init_linestyle(&linestyle2, '-', coul_trait2, w_lines,'o', ms);
-    line2.linestyle = &linestyle2;
 
-    LineData line3;
-    Init_linedata(&line3, len_data, ptx, pty3);
     LineStyle linestyle3;
     Init_linestyle(&linestyle3, '-', coul_trait3, w_lines,'o', ms);
-    line3.linestyle = &linestyle3;
-    
+
+    LineData line1;
+    Init_linedata(&line1, len_data, ptx, pty, &linestyle1);
+    LineData line2;
+    Init_linedata(&line2, len_data, ptx, pty2, &linestyle2);
+    LineData line3;
+    Init_linedata(&line3, len_data, ptx, pty3, &linestyle3);    
+
+    // LineData line1;
+    // Init_linedata(&line1, len_data, ptx, pty);
+    // LineStyle linestyle1;
+    // Init_linestyle(&linestyle1, '-', coul_trait, w_lines,'o', ms);
+    // line1.linestyle = &linestyle1;
+
+    // LineData line2;
+    // Init_linedata(&line2, len_data, ptx, pty2);
+    // LineStyle linestyle2;
+    // Init_linestyle(&linestyle2, '-', coul_trait2, w_lines,'o', ms);
+    // line2.linestyle = &linestyle2;
+
+    // LineData line3;
+    // Init_linedata(&line3, len_data, ptx, pty3);
+    // LineStyle linestyle3;
+    // Init_linestyle(&linestyle3, '-', coul_trait3, w_lines,'o', ms);
+    // line3.linestyle = &linestyle3;
+
     // Def_line(&line1, len_data, ptx, pty, '-', coul_trait, w_lines, 'o', 8);
 
     // LineData line2;
