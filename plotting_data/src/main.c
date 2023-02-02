@@ -44,7 +44,8 @@ typedef struct LineData_s {
 /* --------------------------------------------------------------------------- */
 typedef struct Figure {
     gdImage *img;        /**< Pointeur sur objet gdImage */
-    LineData *linedata;  /**< Vecteur de LineData */
+    size_t nb_linedata;  /**< Nombre de linedata dans la figure */
+    LineData **linedata;  /**< Vecteur de LineData */
     int max_X;           /**< max de l'ensemble des max_X de linedata[] */
     int max_Y;           /**< max de l'ensemble des max_Y de linedata[] */
     int pad[2];          /**< Padding pour definir canvas (cvs) et orig */
@@ -164,6 +165,9 @@ void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
 
     /* Close the files. */
     fclose(pngout_fig);
+
+    free(fig->linedata);
+
 }
 
 
@@ -255,11 +259,10 @@ void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
 {
     // Taile de la zone de dessin
     const int w_dessin = fig->img->sx - fig->orig[0] - fig->margin[0] - 1;
-    const int max_pts = maxval_array(pts, len_pts);
 
     for (int i = 0; i < len_pts; i++)
     {
-        pts_dessin[i] = (pts[i] * w_dessin) / max_pts;
+        pts_dessin[i] = (pts[i] * w_dessin) / fig->max_X;
         // printf("Point : %d, %d \n", i, pts_dessin[i]);
     }
 
@@ -272,12 +275,10 @@ void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
 {
     // Taile de la zone de dessin
 
-    const int h_dessin = fig->orig[1] - fig->margin[1];
-    const int max_pts = maxval_array(pts, len_pts);
-   
+    const int h_dessin = fig->orig[1] - fig->margin[1];   
     for (int i = 0; i < len_pts; i++)
     {
-        pts_dessin[i] = -(pts[i] * h_dessin) / max_pts;
+        pts_dessin[i] = -(pts[i] * h_dessin) / fig->max_Y;
         // printf("Point : %d, %d \n", i, pts_dessin[i]);
     }
 
@@ -340,6 +341,7 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2])
         fig->color_cvs_bg[i] = col_cvs[i];        
         fig->color_axes[i] = col_axes[i];
     }
+    fig->nb_linedata = 0;
     fig->linedata = NULL;
     
     Make_background(fig, fig->color_bg, fig->color_cvs_bg);
@@ -389,7 +391,7 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
     linedata->x = ptx;
     linedata->y = pty;
     linedata->max_X = maxval_array(linedata->x, linedata->len_data);
-    linedata->max_X = maxval_array(linedata->y, linedata->len_data);
+    linedata->max_Y = maxval_array(linedata->y, linedata->len_data);
     linedata->linestyle = linestyle;
 }
 
@@ -432,6 +434,20 @@ void Print_debug_ld(LineData *linedata)
     printf("*** End linedata\n\n");
 }
 
+int max_int(int x, int y) 
+{
+    return (x < y) ? y : x ;
+}
+
+/* --------------------------------------------------------------------------- */
+void Update_fig(Figure *fig, LineData *linedata)
+{
+    fig->nb_linedata++;
+    fig->linedata = (LineData *)realloc(fig->linedata, fig->nb_linedata*sizeof(LineData));
+    fig->linedata[fig->nb_linedata] = linedata;
+    fig->max_X = max_int(fig->max_X, linedata->max_X);
+    fig->max_Y = max_int(fig->max_Y, linedata->max_Y);
+}
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
 {
@@ -455,40 +471,59 @@ int main(int argc, char* argv[])
     int coul_trait1[3]  = {51, 160,  44};   //vert_fonce
     int coul_trait2[3] = {253, 191, 111};  //orange_clair
     int coul_trait3[3] = {31, 120, 180};   //bleu_fonce
+    int coul_trait4[3] = {255, 127,   0};   //orange_fonce
+    int coul_trait5[3] = {202, 178, 214};   //violet_clair
+    int coul_trait6[3] = {227,  26,  28};   //rouge_fonce
 
 
     Figure fig1;
     Init_figure(&fig1, figsize, pad, margin);
 
-    int ptx[] = {0, 100, 200, 300, 400};
-    int pty[] = {3, 8, 2, 1, 6};
-    int pty2[] = {1, 4, 7, 3, 6};
-    int pty3[] = {5, 1, 4, 9, 6};
+    int ptx[]  = {0, 100, 200, 300, 400};
+    int pty[]  = {3,   8,   2,   1,   6};
+    int pty2[] = {1,   4,   7,   0,   6};
+    int pty3[] = {5,   1,   4,   9,   6};
+    int pty4[] = {1,   1,   1,   1,   1};
+    int pty5[] = {10,  10,  10,  10,  10};
 
     size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
 
     LineStyle linestyle1;
     Init_linestyle(&linestyle1, '-', coul_trait1, w_lines,'o', ms);
+    LineData line1;
+    Init_linedata(&line1, len_data, ptx, pty, &linestyle1);
+    Update_fig(&fig1, &line1);
 
     LineStyle linestyle2;
-    Init_linestyle(&linestyle2, '-', coul_trait2, w_lines,'o', ms);
+    Init_linestyle(&linestyle2, '-', coul_trait6, w_lines,'o', ms);
+    LineData line2;
+    Init_linedata(&line2, len_data, ptx, pty2, &linestyle2);
+    Update_fig(&fig1, &line2);
 
     LineStyle linestyle3;
     Init_linestyle(&linestyle3, '-', coul_trait3, w_lines,'o', ms);
-
-    LineData line1;
-    Init_linedata(&line1, len_data, ptx, pty, &linestyle1);
-    LineData line2;
-    Init_linedata(&line2, len_data, ptx, pty2, &linestyle2);
     LineData line3;
     Init_linedata(&line3, len_data, ptx, pty3, &linestyle3);    
+    Update_fig(&fig1, &line3);
 
-    // Ajouter les lines dans Fig->linedata, plotline bouclera sur les 
-    // lignes et calculera le max tot
+    LineStyle linestyle4;
+    Init_linestyle(&linestyle4, '-', coul_trait4, w_lines,'o', ms);
+    LineData line4;
+    Init_linedata(&line4, len_data, ptx, pty4, &linestyle4);    
+    Update_fig(&fig1, &line4);
 
+    LineStyle linestyle5;
+    Init_linestyle(&linestyle5, '-', coul_trait5, w_lines,'o', ms);
+    LineData line5;
+    Init_linedata(&line5, len_data, ptx, pty5, &linestyle5);    
+    Update_fig(&fig1, &line5);
+
+    // Plot_all_lines(&fig1);
     PlotLine(&fig1, &line1);
     PlotLine(&fig1, &line2);
     PlotLine(&fig1, &line3);
+    PlotLine(&fig1, &line4);
+    PlotLine(&fig1, &line5);
 
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
