@@ -16,7 +16,7 @@
 #define PI 3.141592
 
 /* --------------------------------------------------------------------------- */
-// Structures
+// Structures -> Check l'ordre des arguments pour la contiguite memoire
 /* --------------------------------------------------------------------------- */
 
 typedef struct LineStyle_s {
@@ -116,8 +116,12 @@ void Print_debug_ls(LineStyle *linestyle);
 
 void Print_debug_ld(LineData *linedata);
 
-/*
-// void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
+int Maxval_array(const int x_array[], size_t n);
+
+int Max_int(int x, int y);
+
+
+/* void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
 //                             char* label, int labelSize, \
 //                             char *fontpath, int couleur[3], \
 //                                 int posX, int posY);
@@ -126,13 +130,14 @@ void Print_debug_ld(LineData *linedata);
 //                             char* label, int labelSize, \
 //                             char *fontpath, int couleur[3], \
 //                                 int posX, int posY);
+*/
 
 /* --------------------------------------------------------------------------- */
 // Fonctions
 /* --------------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------------- */
-int maxval_array(const int x_array[], size_t n)
+int Maxval_array(const int x_array[], size_t n)
 {
     int t, i;
     t = x_array[0];
@@ -144,7 +149,7 @@ int maxval_array(const int x_array[], size_t n)
 }
 
 /* --------------------------------------------------------------------------- */
-float deg2rad(float angle) 
+float Deg2rad(float angle) 
 {
     return angle*PI/180;
 }
@@ -181,7 +186,8 @@ void Make_background(Figure *fig,\
                         GetCouleur(fig->img, color_bg));
 
     /* Remplissage du canvas */
-    gdImageFilledRectangle(fig->img, fig->pad[0], 0,\
+    gdImageFilledRectangle(fig->img,\
+                        fig->pad[0], fig->pad[1],\
                         fig->img->sx-1, fig->img->sy-1 - fig->pad[1],\
                         GetCouleur(fig->img, color_canvas_bg));
 }
@@ -194,8 +200,9 @@ void Make_support_axes(Figure *fig, const int couleur[3])
     Init_linestyle(&linestyle_axe, '-', couleur, 3, ' ', 0);
 
     // axe vertical
-    ImageLineEpaisseur(fig->img, fig->orig[0], fig->orig[1],\
-                            fig->orig[0],   0,\
+    ImageLineEpaisseur(fig->img,\
+                            fig->orig[0], fig->orig[1],\
+                            fig->orig[0], fig->pad[1],\
                             &linestyle_axe); 
 
     // axe horizontal
@@ -274,7 +281,7 @@ void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
 {
     // Taile de la zone de dessin
 
-    const int h_dessin = fig->orig[1] - fig->margin[1];   
+    const int h_dessin = fig->orig[1] - fig->pad[1] - fig->margin[1];   
     for (int i = 0; i < len_pts; i++)
     {
         pts_dessin[i] = -(pts[i] * h_dessin) / fig->max_Y;
@@ -291,6 +298,8 @@ int *Transform_data_to_plot(Figure *fig, size_t len_pts,\
 
     if (pts_dessin == NULL) {
         printf("Erreur : Pas assez de memoire.\n");
+        free(pts_dessin);
+        exit(EXIT_FAILURE);
     }    
 
     // Taile de la zone de dessin
@@ -389,8 +398,8 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
     linedata->len_data = len_data;
     linedata->x = ptx;
     linedata->y = pty;
-    linedata->max_X = maxval_array(linedata->x, linedata->len_data);
-    linedata->max_Y = maxval_array(linedata->y, linedata->len_data);
+    linedata->max_X = Maxval_array(linedata->x, linedata->len_data);
+    linedata->max_Y = Maxval_array(linedata->y, linedata->len_data);
     linedata->linestyle = linestyle;
 }
 
@@ -426,14 +435,14 @@ void Print_debug_ls(LineStyle *linestyle)
 void Print_debug_ld(LineData *linedata)
 {
     printf("*** Debug linedata\n");
-    printf("* Len data = %d \n", linedata->len_data);
+    printf("* Len data = %ld \n", linedata->len_data);
     printf("* Max X    = %d \n", linedata->max_X);
     printf("* Max Y    = %d \n", linedata->max_Y);
     Print_debug_ls(linedata->linestyle);
     printf("*** End linedata\n\n");
 }
 
-int max_int(int x, int y) 
+int Max_int(int x, int y) 
 {
     return (x < y) ? y : x ;
 }
@@ -442,10 +451,17 @@ int max_int(int x, int y)
 void Update_fig(Figure *fig, LineData *linedata)
 {
     fig->nb_linedata++;
-    fig->linedata = (LineData *)realloc(fig->linedata, fig->nb_linedata*sizeof(LineData));
+    fig->linedata = (LineData **)realloc(fig->linedata, fig->nb_linedata*sizeof(LineData));
+
+    if (fig->linedata == NULL) {
+        printf("Erreur : Pas assez de memoire.\n");
+        free(fig->linedata);
+        exit(EXIT_FAILURE);
+    }    
+
     fig->linedata[fig->nb_linedata] = linedata;
-    fig->max_X = max_int(fig->max_X, linedata->max_X);
-    fig->max_Y = max_int(fig->max_Y, linedata->max_Y);
+    fig->max_X = Max_int(fig->max_X, linedata->max_X);
+    fig->max_Y = Max_int(fig->max_Y, linedata->max_Y);
 }
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -463,9 +479,9 @@ int main(int argc, char* argv[])
     int ms = 8;
     int pad[2] = {90,70}; /**< pad zone de dessin*/
     int margin[2] = {10,10}; /**< margin zone de dessin*/
-    // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf";
-    char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
-    const int labelSize = 18;
+    char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf";
+    // char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    const int labelSize = 16;
     char* errStringFT;
     int coul_trait1[3]  = {51, 160,  44};   //vert_fonce
     int coul_trait2[3] = {253, 191, 111};  //orange_clair
@@ -473,6 +489,7 @@ int main(int argc, char* argv[])
     int coul_trait4[3] = {255, 127,   0};   //orange_fonce
     int coul_trait5[3] = {202, 178, 214};   //violet_clair
     int coul_trait6[3] = {227,  26,  28};   //rouge_fonce
+    int coul_label[3]  = {255, 255, 255};   //white
 
 
     Figure fig1;
@@ -523,6 +540,42 @@ int main(int argc, char* argv[])
     PlotLine(&fig1, &line3);
     PlotLine(&fig1, &line4);
     PlotLine(&fig1, &line5);
+
+    /* Make xlabel */
+    int brect[8] = {0};
+    char *xlabel = "Date";
+    int posX_xlabel = fig1.orig[0]+ (fig1.img->sx -pad[0])/2;
+    int posY_xlabel = fig1.orig[1]+(pad[1]/2) + pad[1]/3;
+    printf("Pos xlabel : %d, %d \n", posX_xlabel, posY_xlabel);
+    errStringFT = gdImageStringFT(fig1.img, brect,\
+                        GetCouleur(fig1.img, coul_label), fontLabels,\
+                            labelSize, 0., posX_xlabel, posY_xlabel, xlabel);    
+    printf("%s \n", errStringFT); 
+    /* Make ylabel */
+
+    char *ylabel = "Nb bornes disponibles";
+    int posX_ylabel = fig1.pad[0]/2 - fig1.pad[0]/3 ;
+    int posY_ylabel = (fig1.img->sy)-(fig1.img->sy)/3.5;    
+    errStringFT = gdImageStringFT(fig1.img, brect,\
+                        GetCouleur(fig1.img, coul_label), fontLabels,\
+                            labelSize, PI/2., posX_ylabel, posY_ylabel, ylabel);
+    printf("%s \n", errStringFT);
+
+    /* Make yticks */
+
+    /* Make xticks <- Avant ca, recup data belib, transformer time sur l'axe X*/ 
+
+    /* Make grid */
+
+    /* Make legende !! <- Ajouter label aux linedatas !*/
+    char *legendTitle = "Légende";
+    int posX_legendTitle = fig1.orig[0] ;
+    int posY_legendTitle = fig1.pad[1]/4;    
+    errStringFT = gdImageStringFT(fig1.img, brect,\
+                        GetCouleur(fig1.img, coul_label), fontLabels,\
+                            12, 0., posX_legendTitle, posY_legendTitle,\
+                                legendTitle);    
+    printf("%s \n", errStringFT);
 
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
