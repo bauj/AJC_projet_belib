@@ -37,6 +37,7 @@ typedef struct LineData_s {
     int *y;               /**< Vecteur de data Y */
     int max_X;            /**< Maximum des valeurs X */
     int max_Y;            /**< Maximum des valeurs Y */
+    char* label;
     LineStyle *linestyle;  /**< LineStyle */
 } LineData; // = {0, 0, 0, 0, 0, {'-', 3, 'o', 8, {255,255,255}}};
 // typedef struct LineData_s LineData;
@@ -102,7 +103,7 @@ void Init_linestyle(LineStyle *linestyle, char style,\
         const int color[3], int width, char marker, int ms);
 
 void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],\
-        LineStyle *linestyle);
+        char* label, LineStyle *linestyle);
 
 void Change_fig_axes_color(Figure *fig, int color[3]);
 
@@ -119,6 +120,16 @@ void Print_debug_ld(LineData *linedata);
 int Maxval_array(const int x_array[], size_t n);
 
 int Max_int(int x, int y);
+
+void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
+                    int decalage_X, int decalage_Y);
+
+void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
+                    int decalage_X, int decalage_Y);
+
+void Make_legend(Figure *fig, char* font, int size,\
+                    int decal_X, int decal_Y, int ecart);
+
 
 
 /* void Make_xlabel(gdImagePtr im_fig, int origin_axes[2], int pad[2], \
@@ -391,7 +402,7 @@ void Change_fig_axes_color(Figure *fig, int color[3])
 
 /* --------------------------------------------------------------------------- */
 void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
-                    LineStyle *linestyle)
+                    char* label, LineStyle *linestyle)
 {
     // int *ptx_plot = Transform_data_to_plot(fig, len_data, ptx, 'x');
     // int *pty_plot = Transform_data_to_plot(fig, len_data, pty, 'y');
@@ -400,6 +411,7 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
     linedata->y = pty;
     linedata->max_X = Maxval_array(linedata->x, linedata->len_data);
     linedata->max_Y = Maxval_array(linedata->y, linedata->len_data);
+    linedata->label = label;
     linedata->linestyle = linestyle;
 }
 
@@ -463,6 +475,86 @@ void Update_fig(Figure *fig, LineData *linedata)
     fig->max_X = Max_int(fig->max_X, linedata->max_X);
     fig->max_Y = Max_int(fig->max_Y, linedata->max_Y);
 }
+
+/* --------------------------------------------------------------------------- */
+void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
+                    int decalage_X, int decalage_Y)
+{
+    // Pos avec decalage : Y decal autre sens
+    // Prise en compte de la longueur du label
+    int posX_xlabel = fig->orig[0] + (fig->img->sx - fig->pad[0])/2 - \
+                              (strlen(xlabel) * size/3) + decalage_X;
+    int posY_xlabel = fig->img->sy - (fig->pad[1]/10)                 - decalage_Y; 
+
+    int brect[8] = {0};
+    char *errStringFT = gdImageStringFT(fig->img, brect,\
+                            GetCouleur(fig->img, color), font,\
+                                size, 0., posX_xlabel, posY_xlabel, xlabel);    
+
+    printf("%s \n", errStringFT); 
+}
+
+/* --------------------------------------------------------------------------- */
+void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
+                     int decalage_X, int decalage_Y)
+{
+    // Pos avec decalage : Y decal autre sens
+    int posX_ylabel = fig->pad[0]/2 - fig->pad[0]/4      + decalage_X;
+
+    // Prise en compte de la longueur du label
+    int posY_ylabel = (fig->orig[1] + (fig->pad[1]))/2 + \
+                            (strlen(ylabel) * size/3)  + decalage_Y;   
+
+    int brect[8] = {0};
+    char *errStringFT = gdImageStringFT(fig->img, brect,\
+                            GetCouleur(fig->img, color), font,\
+                                size, Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
+
+    printf("%s \n", errStringFT); 
+}
+
+/* --------------------------------------------------------------------------- */
+void Make_legend(Figure *fig, char* font, int size,\
+                    int decal_X, int decal_Y, int ecart)
+{
+    // Position des 8 legendes possibles
+    int w_canvas = fig->img->sx - fig->pad[0];
+    int pos_midcanvas = fig->orig[0] + w_canvas/2;
+    int h_canvas = fig->img->sy - 2*fig->pad[1];
+
+    int pos_X[8] = {fig->orig[0]+5  + decal_X, fig->orig[0]+5  + decal_X,\
+                    fig->orig[0]+5  + decal_X, fig->orig[0]+5  + decal_X,\
+                    pos_midcanvas + decal_X, pos_midcanvas + decal_X,\
+                    pos_midcanvas + decal_X, pos_midcanvas + decal_X};
+
+    int ecart_base = 6;
+    int ecart_Y = ecart_base + ecart;
+    int pos_Y[8] = {  (size + ecart_Y) - decal_Y,  2*(size + ecart_Y) - decal_Y,\
+                    3*(size + ecart_Y) - decal_Y,  4*(size + ecart_Y) - decal_Y,\
+                      (size + ecart_Y) - decal_Y,  2*(size + ecart_Y) - decal_Y,\
+                    3*(size + ecart_Y) - decal_Y,  4*(size + ecart_Y) - decal_Y};
+
+    char *errStringFT;
+    char label_i[8];
+    char i_lab[2];
+    int brect[8] = {0};
+    int white[3]  = {255, 255, 255};   //white
+
+    int nb_labels = fig->nb_linedata;
+    for (int i = 0; i < nb_labels; i++)
+    {
+        sprintf(label_i, "Label ");
+        sprintf(i_lab, "%d", i);
+        strcat(label_i, i_lab);
+        printf("%s, %d, %d\n", label_i, pos_X[i], pos_Y[i]);
+        errStringFT= gdImageStringFT(fig->img, brect,\
+                            GetCouleur(fig->img, white), font,\
+                                size, 0., pos_X[i], pos_Y[i],\
+                                fig->linedata[i]->label);        
+    }
+    
+}    
+
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
 {
@@ -477,19 +569,20 @@ int main(int argc, char* argv[])
     char *dir_figures= "./figures/";
     int w_lines = 3;
     int ms = 8;
-    int pad[2] = {90,70}; /**< pad zone de dessin*/
+    int pad[2] = {90,80}; /**< pad zone de dessin*/
     int margin[2] = {10,10}; /**< margin zone de dessin*/
-    char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf";
-    // char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    // char* fontLabels = "/home/jhamma/DejaVuSansMono.ttf";
+    // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf";
+    char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
     const int labelSize = 16;
     char* errStringFT;
-    int coul_trait1[3]  = {51, 160,  44};   //vert_fonce
-    int coul_trait2[3] = {253, 191, 111};  //orange_clair
-    int coul_trait3[3] = {31, 120, 180};   //bleu_fonce
-    int coul_trait4[3] = {255, 127,   0};   //orange_fonce
-    int coul_trait5[3] = {202, 178, 214};   //violet_clair
-    int coul_trait6[3] = {227,  26,  28};   //rouge_fonce
-    int coul_label[3]  = {255, 255, 255};   //white
+    int vert_fonce[3]  = {51, 160,  44};   //vert_fonce
+    int orange_clair[3] = {253, 191, 111};  //orange_clair
+    int bleu_fonce[3] = {31, 120, 180};   //bleu_fonce
+    int orange_fonce[3] = {255, 127,   0};   //orange_fonce
+    int violet_clair[3] = {202, 178, 214};   //violet_clair
+    int rouge_fonce[3] = {227,  26,  28};   //rouge_fonce
+    int white[3]  = {255, 255, 255};   //white
 
 
     Figure fig1;
@@ -505,61 +598,55 @@ int main(int argc, char* argv[])
     size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
 
     LineStyle linestyle1;
-    Init_linestyle(&linestyle1, '-', coul_trait1, w_lines,'o', ms);
+    Init_linestyle(&linestyle1, '-', vert_fonce, w_lines,'o', ms);
     LineData line1;
-    Init_linedata(&line1, len_data, ptx, pty, &linestyle1);
+    char* label1 = "Rue blablib";
+    Init_linedata(&line1, len_data, ptx, pty, label1, &linestyle1);
     Update_fig(&fig1, &line1);
 
     LineStyle linestyle2;
-    Init_linestyle(&linestyle2, '-', coul_trait6, w_lines,'o', ms);
+    Init_linestyle(&linestyle2, '-', orange_clair, w_lines,'o', ms);
     LineData line2;
-    Init_linedata(&line2, len_data, ptx, pty2, &linestyle2);
+    char* label2 = "Rue blablibsddfsd sdf";
+    Init_linedata(&line2, len_data, ptx, pty2, label2, &linestyle2);
     Update_fig(&fig1, &line2);
 
     LineStyle linestyle3;
-    Init_linestyle(&linestyle3, '-', coul_trait3, w_lines,'o', ms);
+    Init_linestyle(&linestyle3, '-', bleu_fonce, w_lines,'o', ms);
     LineData line3;
-    Init_linedata(&line3, len_data, ptx, pty3, &linestyle3);    
+    char* label3 = "Rue zeafsdg ztfd df-rezr";
+    Init_linedata(&line3, len_data, ptx, pty3, label3, &linestyle3);    
     Update_fig(&fig1, &line3);
 
     LineStyle linestyle4;
-    Init_linestyle(&linestyle4, '-', coul_trait4, w_lines,'o', ms);
+    Init_linestyle(&linestyle4, '-', orange_fonce, w_lines,'o', ms);
     LineData line4;
-    Init_linedata(&line4, len_data, ptx, pty4, &linestyle4);    
+    char* label4 = "Rue df Fezr";
+    Init_linedata(&line4, len_data, ptx, pty4, label4, &linestyle4);    
     Update_fig(&fig1, &line4);
 
-    LineStyle linestyle5;
-    Init_linestyle(&linestyle5, '-', coul_trait5, w_lines,'o', ms);
-    LineData line5;
-    Init_linedata(&line5, len_data, ptx, pty5, &linestyle5);    
-    Update_fig(&fig1, &line5);
+    // LineStyle linestyle5;
+    // Init_linestyle(&linestyle5, '-', coul_trait5, w_lines,'o', ms);
+    // LineData line5;
+    // Init_linedata(&line5, len_data, ptx, pty5, &linestyle5);    
+    // Update_fig(&fig1, &line5);
 
     // Plot_all_lines(&fig1);
     PlotLine(&fig1, &line1);
     PlotLine(&fig1, &line2);
     PlotLine(&fig1, &line3);
     PlotLine(&fig1, &line4);
-    PlotLine(&fig1, &line5);
+    // PlotLine(&fig1, &line5);
 
     /* Make xlabel */
-    int brect[8] = {0};
     char *xlabel = "Date";
-    int posX_xlabel = fig1.orig[0]+ (fig1.img->sx -pad[0])/2;
-    int posY_xlabel = fig1.orig[1]+(pad[1]/2) + pad[1]/3;
-    printf("Pos xlabel : %d, %d \n", posX_xlabel, posY_xlabel);
-    errStringFT = gdImageStringFT(fig1.img, brect,\
-                        GetCouleur(fig1.img, coul_label), fontLabels,\
-                            labelSize, 0., posX_xlabel, posY_xlabel, xlabel);    
-    printf("%s \n", errStringFT); 
-    /* Make ylabel */
+    int decalx_X = 0, decaly_X = 0;
+    Make_xlabel(&fig1, xlabel, fontLabels, labelSize, white, decalx_X, decaly_X);
 
-    char *ylabel = "Nb bornes disponibles";
-    int posX_ylabel = fig1.pad[0]/2 - fig1.pad[0]/3 ;
-    int posY_ylabel = (fig1.img->sy)-(fig1.img->sy)/3.5;    
-    errStringFT = gdImageStringFT(fig1.img, brect,\
-                        GetCouleur(fig1.img, coul_label), fontLabels,\
-                            labelSize, PI/2., posX_ylabel, posY_ylabel, ylabel);
-    printf("%s \n", errStringFT);
+    /* Make ylabel */
+    int decalx_Y = 0, decaly_Y = 0;    
+    char *ylabel = "Bornes disponibles";
+    Make_ylabel(&fig1, ylabel, fontLabels, labelSize, white, decalx_Y, decaly_Y);
 
     /* Make yticks */
 
@@ -568,14 +655,18 @@ int main(int argc, char* argv[])
     /* Make grid */
 
     /* Make legende !! <- Ajouter label aux linedatas !*/
-    char *legendTitle = "Légende";
-    int posX_legendTitle = fig1.orig[0] ;
-    int posY_legendTitle = fig1.pad[1]/4;    
-    errStringFT = gdImageStringFT(fig1.img, brect,\
-                        GetCouleur(fig1.img, coul_label), fontLabels,\
-                            12, 0., posX_legendTitle, posY_legendTitle,\
-                                legendTitle);    
-    printf("%s \n", errStringFT);
+    int decalx_leg = 0, decaly_leg = 0, ecart = 2;
+    Make_legend(&fig1, fontLabels, 11, decalx_leg, decaly_leg, ecart);
+
+
+    // char *legendTitle = "Légende";
+    // int posX_legendTitle = fig1.orig[0] ;
+    // int posY_legendTitle = fig1.pad[1]/4;    
+    // errStringFT = gdImageStringFT(fig1.img, brect,\
+    //                     GetCouleur(fig1.img, coul_label), fontLabels,\
+    //                         12, 0., posX_legendTitle, posY_legendTitle,\
+    //                             legendTitle);    
+    // printf("%s \n", errStringFT);
 
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
