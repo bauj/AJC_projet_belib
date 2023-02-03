@@ -39,11 +39,10 @@ typedef struct LineData_s {
     int max_Y;            /**< Maximum des valeurs Y */
     char* label;
     LineStyle *linestyle;  /**< LineStyle */
-} LineData; // = {0, 0, 0, 0, 0, {'-', 3, 'o', 8, {255,255,255}}};
-// typedef struct LineData_s LineData;
+} LineData; 
 
 /* --------------------------------------------------------------------------- */
-typedef struct Figure {
+typedef struct Figure_s {
     gdImage *img;        /**< Pointeur sur objet gdImage */
     size_t nb_linedata;  /**< Nombre de linedata dans la figure */
     LineData **linedata;  /**< Vecteur de LineData */
@@ -82,8 +81,8 @@ void Make_background(Figure *fig,\
 void Make_support_axes(Figure *fig, const int couleur[3]);
 
 void ImageLineEpaisseur(gdImagePtr im_fig, \
-                const int x1, const int y1, const int x2, const int y2,\
-                    LineStyle *linestyle);
+                        const int x1, const int y1, const int x2, const int y2,\
+                            LineStyle *linestyle);
 
 void PlotPoint(gdImagePtr im_fig, const int x1, const int y1,\
                 LineStyle *linestyle);
@@ -160,7 +159,7 @@ int Maxval_array(const int x_array[], size_t n)
 }
 
 /* --------------------------------------------------------------------------- */
-float Deg2rad(float angle) 
+float Deg2rad(float angle)
 {
     return angle*PI/180;
 }
@@ -204,6 +203,17 @@ void Make_background(Figure *fig,\
 }
 
 /* --------------------------------------------------------------------------- */
+void ImageLineEpaisseur(gdImagePtr im_fig,\
+    const int x1, const int y1, const int x2, const int y2, LineStyle *linestyle)
+{
+                    
+    gdImageSetThickness(im_fig, linestyle->w);
+    gdImageLine(im_fig, x1,   y1,   x2,   y2,   GetCouleur(im_fig, linestyle->color));
+    gdImageSetThickness(im_fig, 1);
+}
+
+
+/* --------------------------------------------------------------------------- */
 void Make_support_axes(Figure *fig, const int couleur[3])
 {
     // int w_axes = 3;
@@ -220,16 +230,6 @@ void Make_support_axes(Figure *fig, const int couleur[3])
     ImageLineEpaisseur(fig->img,  fig->orig[0],  fig->orig[1],\
                             fig->img->sx-1,  fig->orig[1],
                             &linestyle_axe); 
-}
-/* --------------------------------------------------------------------------- */
-void ImageLineEpaisseur(gdImagePtr im_fig, \
-                        const int x1, const int y1, const int x2, const int y2,\
-                            LineStyle *linestyle)
-{
-                    
-    gdImageSetThickness(im_fig, linestyle->w);
-    gdImageLine(im_fig, x1,   y1,   x2,   y2,   GetCouleur(im_fig, linestyle->color));
-    gdImageSetThickness(im_fig, 1);
 }
 
 /* --------------------------------------------------------------------------- */
@@ -447,6 +447,7 @@ void Print_debug_ls(LineStyle *linestyle)
 void Print_debug_ld(LineData *linedata)
 {
     printf("*** Debug linedata\n");
+    printf("* Label    = %s \n", linedata->label);
     printf("* Len data = %ld \n", linedata->len_data);
     printf("* Max X    = %d \n", linedata->max_X);
     printf("* Max Y    = %d \n", linedata->max_Y);
@@ -469,11 +470,16 @@ void Update_fig(Figure *fig, LineData *linedata)
         printf("Erreur : Pas assez de memoire.\n");
         free(fig->linedata);
         exit(EXIT_FAILURE);
-    }    
+    }
 
-    fig->linedata[fig->nb_linedata] = linedata;
+    // Index = nb line - 1
+    fig->linedata[fig->nb_linedata-1] = linedata;
+
+    // Print_debug_ld(fig->linedata[fig->nb_linedata]);
+
     fig->max_X = Max_int(fig->max_X, linedata->max_X);
     fig->max_Y = Max_int(fig->max_Y, linedata->max_Y);
+
 }
 
 /* --------------------------------------------------------------------------- */
@@ -486,12 +492,13 @@ void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
                               (strlen(xlabel) * size/3) + decalage_X;
     int posY_xlabel = fig->img->sy - (fig->pad[1]/10)                 - decalage_Y; 
 
-    int brect[8] = {0};
-    char *errStringFT = gdImageStringFT(fig->img, brect,\
+    // int brect[8] = {0};
+    gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img, color), font,\
                                 size, 0., posX_xlabel, posY_xlabel, xlabel);    
-
-    printf("%s \n", errStringFT); 
+    //Avoid memoty leaks
+    gdFontCacheShutdown();
+    // printf("%s \n", errStringFT); 
 }
 
 /* --------------------------------------------------------------------------- */
@@ -511,6 +518,8 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
                                 size, Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
 
     printf("%s \n", errStringFT); 
+    //Avoid memoty leaks
+    gdFontCacheShutdown();
 }
 
 /* --------------------------------------------------------------------------- */
@@ -534,14 +543,28 @@ void Make_legend(Figure *fig, char* font, int size,\
                       (size + ecart_Y) - decal_Y,  2*(size + ecart_Y) - decal_Y,\
                     3*(size + ecart_Y) - decal_Y,  4*(size + ecart_Y) - decal_Y};
 
+    // Longueur petit trait
+    int long_trait_leg = 30;
+    // Decalage apres trait
+    int decalage_trait_leg = long_trait_leg + 10;
+
+    // Print des petits traits de legende pour chaque plot
+
+    for (int i = 0; i < fig->nb_linedata; i++)
+    { 
+        ImageLineEpaisseur(fig->img,\
+                    pos_X[i]                   ,   pos_Y[i]-size/2,\
+                    pos_X[i]+long_trait_leg,   pos_Y[i]-size/2,\
+                    fig->linedata[i]->linestyle);
+    }
+
     char *errStringFT;
     char label_i[8];
     char i_lab[2];
     int brect[8] = {0};
     int white[3]  = {255, 255, 255};   //white
 
-    int nb_labels = fig->nb_linedata;
-    for (int i = 0; i < nb_labels; i++)
+    for (int i = 0; i < fig->nb_linedata; i++)
     {
         sprintf(label_i, "Label ");
         sprintf(i_lab, "%d", i);
@@ -549,10 +572,13 @@ void Make_legend(Figure *fig, char* font, int size,\
         printf("%s, %d, %d\n", label_i, pos_X[i], pos_Y[i]);
         errStringFT= gdImageStringFT(fig->img, brect,\
                             GetCouleur(fig->img, white), font,\
-                                size, 0., pos_X[i], pos_Y[i],\
+                                size, 0.,\
+                                decalage_trait_leg+pos_X[i], pos_Y[i],\
                                 fig->linedata[i]->label);        
     }
-    
+    //Avoid memoty leaks
+    gdFontCacheShutdown();
+
 }    
 
 /* =========================================================================== */
@@ -583,60 +609,62 @@ int main(int argc, char* argv[])
     int violet_clair[3] = {202, 178, 214};   //violet_clair
     int rouge_fonce[3] = {227,  26,  28};   //rouge_fonce
     int white[3]  = {255, 255, 255};   //white
-
+    int bleu_clair[3] = {166, 206, 227};
 
     Figure fig1;
     Init_figure(&fig1, figsize, pad, margin);
 
     int ptx[]  = {0, 100, 200, 300, 400};
-    int pty[]  = {3,   8,   2,   1,   6};
-    int pty2[] = {1,   4,   7,   0,   6};
-    int pty3[] = {5,   1,   4,   9,   6};
-    int pty4[] = {1,   1,   1,   1,   1};
-    int pty5[] = {10,  10,  10,  10,  10};
+    int pty[]  = {3,    8,  2,   1,   6};
+    int pty2[] = {1,    4,  7,   0,   6};
+    int pty3[] = {5,    1,  4,   9,   6};
+    int pty4[] = {1,    1,  1,   1,   1};
+    int pty5[] = {10,   5,  4,   6,   7};
+    int pty6[] = {10,  12,  3,   2,   5};
 
     size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
 
     LineStyle linestyle1;
     Init_linestyle(&linestyle1, '-', vert_fonce, w_lines,'o', ms);
     LineData line1;
-    char* label1 = "Rue blablib";
+    char* label1 = "Rue de la station 1";
     Init_linedata(&line1, len_data, ptx, pty, label1, &linestyle1);
     Update_fig(&fig1, &line1);
 
     LineStyle linestyle2;
     Init_linestyle(&linestyle2, '-', orange_clair, w_lines,'o', ms);
     LineData line2;
-    char* label2 = "Rue blablibsddfsd sdf";
+    char* label2 = "Rue de la station 2";
     Init_linedata(&line2, len_data, ptx, pty2, label2, &linestyle2);
     Update_fig(&fig1, &line2);
 
     LineStyle linestyle3;
     Init_linestyle(&linestyle3, '-', bleu_fonce, w_lines,'o', ms);
     LineData line3;
-    char* label3 = "Rue zeafsdg ztfd df-rezr";
+    char* label3 = "Rue de la station 3";
     Init_linedata(&line3, len_data, ptx, pty3, label3, &linestyle3);    
     Update_fig(&fig1, &line3);
 
     LineStyle linestyle4;
     Init_linestyle(&linestyle4, '-', orange_fonce, w_lines,'o', ms);
     LineData line4;
-    char* label4 = "Rue df Fezr";
-    Init_linedata(&line4, len_data, ptx, pty4, label4, &linestyle4);    
+    char* label4 = "Rue de la station 4";
+    Init_linedata(&line4, len_data, ptx, pty4, label4, &linestyle4);
     Update_fig(&fig1, &line4);
 
-    // LineStyle linestyle5;
-    // Init_linestyle(&linestyle5, '-', coul_trait5, w_lines,'o', ms);
-    // LineData line5;
-    // Init_linedata(&line5, len_data, ptx, pty5, &linestyle5);    
-    // Update_fig(&fig1, &line5);
+    LineStyle linestyle5;
+    Init_linestyle(&linestyle5, '-', rouge_fonce, w_lines,'o', ms);
+    LineData line5;
+    char* label5 = "Rue de la station 5";
+    Init_linedata(&line5, len_data, ptx, pty5, label5, &linestyle5);
+    Update_fig(&fig1, &line5);
 
-    // Plot_all_lines(&fig1);
+
     PlotLine(&fig1, &line1);
     PlotLine(&fig1, &line2);
     PlotLine(&fig1, &line3);
     PlotLine(&fig1, &line4);
-    // PlotLine(&fig1, &line5);
+    PlotLine(&fig1, &line5);
 
     /* Make xlabel */
     char *xlabel = "Date";
@@ -656,17 +684,20 @@ int main(int argc, char* argv[])
 
     /* Make legende !! <- Ajouter label aux linedatas !*/
     int decalx_leg = 0, decaly_leg = 0, ecart = 2;
-    Make_legend(&fig1, fontLabels, 11, decalx_leg, decaly_leg, ecart);
+    Make_legend(&fig1, fontLabels, 10, decalx_leg, decaly_leg, ecart);
+
 
 
     // char *legendTitle = "Légende";
     // int posX_legendTitle = fig1.orig[0] ;
     // int posY_legendTitle = fig1.pad[1]/4;    
-    // errStringFT = gdImageStringFT(fig1.img, brect,\
-    //                     GetCouleur(fig1.img, coul_label), fontLabels,\
+    // errStringFT = gdImageStringFT(fig1.img, NULL,\
+    //                     GetCouleur(fig1.img, white), fontLabels,\
     //                         12, 0., posX_legendTitle, posY_legendTitle,\
     //                             legendTitle);    
     // printf("%s \n", errStringFT);
+
+    // gdFontCacheShutdown();
 
     /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1.png";
