@@ -51,51 +51,52 @@ int main(int argc, char* argv[])
     // Recuperation nombre de lignes pour chaque station
     // SELECT COUNT(*) FROM 'Stations_fav' WHERE adresse_station = '108 Rue Balard 75015 Paris';
 
-    // Declaration statement
-    sqlite3_stmt *stmt;
 
-    // Recuperation du nombre de stations en favoris
-    int nb_stations_fav = Get_nb_stations_fav(stmt, db_belib);
+    // // Recuperation du nombre de stations en favoris
+    int nb_stations_fav = Get_nb_stations_fav(db_belib);
     printf("> Nb stations en fav : %d \n", nb_stations_fav);
 
-    // Recuperation du nombre de lignes par station
-    int nb_rows_par_station = Get_nb_rows_par_station(stmt, db_belib);
+    // // Recuperation du nombre de lignes par station
+    int nb_rows_par_station = Get_nb_rows_par_station(db_belib);
     printf("> Nb lignes par station : %d \n", nb_rows_par_station);
 
     // Recuperation des adresses des stations en favoris
     char *tableau_adresses_fav[nb_stations_fav];
-    Get_adresses_fav(stmt, db_belib, tableau_adresses_fav, nb_stations_fav);
+    Get_adresses_fav(db_belib, tableau_adresses_fav, nb_stations_fav);
     printf("> Adresse %d : %s \n", 1, tableau_adresses_fav[0]);
-    printf("> Adresse %d : %s \n", 2, tableau_adresses_fav[1]);
+    printf("> Adresse %d : %s \n", 2, tableau_adresses_fav[1]);             
     printf("> Adresse %d : %s \n", 3, tableau_adresses_fav[2]);
     printf("> Adresse %d : %s \n", 4, tableau_adresses_fav[3]);
     printf("> Adresse %d : %s \n", 5, tableau_adresses_fav[4]);
 
     // Recuperation des date de recolte de chaque station (same for all)
     char *tableau_date_recolte_fav[nb_rows_par_station];
-    Get_date_recolte_fav(stmt, db_belib, tableau_date_recolte_fav, nb_rows_par_station);
+    Get_date_recolte_fav(db_belib, tableau_date_recolte_fav, nb_rows_par_station);
     printf("> Date recolte %d : %s \n", 7, tableau_date_recolte_fav[6]);
     printf("> Date recolte %d : %s \n", 13, tableau_date_recolte_fav[12]);
 
-    // Recuperation des status par station fav
+    // Recuperation des statuts par station fav
     int nb_statuts = 4; /**< disponible occupe en_maintenance inconnu*/
-    int ***tableau_statuts_fav[nb_stations_fav][nb_statuts][nb_rows_par_station];
-     //Get_statuts_station_fav(stmt, db_belib, tableau_adresses_fav, nb_stations_fav, \
-                                    nb_rows_par_station, nb_statuts);
+    // int ***tableau_statuts_fav = (int ***)malloc(nb_stations_fav*nb_statuts*nb_rows_par_station*sizeof(int));
 
-    for (int station = 0; station < nb_stations_fav; station++)
-    {
-        Construct_req_station_statuts(station, tableau_adresses_fav);
-    }
+    Get_statuts_station_fav(db_belib, tableau_adresses_fav, nb_stations_fav, \
+                    nb_rows_par_station, nb_statuts);
+
+    // for (int station = 0; station < nb_stations_fav; station++)
+    // {
+    //     Construct_req_station_statuts(station, tableau_adresses_fav);
+    // }
 
     // char *test = sqlite3_expanded_sql(stmt);
     // printf("%s\n",test);
 
-
-    sqlite3_finalize(stmt);
     
     sqlite3_close(db_belib);
 
+    free_tab_char1(tableau_adresses_fav, nb_stations_fav);
+    free_tab_char1(tableau_date_recolte_fav, nb_rows_par_station);
+    // free_tab_int3(tableau_statuts_fav, nb_stations_fav, nb_statuts, nb_rows_par_station);
+ 
 
     return 0;
 }
