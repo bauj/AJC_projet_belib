@@ -73,22 +73,66 @@ void Get_date_recolte_fav(sqlite3_stmt *stmt, sqlite3 *db_belib, \
 
 
 /* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param stmt 
- * @param db_belib 
- * @param nb_stations_fav 
- * @param nb_rows_par_station 
- * @param nb_statuts 
- * @return int*** 
- */
-int*** Get_statuts_station_fav(sqlite3_stmt stmt, sqlite3 *db_belib,\
-        int nb_stations_fav, int nb_rows_par_station, int nb_statuts);
+int*** Get_statuts_station_fav(sqlite3_stmt *stmt, sqlite3 *db_belib,\
+            char **tableau_adresses_fav, int nb_stations_fav, \
+                int nb_rows_par_station, int nb_statuts);
+
+
+/* --------------------------------------------------------------------------- */
+char* Construct_req_station_statuts(int station, char **tableau_adresses_fav);
+
 
 /* --------------------------------------------------------------------------- */
 // Definition des fonctions
 /* --------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------- */
+char* Construct_req_station_statuts(int station, char **tableau_adresses_fav)
+{
+    const char *query_statuts_stations_fav = \  
+            "SELECT disponible, occupe, en_maintenance, inconnu FROM \
+                'Stations_fav' WHERE adresse_station = ";
+    char ajout_adresse[50];
+    char *req = (char *)malloc((50+strlen(query_statuts_stations_fav))*sizeof(char));
+
+    strcpy(req, query_statuts_stations_fav);
+    strcat(req, "\'");
+    strcat(req, tableau_adresses_fav[station]);
+    strcat(req, "\';");
+
+    printf("%s\n", req);
+
+    return req;
+}
+
+
+/* --------------------------------------------------------------------------- */
+int*** Get_statuts_station_fav(sqlite3_stmt *stmt, sqlite3 *db_belib,\
+            char **tableau_adresses_fav, int nb_stations_fav, \
+                int nb_rows_par_station, int nb_statuts)
+{
+    int*** statuts_table = \
+        (int ***)calloc(nb_stations_fav*nb_rows_par_station*nb_statuts,sizeof(int));
+
+    // ENUM DANS LE IF POUR STATUT !!
+
+    for (int station = 0; station < nb_stations_fav; station++)
+    {
+        char query_statuts_stations_fav[] = \  
+            "SELECT disponible, occupe, en_maintenance, inconnu \
+                FROM 'Stations_fav' WHERE adresse_station = ";
+        char ajout_adresse[50];
+        strcat(ajout_adresse, "\'");
+        strcat(ajout_adresse, tableau_adresses_fav[station]);
+        strcat(ajout_adresse, "\';");
+        strcat(query_statuts_stations_fav, ajout_adresse);
+
+        printf("%s\n", query_statuts_stations_fav);
+    }
+ 
+    return statuts_table;
+}
 
 void Get_date_recolte_fav(sqlite3_stmt *stmt, sqlite3 *db_belib, \
                 char **tableau_date_recolte_fav, int nb_rows_par_station)
@@ -109,7 +153,6 @@ void Get_date_recolte_fav(sqlite3_stmt *stmt, sqlite3 *db_belib, \
     }
 
     // Application du statement et fermeture de la db
-
     for (int i = 0; i < nb_rows_par_station; i++) {
         int step = sqlite3_step(stmt);
         if (step == SQLITE_ROW) 

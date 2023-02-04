@@ -79,9 +79,14 @@ int main(int argc, char* argv[])
 
     // Recuperation des status par station fav
     int nb_statuts = 4; /**< disponible occupe en_maintenance inconnu*/
-    int tableau_statuts_fav[nb_stations_fav][nb_statuts][nb_rows_par_station] = \
-        Get_statuts_station_fav(stmt, db_belib, nb_stations_fav, \
+    int ***tableau_statuts_fav[nb_stations_fav][nb_statuts][nb_rows_par_station];
+     //Get_statuts_station_fav(stmt, db_belib, tableau_adresses_fav, nb_stations_fav, \
                                     nb_rows_par_station, nb_statuts);
+
+    for (int station = 0; station < nb_stations_fav; station++)
+    {
+        Construct_req_station_statuts(station, tableau_adresses_fav);
+    }
 
     // char *test = sqlite3_expanded_sql(stmt);
     // printf("%s\n",test);
