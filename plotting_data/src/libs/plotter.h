@@ -282,8 +282,9 @@ void Print_debug_ls(LineStyle *linestyle);
  * @brief 
  * 
  * @param linedata 
+ * @param w_xy 
  */
-void Print_debug_ld(LineData *linedata);
+void Print_debug_ld(LineData *linedata, char w_xy);
 
 /* --------------------------------------------------------------------------- */
 /**
@@ -446,7 +447,7 @@ void ImageLineEpaisseur(gdImagePtr im_fig,\
 
     }
     
-    gdImageSetThickness(im_fig, 1);
+    // gdImageSetThickness(im_fig, 1);
 }
 
 
@@ -474,11 +475,7 @@ void Make_support_axes(Figure *fig, const int couleur[3])
 void PlotPoint(Figure *fig, const int x1, const int y1,\
                         LineStyle *linestyle)
 {
-    if ( x1 != fig->orig[0] && y1 != fig->orig[1])
-    {
-        gdImageFilledEllipse(fig->img, x1, y1,\
-            linestyle->ms, linestyle->ms, GetCouleur(fig->img, linestyle->color));
-    } else if (x1 == fig->orig[0] && y1 != fig->orig[1])
+    if (x1 == fig->orig[0] && y1 != fig->orig[1])
     {   
         // Arc lorsque pt sur axe vertical
         gdImageFilledArc (fig->img, x1, y1, linestyle->ms, linestyle->ms,\
@@ -491,7 +488,8 @@ void PlotPoint(Figure *fig, const int x1, const int y1,\
                           -180, 0,\
                           GetCouleur(fig->img, linestyle->color), gdArc);
     } else {
-
+        gdImageFilledEllipse(fig->img, x1, y1,\
+            linestyle->ms, linestyle->ms, GetCouleur(fig->img, linestyle->color));
     }
 
 }
@@ -516,15 +514,19 @@ void PlotLine(Figure *fig, LineData *linedata)
                 linedata->linestyle);
 
         
-        PlotPoint(fig,\
-            x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
+        // PlotPoint(fig,\
+        //     x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
 
-        if (i == linedata->len_data-2) {
-            PlotPoint(fig,\
-                            x_plot[i+1] + fig->orig[0],\
-                            y_plot[i+1] + fig->orig[1],\
-                            linedata->linestyle);
-        }
+        // if (i == linedata->len_data-2) {
+        //     PlotPoint(fig,\
+        //                     x_plot[i+1] + fig->orig[0],\
+        //                     y_plot[i+1] + fig->orig[1],\
+        //                     linedata->linestyle);
+        // }
+
+        // gdImageLine(fig->img, x_plot[i]   + fig->orig[0],   y_plot[i] + fig->orig[1],\
+        //         x_plot[i+1] + fig->orig[0], y_plot[i+1] + fig->orig[1],\
+        //             GetCouleur(fig->img, linedata->linestyle->color));
     }
 
     free(x_plot);
@@ -707,15 +709,21 @@ void Print_debug_ls(LineStyle *linestyle)
 }
 
 /* --------------------------------------------------------------------------- */
-void Print_debug_ld(LineData *linedata)
+void Print_debug_ld(LineData *linedata, char w_xy)
 {
-    printf("*** Debug linedata\n");
+    printf("*** Debug linedata --------------------------\n");
     printf("* Label    = %s \n", linedata->label);
     printf("* Len data = %ld \n", linedata->len_data);
     printf("* Max X    = %d \n", linedata->max_X);
     printf("* Max Y    = %d \n", linedata->max_Y);
+    if (w_xy == 'y') {
+        printf("* Vecteur X : \n");
+        print_arr1D(linedata->len_data, linedata->x, 'n');
+        printf("* Vecteur Y : \n");
+        print_arr1D(linedata->len_data, linedata->y, 'n');
+    }    
     Print_debug_ls(linedata->linestyle);
-    printf("*** End linedata\n\n");
+    printf("*** End linedata ----------------------------\n\n");
 }
 
 /* --------------------------------------------------------------------------- */
@@ -797,13 +805,13 @@ void Make_legend(Figure *fig, char* font, int size,\
                     int decal_X, int decal_Y, int ecart)
 {
     // Position des 8 legendes possibles
-    int w_canvas = fig->img->sx - fig->pad[0];
-    int pos_midcanvas = fig->orig[0] + w_canvas/2;
+    int w_img = fig->img->sx;
+    int pos_midX = w_img/2 + 5;
 
-    int pos_X[8] = {fig->orig[0]+5  + decal_X, fig->orig[0]+5  + decal_X,\
-                    fig->orig[0]+5  + decal_X, fig->orig[0]+5  + decal_X,\
-                    pos_midcanvas + decal_X, pos_midcanvas + decal_X,\
-                    pos_midcanvas + decal_X, pos_midcanvas + decal_X};
+    int pos_X[8] = {30  + decal_X, 30  + decal_X,\
+                    30  + decal_X, 30  + decal_X,\
+                    pos_midX + decal_X, pos_midX + decal_X,\
+                    pos_midX + decal_X, pos_midX + decal_X};
 
     int ecart_base = 6;
     int ecart_Y = ecart_base + ecart;
@@ -848,6 +856,98 @@ void Make_legend(Figure *fig, char* font, int size,\
     gdFontCacheShutdown();
 }
 
+/* --------------------------------------------------------------------------- */
+void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
+{
+    if (fig->max_X == 0)
+    {
+        printf("Erreur : pas de ticks pour un max a 0.");
+        exit(EXIT_FAILURE);
+    }
+    
+    int nb_ticks = 7;
+    int nb_itv = nb_ticks-1;
+
+    // Intervalles entre 2 ticks en sec
+    int itv_sec = fig->max_X / nb_itv;
+
+    // Largeur canvas
+    int l_canvas = fig->img->sx-1 - fig->orig[0];
+    // On pense a enlever la marge Y pour calculer l'ecart entre tick maj
+    int l_max = l_canvas - fig->margin[0];
+
+    // Intervalle entre 2 ticks en pix
+    int itv_pixels = (itv_sec*l_max) / fig->max_X;
+    printf("Itv X en px = %d \n", itv_pixels);
+
+    // Style tick
+    int w_tick = 2;
+    int w_linegrid = 0.5;
+    int long_tick = 9;
+    int long_tick_min = 5;
+
+    LineStyle style_tick;
+    Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
+
+    LineStyle style_linegrid;
+    Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
+
+    // Plot ticks
+    char tickVal[12];
+
+    for (int i = 0; i <= nb_ticks; i++)
+    {
+      
+        // tick
+        ImageLineEpaisseur(fig->img,\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->orig[1]+2,\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->orig[1] + long_tick +2,\
+                        &style_tick);
+
+        //gridline
+        ImageLineEpaisseur(fig->img,\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->orig[1],\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->pad[1],\
+                        &style_linegrid);        
+
+        time_t t_tick = date_init.ctime + i*itv_sec;
+        struct tm *tm_tick;
+        gmtime(&t_tick);
+        tm_tick = gmtime(&t_tick);
+
+        char tickdate[6];
+        strftime(tickdate, 6, "%d/%m", tm_tick);
+        printf("%s \n", tickdate);
+
+        char tickhour[6];
+        strftime(tickhour, 6, "%H:%M", tm_tick);
+        printf("%s \n", tickdate);
+
+
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img, style_tick.color), font,\
+                                fontsize, 0.,\
+                                fig->pad[0]/2 -10 + i*itv_pixels ,\
+                                fig->orig[1] + (long_tick+2) + fontsize,\
+                                tickdate);
+
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img, style_tick.color), font,\
+                                fontsize, 0.,\
+                                fig->pad[0]/2 -10 + i*itv_pixels + fontsize/2,\
+                                fig->orig[1] + 2*((long_tick) + fontsize),\
+                                tickhour);
+                                
+        // printf("%d\n", i);
+    }
+
+    //Avoid memory leaks
+    gdFontCacheShutdown();
+}
 
 /* --------------------------------------------------------------------------- */
 void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
@@ -882,27 +982,27 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
         itv_minor = 2;
     }
     
-    printf("Itv       = %d \n", itv);
-    printf("Itv minor = %d \n", itv_minor);
+    // printf("Itv       = %d \n", itv);
+    // printf("Itv minor = %d \n", itv_minor);
     int nb_ticks = fig->max_Y / itv;
 
     int nb_ticks_min = 0;    
     if (itv_minor != 0) {
         nb_ticks_min= (fig->max_Y / itv_minor) / nb_ticks;
-        printf("Nb ticks min = %d \n", nb_ticks_min);
+        // printf("Nb ticks min = %d \n", nb_ticks_min);
     }    
-    printf("Nb ticks  = %d \n", nb_ticks);
+    // printf("Nb ticks  = %d \n", nb_ticks);
 
     int h_canvas = fig->img->sy - 2*fig->pad[1];
     // On pense a enlever la marge Y pour calculer l'ecart entre tick maj
     // Pos de maxY repere figure = h_canvas - fig->margin[1]
     int h_max = h_canvas - fig->margin[1];
-    printf("h max     = %d \n", h_max);
+    // printf("h max     = %d \n", h_max);
 
     // int ecart_major = ( h_canvas - fig->margin[1] ) / (nb_interv)  ; 
 
     int itv_pixels = (itv*h_max) / fig->max_Y;
-    printf("Itv px     = %d \n", itv_pixels);
+    // printf("Itv px     = %d \n", itv_pixels);
 
     // Style tick
     int w_tick = 2;
@@ -913,7 +1013,7 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
 
     LineStyle style_linegrid;
-    Init_linestyle(&style_linegrid, ':', gris_grid, w_linegrid, ' ', ' ');
+    Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
 
     // Plot ticks
   
@@ -924,6 +1024,7 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
     {
         sprintf(tickVal, "%d", i*itv);
 
+        // tick
         ImageLineEpaisseur(fig->img,\
                         fig->orig[0]-long_tick-2,\
                             fig->orig[1] - i*itv_pixels,\
@@ -931,6 +1032,7 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
                             fig->orig[1] - i*itv_pixels,\
                         &style_tick);
 
+        // gridline
         ImageLineEpaisseur(fig->img,\
                         fig->orig[0],\
                             fig->orig[1] - i*itv_pixels,\

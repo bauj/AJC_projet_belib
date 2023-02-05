@@ -133,9 +133,26 @@ void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
             int station, int statut);
 
 /* --------------------------------------------------------------------------- */
+void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows]);
+
+/* --------------------------------------------------------------------------- */
 // Definition des fonctions
 /* --------------------------------------------------------------------------- */
 
+void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows])
+{
+    for (int i = 0; i < nb_rows; i++)
+    {
+        Datetick tick_i;
+        Init_Datetick(&tick_i,\
+                &tableau_date_recolte_fav[i], &tableau_date_recolte_fav[0]);
+
+        vect_dateticks[i] =tick_i;
+    }      
+}
+
+
+/* --------------------------------------------------------------------------- */
 void Get_time_vect(int nb_rows, int vect_time[nb_rows],\
                 Date tableau_date_recolte_fav[nb_rows])
 {
@@ -150,6 +167,7 @@ void Get_time_vect(int nb_rows, int vect_time[nb_rows],\
 }
 
 
+/* --------------------------------------------------------------------------- */
 void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
             int vect_statut[nb_rows], \
             int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],
@@ -392,7 +410,6 @@ void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib)
         exit(EXIT_FAILURE);
     }
 }
-
 
 /* --------------------------------------------------------------------------- */
 void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\

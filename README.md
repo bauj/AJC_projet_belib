@@ -120,3 +120,5 @@ moment de la derniere recolte.
     + **Python** : sqlite3, urllib3 (ssl et CA Certificates), ujson, sqlite3.
     + **C** : libgd, sqlite3.
 
+## Perspectives
++ Moyenne par jour de bornes disponibles, à certaines heures

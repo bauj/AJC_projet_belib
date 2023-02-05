@@ -46,13 +46,13 @@ int main(int argc, char* argv[])
     Figure fig1;
     Init_figure(&fig1, figsize, pad, margin);
 
-    int ptx[]  = {0, 100, 200, 300, 400};
-    int pty[]  = {5,    9,  0,   7,   1};
-    int pty2[] = {1,    4,  7,   0,   6};
-    int pty3[] = {5,    1,  4,   9,   6};
-    int pty4[] = {1,    6,  1,   2,   1};
-    int pty5[] = {10,   5,  4,   6,   7};
-    int pty6[] = {10,  9,  3,   8,   5};
+    int ptx[]  = {0, 100, 200, 300, 400,500,600,700,800,900,1000,1100,1200,1300,1400,1500};
+    int pty[]  = {5,    9,  0,   7,   1, 5,    9,  0,   7,  1, 7,   6, 7,  1, 7,   6};
+    int pty2[] = {1,    4,  7,   0,   6,1,    4,  7,   0,   6, 0,   6,0,   6, 0,   6};
+    int pty3[] = {5,    1,  4,   9,   6,5,    1,  4,   9,   6, 9,   6,9,   6, 9,   6};
+    int pty4[] = {1,    6,  1,   2,   1,1,    6,  1,   2,   1, 2,   1,2,   1, 2,   1};
+    int pty5[] = {10,   5,  4,   6,   7,10,   5,  4,   6,   7, 6,   7,6,   7, 6,   7};
+    int pty6[] = {10,  9,  3,   8,    5,10,  9,  3,    8,   5, 8,   5,8,   5, 8,   5};
 
     size_t len_data = sizeof(ptx)/sizeof(ptx[0]);
 
@@ -101,12 +101,13 @@ int main(int argc, char* argv[])
 
 
     PlotLine(&fig1, &line1);
+    // PlotLine(&fig1, &line1);
+    // PlotLine(&fig1, &line1);
     PlotLine(&fig1, &line2);
     PlotLine(&fig1, &line3);
     PlotLine(&fig1, &line4);
     PlotLine(&fig1, &line5);
     PlotLine(&fig1, &line6);
-
 
     /* Make xlabel */
     char *xlabel = "Date";
