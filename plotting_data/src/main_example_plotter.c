@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "libs/Plotter.h"
+#include "libs/plotter.h"
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -106,6 +106,7 @@ int main(int argc, char* argv[])
     PlotLine(&fig1, &line4);
     PlotLine(&fig1, &line5);
     PlotLine(&fig1, &line6);
+
 
     /* Make xlabel */
     char *xlabel = "Date";

@@ -9,7 +9,9 @@
 #ifndef PLOTTER_H
 #define PLOTTER_H
 
+#include "consts.h"
 #include <stdlib.h>
+#include "getter.h"
 #include <gd.h>
 
 #define PI 3.141592
@@ -500,6 +502,10 @@ void PlotLine(Figure *fig, LineData *linedata)
     int *x_plot = Transform_data_to_plot(fig, linedata->len_data, linedata->x, 'x');
     int *y_plot = Transform_data_to_plot(fig, linedata->len_data, linedata->y, 'y');   
 
+    // Print_debug_ld(linedata);
+    // print_arr1D(linedata->len_data, linedata->x, 'n');
+    // print_arr1D(linedata->len_data, linedata->y, 'n');
+
     // Prise en compte du decalage de l'origine
     // printf("Orig = %d, %d \n", orig[0], orig[1]);
     for (int i=0; i < linedata->len_data-1; i++) 
@@ -661,13 +667,15 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
 {
     // int *ptx_plot = Transform_data_to_plot(fig, len_data, ptx, 'x');
     // int *pty_plot = Transform_data_to_plot(fig, len_data, pty, 'y');
+    
     linedata->len_data = len_data;
-    linedata->x = ptx;
+    linedata->x = ptx; 
     linedata->y = pty;
     linedata->max_X = Maxval_array(linedata->x, linedata->len_data);
     linedata->max_Y = Maxval_array(linedata->y, linedata->len_data);
     linedata->label = label;
     linedata->linestyle = linestyle;
+    print_arr1D(len_data, linedata->y, 'n');
 }
 
 /* --------------------------------------------------------------------------- */
@@ -904,7 +912,6 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
     LineStyle style_tick;
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
 
-    int gris_grid[3] = {71, 71, 71};
     LineStyle style_linegrid;
     Init_linestyle(&style_linegrid, ':', gris_grid, w_linegrid, ' ', ' ');
 

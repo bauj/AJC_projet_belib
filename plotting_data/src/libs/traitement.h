@@ -36,13 +36,14 @@ typedef struct Date_s {
  * 
  */
 typedef struct Datetick_s {
-    Date date;         /**< Contient l'objet date auquel seront associés les labels */
     int  ecart_init;   /**< Contient l'écart en secondes a la date initiale */
     char labeldate[9]; /**< string de type : DD/mm/YY + '\0' */
     char labelh[6];    /**< string de type : HH:MM + '\0' */ 
 }   Datetick;
 
 
+// ----------------------------------------------------------------------------
+void Init_Datetick(Datetick *datetick, Date *dateobj_i, Date *dateobj_init);
 
 // ----------------------------------------------------------------------------
 void Print_debug_datetick(Datetick *datetick);
@@ -76,23 +77,17 @@ void Slice_str(const char *str_src, char *str_dest, int start, int end)
 }
 
 // ----------------------------------------------------------------------------
-void Init_Datetick(Datetick *datetick, char date_input[20], char date_init[20])
+void Init_Datetick(Datetick *datetick, Date *dateobj_i, Date *dateobj_init)
 {
-    Date dateobj_init;
-    Init_Date(&(dateobj_init), date_init);
-
-    Init_Date(&(datetick->date), date_input);
-    
-    datetick->ecart_init = (int)difftime(datetick->date.ctime, dateobj_init.ctime);
+    datetick->ecart_init = (int)difftime(dateobj_i->ctime, dateobj_init->ctime);
 
     sprintf(datetick->labeldate, "%02d/%02d/%02d", \
-                            datetick->date.tm.tm_mday,\
-                            datetick->date.tm.tm_mon+1,\
-                            (datetick->date.tm.tm_year+1900)%2000);
+                             dateobj_i->tm.tm_mday,\
+                             dateobj_i->tm.tm_mon+1,\
+                            (dateobj_i->tm.tm_year+1900)%2000);
     sprintf(datetick->labelh, "%02d:%02d", \
-                            datetick->date.tm.tm_hour,\
-                            datetick->date.tm.tm_min);                            
-    
+                            dateobj_i->tm.tm_hour,\
+                            dateobj_i->tm.tm_min);                            
 }
 
 // ----------------------------------------------------------------------------
@@ -185,7 +180,7 @@ void Print_debug_date(Date *dateobj, char debugmode)
         printf("  ctime      : %ld\n", dateobj->ctime);
         printf("# -----------------------------------------\n");
     } else if (debugmode == 'n') {
-        printf("%d/%d/%d %d:%d\n", dateobj->tm.tm_mday,\
+        printf("%02d/%02d/%02d %02d:%02d\n", dateobj->tm.tm_mday,\
                                  dateobj->tm.tm_mon+1,\
                                  (dateobj->tm.tm_year+1900)%2000,\
                                  dateobj->tm.tm_hour,\
@@ -201,10 +196,9 @@ void Print_debug_datetick(Datetick *datetick)
 {
     printf("# -----------------------------------------\n");
     printf("> Date tick debug : \n");
-    Print_debug_date(&(datetick->date), 'y');
-    printf("    labeldate  : %s \n", datetick->labeldate);
-    printf("    labelh     : %s \n", datetick->labelh);
-    printf("    ecart_time : %d \n", datetick->ecart_init);
+    printf("  labeldate  : %s \n", datetick->labeldate);
+    printf("  labelh     : %s \n", datetick->labelh);
+    printf("  ecart_time : %d \n", datetick->ecart_init);
     printf("# -----------------------------------------\n");
 }
 

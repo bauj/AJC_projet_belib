@@ -127,9 +127,39 @@ void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
             
 
 /* --------------------------------------------------------------------------- */
+void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
+            int vect_statut[nb_rows], \
+            int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],\
+            int station, int statut);
+
+/* --------------------------------------------------------------------------- */
 // Definition des fonctions
 /* --------------------------------------------------------------------------- */
 
+void Get_time_vect(int nb_rows, int vect_time[nb_rows],\
+                Date tableau_date_recolte_fav[nb_rows])
+{
+    for (int i = 0; i < nb_rows; i++)
+    {
+        Datetick tick_i;
+        Init_Datetick(&tick_i,\
+                &tableau_date_recolte_fav[i], &tableau_date_recolte_fav[0]);
+
+        vect_time[i] = tick_i.ecart_init;
+    }  
+}
+
+
+void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
+            int vect_statut[nb_rows], \
+            int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],
+            int station, int statut)
+{
+    for (int i = 0; i < nb_rows; i++)
+    {
+        vect_statut[i] = tableau_statuts_fav[station][i][statut];
+    }
+}
 
 /* --------------------------------------------------------------------------- */
 char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
@@ -389,6 +419,23 @@ void free_tab_char1(char **tableau_str, int len_tab)
     {
         free(tableau_str[i]);
     }
+}
+ 
+
+/* --------------------------------------------------------------------------- */
+void print_arr1D(int len_tab, int tab[len_tab], char col)
+{
+    if (col=='y')
+    {
+        for (int i=0; i< len_tab; i++ )
+            printf("%d\n", tab[i]);
+    } else if (col=='n') {
+        for (int i=0; i< len_tab; i++ )
+            printf("%d, ", tab[i]);
+    } else {
+        printf("\n");
+    }
+    printf("\n");
 }
  
 #endif /* GETTER_H */
