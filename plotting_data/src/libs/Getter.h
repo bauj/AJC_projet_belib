@@ -136,7 +136,7 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
 {
     const char *query_statuts_stations_fav = \
             "SELECT disponible, occupe, en_maintenance, inconnu FROM \
-                'Stations_fav' WHERE adresse_station = ";
+                Stations_fav WHERE adresse_station = ";
 
     int len_query_base = strlen(query_statuts_stations_fav);
     int len_max_adresse = 70;
@@ -208,7 +208,7 @@ void Get_date_recolte_fav(sqlite3 *db_belib, \
     sqlite3_stmt *stmt;
 
     const char *query_adresse_stations_fav = \
-                "SELECT DISTINCT(date_recolte) FROM 'Stations_fav';";
+                "SELECT DISTINCT(date_recolte) FROM Stations_fav;";
 
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib, query_adresse_stations_fav, -1, &stmt, NULL))
@@ -246,7 +246,7 @@ void Get_adresses_fav(sqlite3 *db_belib, \
     sqlite3_stmt *stmt;
 
     const char *query_adresse_stations_fav = \
-                "SELECT DISTINCT(adresse_station) FROM 'Stations_fav';";
+                "SELECT DISTINCT(adresse_station) FROM Stations_fav;";
 
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib, query_adresse_stations_fav, -1, &stmt, NULL))
@@ -285,7 +285,7 @@ int Get_nb_rows_par_station(sqlite3 *db_belib)
     int nb_rows_par_station = 0;
 
     const char *query_nb_row_par_station = \
-            "SELECT COUNT(DISTINCT date_recolte) FROM 'Stations_fav';";
+            "SELECT COUNT(DISTINCT date_recolte) FROM Stations_fav;";
 
 
     // Test de la requete
