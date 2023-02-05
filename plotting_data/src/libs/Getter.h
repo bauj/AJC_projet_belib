@@ -13,8 +13,11 @@
 #include <sqlite3.h>
 
 
-#endif /* GETTER_H */
+/* --------------------------------------------------------------------------- */
+typedef enum {disponible, occupe, en_maintenance, inconnu} statuts;
 
+
+/* --------------------------------------------------------------------------- */
 /**
  * @brief 
  * 
@@ -22,19 +25,6 @@
  * @param len_tab 
  */
 void free_tab_char1(char **tableau_str, int len_tab);
-
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param tableau_int 
- * @param dim1 
- * @param dim2 
- * @param dim3 
- */
-
-void free_tab_int3(int ***tableau_int, int dim1, int dim2, int dim3);
 
 
 /* --------------------------------------------------------------------------- */
@@ -73,7 +63,7 @@ int Get_nb_rows_par_station(sqlite3 *db_belib);
  * @param db_belib 
  * @param tableau_adresses_fav 
  * @param nb_stations_fav 
- * @warning MEMALLOC 
+ * @warning MALLOC 
  */
 void Get_adresses_fav(sqlite3 *db_belib, \
             char **tableau_adresses_fav, int nb_stations_fav);
@@ -86,16 +76,26 @@ void Get_adresses_fav(sqlite3 *db_belib, \
  * @param db_belib 
  * @param tableau_date_recolte_fav 
  * @param nb_rows_par_station
- * @warning MEMALLOC 
+ * @warning MALLOC 
  */
 void Get_date_recolte_fav(sqlite3 *db_belib, \
             char **tableau_date_recolte_fav, int nb_rows_par_station);
 
 
 /* --------------------------------------------------------------------------- */
-void Get_statuts_station_fav(sqlite3 *db_belib,\
-            char **tableau_adresses_fav, int nb_stations_fav, \
-                int nb_rows_par_station, int nb_statuts);
+/**
+ * @brief 
+ * 
+ * @param db_belib 
+ * @param tableau_adresses_fav 
+ * @param nb_stations_fav 
+ * @param nb_rows_par_station 
+ * @param nb_statuts 
+ * @param tableau_statuts_fav 
+ */
+void Get_statuts_station_fav(sqlite3 *db_belib,char **tableau_adresses_fav,\
+     int nb_stations_fav,int nb_rows_par_station, int nb_statuts,\
+     int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts]);
 
 
 /* --------------------------------------------------------------------------- */
@@ -109,6 +109,22 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
  */
 char *Construct_req_station_statuts(int station, char **tableau_adresses_fav);
 
+
+/* --------------------------------------------------------------------------- */
+/**
+ * @brief 
+ * 
+ * @param nb_station 
+ * @param nb_date 
+ * @param nb_statuts 
+ * @param tab 
+ * @param tableau_date_recolte_fav 
+ * @param tableau_adresses_fav 
+ */
+void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
+        int tab[nb_station][nb_date][nb_statuts],\
+        char** tableau_date_recolte_fav, char** tableau_adresses_fav);
+            
 
 /* --------------------------------------------------------------------------- */
 // Definition des fonctions
@@ -139,24 +155,21 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
 
 /* --------------------------------------------------------------------------- */
 void Get_statuts_station_fav(sqlite3 *db_belib,\
-            char **tableau_adresses_fav, int nb_stations_fav, \
-                int nb_rows_par_station, int nb_statuts)
+    char **tableau_adresses_fav, int nb_stations_fav, \
+    int nb_rows_par_station, int nb_statuts, \
+    int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts])
 {
-    // int*** statuts_table = \
-    //     (int ***)calloc(nb_stations_fav*nb_rows_par_station*nb_statuts,sizeof(int));
-
-    // ENUM DANS LE IF POUR STATUT !!
+    
     for (int station = 0; station < nb_stations_fav; station++)
     {
         // Declaration statement
         sqlite3_stmt *stmt_station;
 
         // Construction requete
-        char *req = Construct_req_station_statuts(station, tableau_adresses_fav);
-        printf("> %s\n", req);
+        char *req_sql = Construct_req_station_statuts(station, tableau_adresses_fav);
 
         // Test de la requete
-        if (sqlite3_prepare_v2(db_belib, req, -1, &stmt_station, NULL))
+        if (sqlite3_prepare_v2(db_belib, req_sql, -1, &stmt_station, NULL))
         {
             printf("Erreur SQL :\n");
             printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
@@ -165,13 +178,15 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
             exit(EXIT_FAILURE);
         }
 
-
         // Application du statement : on recupere les statuts
-        for (int i = 0; i < nb_rows_par_station; i++) {
+        for (int t = 0; t < nb_rows_par_station; t++) {
             int step = sqlite3_step(stmt_station);
             if (step == SQLITE_ROW) 
             {
-                printf("Disponible : %d, Occupe : %d, Maintenance : %d, Inconnu : %d \n", sqlite3_column_int(stmt_station, 0), sqlite3_column_int(stmt_station, 1), sqlite3_column_int(stmt_station, 2), sqlite3_column_int(stmt_station, 3));
+                for (int statut = disponible; statut <= inconnu; statut++) {
+                    tableau_statuts_fav[station][t][statut] = \
+                    sqlite3_column_int(stmt_station, statut);
+                }
             }
             // ELIF STOP
         }
@@ -179,10 +194,8 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
         // Reset du stmt
         sqlite3_finalize(stmt_station);
 
-        free(req);
+        free(req_sql);
     }
- 
-    // return statuts_table;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -351,23 +364,25 @@ void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib)
     }
 }
 
+
 /* --------------------------------------------------------------------------- */
-void free_tab_int3(int ***tableau_int, int dim1, int dim2, int dim3)
+void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
+            int tab[nb_station][nb_date][nb_statuts],\
+            char** tableau_date_recolte_fav, char** tableau_adresses_fav)
 {
-    for (int i=0; i < dim1; i++ )
-    {
-        for (int j=0; j < dim2; j++ )
-        {
-            for (int k=0; i < dim3; k++ )
-            {            
-                free(&tableau_int[i][j][k]);
-            }
+    for (int s = 0; s < nb_station; s++) {
+        printf("--------------------------------------------------------\n");
+        printf("> Adresse de la station : %s\n", tableau_adresses_fav[s]);
+        printf("--------------------------------------------------------\n");
+        for (int t = 0; t < nb_date; t++) {
+            printf("|   %s -> %d disponible |", tableau_date_recolte_fav[t],\
+             tab[s][t][disponible]);
+            printf(" %d occupe | %d maintenance | %d inconnu |\n",\
+            tab[s][t][occupe], tab[s][t][en_maintenance], tab[s][t][inconnu]);
         }
-    }    
+        printf("\n");
+    }
 }
-
-
-
 /* --------------------------------------------------------------------------- */
 void free_tab_char1(char **tableau_str, int len_tab)
 {
@@ -377,4 +392,4 @@ void free_tab_char1(char **tableau_str, int len_tab)
     }
 }
  
-
+#endif /* GETTER_H */
