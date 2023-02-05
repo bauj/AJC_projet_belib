@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 
     /* Make ylabel  ----------  A mettre apres update fig */
     int decalx_Y = 10, decaly_Y = 0;    
-    char *ylabel = "Bornes disponibles";
+    char *ylabel = "Bornes occupées";
     Make_ylabel(&fig1, ylabel, fontLabels, labelSize, white, decalx_Y, decaly_Y);
 
 
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
         Get_statut_station(nb_stations_fav, nb_rows_par_station, nb_statuts,\
                     vect_nb_dispo[st], \
                     tableau_statuts_fav,
-                    st, disponible);
+                    st, occupe);
 
         if (st % 2 != 0) {
             printf("st     : %d \n", st);
@@ -156,9 +156,24 @@ int main(int argc, char* argv[])
     {
         PlotLine(&fig1, &(lines[st]));
     }
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
+    PlotLine(&fig1, &(lines[0]));
 
      /* Sauvegarde du fichier png */
-    const char *filename_fig1= "fig1_dispo.png";
+    const char *filename_fig1= "fig1_occupe.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
     /* Destroy the image in memory. */

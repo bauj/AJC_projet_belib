@@ -514,15 +514,15 @@ void PlotLine(Figure *fig, LineData *linedata)
                 linedata->linestyle);
 
         
-        // PlotPoint(fig,\
-        //     x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
+        PlotPoint(fig,\
+            x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
 
-        // if (i == linedata->len_data-2) {
-        //     PlotPoint(fig,\
-        //                     x_plot[i+1] + fig->orig[0],\
-        //                     y_plot[i+1] + fig->orig[1],\
-        //                     linedata->linestyle);
-        // }
+        if (i == linedata->len_data-2) {
+            PlotPoint(fig,\
+                            x_plot[i+1] + fig->orig[0],\
+                            y_plot[i+1] + fig->orig[1],\
+                            linedata->linestyle);
+        }
 
         // gdImageLine(fig->img, x_plot[i]   + fig->orig[0],   y_plot[i] + fig->orig[1],\
         //         x_plot[i+1] + fig->orig[0], y_plot[i+1] + fig->orig[1],\
@@ -605,7 +605,7 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2])
 
     /* Initialisation de tous les parametres*/
 
-    fig->img = gdImageCreate(figsize[0],figsize[1]);
+    fig->img = gdImageCreateTrueColor(figsize[0],figsize[1]);
     fig->pad[0] = pad[0];
     fig->pad[1] = pad[1];
     fig->orig[0] = fig->pad[0];
