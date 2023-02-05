@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sqlite3.h>
-
+#include "traitement.h"
 
 /* --------------------------------------------------------------------------- */
 typedef enum {disponible, occupe, en_maintenance, inconnu} statuts;
@@ -79,7 +79,7 @@ void Get_adresses_fav(sqlite3 *db_belib, \
  * @warning MALLOC 
  */
 void Get_date_recolte_fav(sqlite3 *db_belib, \
-            char **tableau_date_recolte_fav, int nb_rows_par_station);
+            Date *tableau_date_recolte_fav, int nb_rows_par_station);
 
 
 /* --------------------------------------------------------------------------- */
@@ -122,8 +122,8 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav);
  * @param tableau_adresses_fav 
  */
 void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
-        int tab[nb_station][nb_date][nb_statuts],\
-        char** tableau_date_recolte_fav, char** tableau_adresses_fav);
+            int tab[nb_station][nb_date][nb_statuts],\
+            Date *tableau_date_recolte_fav, char** tableau_adresses_fav);
             
 
 /* --------------------------------------------------------------------------- */
@@ -200,10 +200,8 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
 
 /* --------------------------------------------------------------------------- */
 void Get_date_recolte_fav(sqlite3 *db_belib, \
-                char **tableau_date_recolte_fav, int nb_rows_par_station)
+                Date *tableau_date_recolte_fav, int nb_rows_par_station)
 {
-    int len_max = 20;
-
     // Declaration statement
     sqlite3_stmt *stmt;
 
@@ -225,8 +223,9 @@ void Get_date_recolte_fav(sqlite3 *db_belib, \
         int step = sqlite3_step(stmt);
         if (step == SQLITE_ROW) 
         {
-            tableau_date_recolte_fav[i] = (char *)malloc(len_max);
-            strcpy(tableau_date_recolte_fav[i], (char *)sqlite3_column_text(stmt, 0));
+            Date date_i;
+            Init_Date(&date_i, (char *)sqlite3_column_text(stmt, 0));
+            tableau_date_recolte_fav[i] = date_i;
         }
         // ELIF STOP
     }
@@ -368,14 +367,14 @@ void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib)
 /* --------------------------------------------------------------------------- */
 void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
             int tab[nb_station][nb_date][nb_statuts],\
-            char** tableau_date_recolte_fav, char** tableau_adresses_fav)
+            Date *tableau_date_recolte_fav, char** tableau_adresses_fav)
 {
     for (int s = 0; s < nb_station; s++) {
         printf("--------------------------------------------------------\n");
         printf("> Adresse de la station : %s\n", tableau_adresses_fav[s]);
         printf("--------------------------------------------------------\n");
         for (int t = 0; t < nb_date; t++) {
-            printf("|   %s -> %d disponible |", tableau_date_recolte_fav[t],\
+            printf("|   %s -> %d disponible |", tableau_date_recolte_fav[t].datestr,\
              tab[s][t][disponible]);
             printf(" %d occupe | %d maintenance | %d inconnu |\n",\
             tab[s][t][occupe], tab[s][t][en_maintenance], tab[s][t][inconnu]);
