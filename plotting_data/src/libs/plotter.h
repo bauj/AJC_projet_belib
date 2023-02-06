@@ -31,6 +31,14 @@ typedef struct BarData_s {
     char* label;           /**< Label associé au BarData */
 } BarData; 
 
+typedef struct BarData_s {
+    size_t nb_ctg;        /**< Nombre de categories*/
+    size_t nb_tot;        /**< Nombre total d'éléments dans l'ensemble des ctg*/
+    int *nb_in_ctg;        /**< Vecteur contenant le nombre d'elements par ctg */
+    int *colors[3];           /**< Vecteur contenant une couleur pour chaque ctg*/
+    char* label;           /**< Label associé au BarData */
+} BarData; 
+
 /* --------------------------------------------------------------------------- */
 // Structures -> Check l'ordre des arguments pour la contiguite memoire
 /* --------------------------------------------------------------------------- */
@@ -74,6 +82,7 @@ typedef struct Figure_s {
     gdImage *img;        /**< Pointeur sur objet gdImage */
     size_t nb_linedata;  /**< Nombre de linedata dans la figure */
     LineData **linedata;  /**< Vecteur de LineData */
+    BarData **bardata;   /**< Vecteur de BarData */
     int max_X;           /**< max de l'ensemble des max_X de linedata[] */
     int max_Y;           /**< max de l'ensemble des max_Y de linedata[] */
     int padX[2];         /**< Padding gauche/droite pour definir canvas (cvs) et orig */
@@ -89,6 +98,19 @@ typedef struct Figure_s {
 /* --------------------------------------------------------------------------- */
 // Declaration fonctions
 /* --------------------------------------------------------------------------- */
+
+/**
+ * @brief 
+ * 
+ * @param bardata 
+ * @param nb_ctg 
+ * @param nb_tot 
+ * @param nb_in_ctg 
+ * @param colors 
+ * @param label 
+ */
+void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int *nb_in_ctg,int *colors[3], char* label);
+
 
 /**
  * @brief Transforme les degrés en radians.
@@ -649,6 +671,7 @@ void Init_figure(Figure *fig, int figsize[2],\
     }
     fig->nb_linedata = 0;
     fig->linedata = NULL;
+    fig->bardata = NULL;
     
     Make_background(fig, fig->color_bg, fig->color_cvs_bg);
     Make_support_axes(fig, fig->color_axes);
@@ -685,6 +708,18 @@ void Change_fig_axes_color(Figure *fig, int color[3])
         fig->color_axes[i] = color[i];
     }
     Make_support_axes(fig, fig->color_axes);
+}
+
+/* --------------------------------------------------------------------------- */
+void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int *nb_in_ctg,\
+                int *colors[3], char* label)
+{
+    bardata->nb_ctg = nb_ctg;
+    bardata->nb_tot = nb_tot;
+    bardata->nb_in_ctg = nb_in_ctg;
+    bardata->colors = colors;
+    bardata->label = label;
+
 }
 
 /* --------------------------------------------------------------------------- */
@@ -751,6 +786,25 @@ void Print_debug_ld(LineData *linedata, char w_xy)
 }
 
 /* --------------------------------------------------------------------------- */
+void Print_debug_bd(BarData *bardata, char w_cat)
+{
+    printf("*** Debug bardata --------------------------\n");
+    printf("* Label    = %s \n",  bardata->label);
+    printf("* Len data = %d \n",  bardata->nb_tot);
+    printf("* Nb cat   = %d \n",  bardata->nb_ctg);
+    if (w_cat == 'y') {
+        printf("* Vecteur nb_in_ctg : \n");
+        for (int i = 0; i < nb_ctg; i++){
+            printf("  * Cat %i : nb_ctg[i]; Couleur : %d, %d, %d\n",\
+                    bardata->colors[i][0],\
+                    bardata->colors[i][1],\
+                    bardata->colors[i][2]);
+        }
+    }    
+    printf("*** End bardata ----------------------------\n\n");
+}
+
+/* --------------------------------------------------------------------------- */
 int Max_int(int x, int y) 
 {
     return (x < y) ? y : x ;
@@ -763,7 +817,7 @@ int Min_int(int x, int y)
 }
 
 /* --------------------------------------------------------------------------- */
-void Update_fig(Figure *fig, LineData *linedata)
+void Add_line_to_fig(Figure *fig, LineData *linedata)
 {
     fig->nb_linedata++;
     fig->linedata = (LineData **)realloc(fig->linedata, fig->nb_linedata*sizeof(LineData));
@@ -781,6 +835,29 @@ void Update_fig(Figure *fig, LineData *linedata)
 
     fig->max_X = Max_int(fig->max_X, linedata->max_X);
     fig->max_Y = Max_int(fig->max_Y, linedata->max_Y);
+
+}
+
+
+/* --------------------------------------------------------------------------- */
+void Add_barplot_to_fig(Figure *fig, BarData *bardata)
+{
+    fig->nb_bardata++;
+    fig->bardata = (BarData **)realloc(fig->bardata, fig->nb_bardata*sizeof(BarData));
+
+    if (fig->bardata== NULL) {
+        printf("Erreur : Pas assez de memoire.\n");
+        free(fig->bardata);
+        exit(EXIT_FAILURE);
+    }
+
+    // Index = nb line - 1 : on remplit les linedata de la figure
+    fig->bardata[fig->nb_bardata-1] = bardata;
+
+    // Print_debug_ld(fig->linedata[fig->nb_linedata]);
+
+    fig->max_X = 0;
+    fig->max_Y = Max_int(fig->max_Y, bardata->nb_tot);
 
 }
 
