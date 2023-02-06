@@ -80,38 +80,32 @@ int main(int argc, char* argv[])
 
     // Parametres generaux
     char *dir_figures= "./figures/"; /**< Path folder save fig*/
-    int figsize[2] = {800, 600};     /**< Dimension figure */
-    int pad[2] = {90,90};            /**< pad zone de dessin*/
-    int margin[2] = {10,10};         /**< margin zone de dessin*/
-    int labelSize = 16;              /**< taille de police labels*/
+    int figsize[2] = {800, 700};     /**< Dimension figure */
+    int padX[2] = {90,0};            /**< pad zone de dessin gauche et droite*/
+    int padY[2] = {90,160};          /**< pad zone de dessin haut et bas*/
+    int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
+    int labelSize = 15;              /**< taille de police labels*/
+    int titleSize = 18;              /**< taille de police labels*/
     int tickSize = 12;               /**< taille de police des ticks*/
-    int w_lines = 2;                 /**< epaisseur des traits*/
+    int w_lines = 3;                 /**< epaisseur des traits*/
     int ms = 6;                      /**< marker size */
     // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
-    char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
+    char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
+    char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
+    char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
+
     // Creation de la figure
     Figure fig1;
-    Init_figure(&fig1, figsize, pad, margin);
-
-    /* Make ylabel  ----------  A mettre apres update fig */
-    int decalx_Y = 10, decaly_Y = 0;    
-    char *ylabel = "Bornes disponibles";
-    // char *ylabel = "Bornes occupées";
-    Make_ylabel(&fig1, ylabel, fontLabels, labelSize, white, decalx_Y, decaly_Y);
-
-
-    /* Make xlabel */
-    char *xlabel = "Date";
-    int decalx_X = 0, decaly_X = 0;
-    Make_xlabel(&fig1, xlabel, fontLabels, labelSize, white, decalx_X, decaly_X);
-
+    Init_figure(&fig1, figsize, padX, padY, margin);
 
     // Recup vecteur temps
     int vect_time[nb_rows_par_station];
     Get_time_vect(nb_rows_par_station, vect_time, tableau_date_recolte_fav);
-    print_arr1D(nb_rows_par_station, vect_time, 'n');
+    // print_arr1D(nb_rows_par_station, vect_time, 'n');
 
-    // Recup vecteurs Y
+    // Recup vecteurs Y dans les linedata de la figure 
     int vect_nb_dispo[nb_stations_fav][nb_rows_par_station]; /**< vecteur nb _disponible 
     par station*/
     char style_trait;
@@ -126,8 +120,6 @@ int main(int argc, char* argv[])
                     st, disponible);
 
         if (st % 2 != 0) {
-            printf("st     : %d \n", st);
-            printf("modulo : %d \n", st % 2);
             style_trait = ':';
         } else {
             style_trait = '-';
@@ -139,19 +131,55 @@ int main(int argc, char* argv[])
         Update_fig(&fig1, &(lines[st]));
     }
 
-    // for (int st = 0; st < nb_stations_fav; st++)
-    //     Print_debug_ld(fig1.linedata[st], 'y');
+    /* Make ylabel  ----------  A mettre apres update fig */
+    int decalx_Y = 10, decaly_Y = 0;    
+    char *ylabel = "Bornes disponibles";
+    // char *ylabel = "Bornes occupées";
+    Make_ylabel(&fig1, ylabel, fontLight, labelSize, white, decalx_Y, decaly_Y);
+
+    /* Make xlabel */
+    char *xlabel = "Date";
+    int decalx_X = -5, decaly_X = 15;
+    Make_xlabel(&fig1, xlabel, fontLight, labelSize, white, decalx_X, decaly_X);
+
+    /* Make title */
+    char *title = "Evolution du nombre de bornes Belib disponibles (stations favorites)";
+    int decalx_title = 30, decaly_title = 15;
+    int *bbox_title;     /**< bbox : so, se, ne, no */
+    bbox_title = Make_title(&fig1, title, fontMed, titleSize, white, decalx_title, decaly_title);
+
+    
+    /* Make subtitle */
+    char subtitle[25] = "du ";  
+    Date date_debut;
+    Date date_fin;
+    int decalx_subtitle = 0, decaly_subtitle = 0;
+    Init_Date(&date_debut, tableau_date_recolte_fav[0].datestr);
+    Init_Date(&date_fin, tableau_date_recolte_fav[nb_rows_par_station-1].datestr);
+    Make_subtitle(&fig1, &date_debut, &date_fin, &subtitle, fontMed, titleSize, white, \
+                                bbox_title, decalx_subtitle, decaly_subtitle);
+
+    /* Make github link */
+    char *github = "https://github.com/bauj/AJC_projet_belib";
+    int decalx_github = 0, decaly_github = 0;
+    Make_annotation(&fig1, github, fontLightIt, 10, white, decalx_github, decaly_github);
+
+    /* Make copyright */
+    char *sign = "\u00a9 2023 by Juba Hamma";
+    int size_sign = 10;
+    int decalx_sign = fig1.img->sx- strlen(sign)*7, decaly_sign = 0;
+    Make_annotation(&fig1, sign, fontLightIt, size_sign, white, decalx_sign, decaly_sign);
 
     /* Make X ticks and grid line*/
-    Make_xticks_xgrid(&fig1, fontLabels, tickSize, tableau_date_recolte_fav[0]);
+    Make_xticks_xgrid(&fig1, fontLight, tickSize, tableau_date_recolte_fav[0]);
 
     // /* Make Y ticks and grid line*/
-    Make_yticks_ygrid(&fig1, fontLabels, tickSize);
-    printf("Done here.\n");
+    Make_yticks_ygrid(&fig1, fontLight, tickSize);
+    // printf("Done here.\n");
 
     /* Make legend */
     int decalx_leg = 0, decaly_leg = 0, ecart = 2;
-    Make_legend(&fig1, fontLabels, 10, decalx_leg, decaly_leg, ecart);
+    Make_legend(&fig1, fontLight, 11, decalx_leg, decaly_leg, ecart);
 
     /* Plot lines */
     for (int st = 0; st < nb_stations_fav; st++)

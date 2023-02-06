@@ -61,7 +61,8 @@ typedef struct Figure_s {
     LineData **linedata;  /**< Vecteur de LineData */
     int max_X;           /**< max de l'ensemble des max_X de linedata[] */
     int max_Y;           /**< max de l'ensemble des max_Y de linedata[] */
-    int pad[2];          /**< Padding pour definir canvas (cvs) et orig */
+    int padX[2];         /**< Padding gauche/droite pour definir canvas (cvs) et orig */
+    int padY[2];         /**< Padding haut/bas pour definir canvas (cvs) et orig */
     int orig[2];         /**< Coordonnees de l'origine des plots */    
     int margin[2];       /**< Marge droite et haut (evite de toucher les bords)*/    
     int color_bg[3];     /**< Couleur du fond de la figure */
@@ -259,15 +260,18 @@ void Change_fig_cvs_bg(Figure *fig, int color[3]);
 void Change_fig_bg(Figure *fig, int color[3]);
 
 /* --------------------------------------------------------------------------- */
+
 /**
  * @brief 
  * 
  * @param fig 
  * @param figsize 
- * @param pad 
+ * @param padX 
+ * @param padY 
  * @param margin 
  */
-void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2]);
+void Init_figure(Figure *fig, int figsize[2],\
+            int padX[2], int padY[2], int margin[2]);
 
 /* --------------------------------------------------------------------------- */
 /**
@@ -426,8 +430,8 @@ void Make_background(Figure *fig,\
 
     /* Remplissage du canvas */
     gdImageFilledRectangle(fig->img,\
-                        fig->pad[0], fig->pad[1],\
-                        fig->img->sx-1, fig->img->sy-1 - fig->pad[1],\
+                        fig->padX[0], fig->padY[0],\
+                        (fig->img->sx-1)-fig->padX[1], (fig->img->sy-1) - fig->padY[1],\
                         GetCouleur(fig->img, color_canvas_bg));
 }
 
@@ -461,13 +465,13 @@ void Make_support_axes(Figure *fig, const int couleur[3])
     // axe vertical
     ImageLineEpaisseur(fig->img,\
                             fig->orig[0]-(w_axes-1), fig->orig[1]+(w_axes-1),\
-                            fig->orig[0]-(w_axes-1), fig->pad[1],\
+                            fig->orig[0]-(w_axes-1), fig->padY[0],\
                             &linestyle_axe); 
 
     // axe horizontal
     ImageLineEpaisseur(fig->img,\
-                            fig->orig[0]-(w_axes-1),    fig->orig[1]+(w_axes-1),\
-                            fig->img->sx-1,  fig->orig[1]+(w_axes-1),
+                            fig->orig[0]-(w_axes-1), fig->orig[1]+(w_axes-1),\
+                            (fig->img->sx-1)-fig->padX[1],  fig->orig[1]+(w_axes-1),
                             &linestyle_axe); 
 }
 
@@ -477,7 +481,7 @@ void PlotPoint(Figure *fig, const int x1, const int y1,\
 {
     if (x1 == fig->orig[0] && y1 != fig->orig[1])
     {   
-        // Arc lorsque pt sur axe vertical
+        // Arc lorsque pt sur axe horizontal
         gdImageFilledArc (fig->img, x1, y1, linestyle->ms, linestyle->ms,\
                           -90, 90,\
                           GetCouleur(fig->img, linestyle->color), gdArc);
@@ -486,6 +490,12 @@ void PlotPoint(Figure *fig, const int x1, const int y1,\
         // Arc lorsque pt sur axe vertical
         gdImageFilledArc (fig->img, x1, y1, linestyle->ms, linestyle->ms,\
                           -180, 0,\
+                          GetCouleur(fig->img, linestyle->color), gdArc);
+    } else if (x1 == fig->orig[0] && y1 == fig->orig[1])
+    {
+        // Arc lorsque pt sur l'origine
+        gdImageFilledArc (fig->img, x1, y1, linestyle->ms, linestyle->ms,\
+                          -90, 0,\
                           GetCouleur(fig->img, linestyle->color), gdArc);
     } else {
         gdImageFilledEllipse(fig->img, x1, y1,\
@@ -500,12 +510,6 @@ void PlotLine(Figure *fig, LineData *linedata)
     int *x_plot = Transform_data_to_plot(fig, linedata->len_data, linedata->x, 'x');
     int *y_plot = Transform_data_to_plot(fig, linedata->len_data, linedata->y, 'y');   
 
-    // Print_debug_ld(linedata);
-    // print_arr1D(linedata->len_data, linedata->x, 'n');
-    // print_arr1D(linedata->len_data, linedata->y, 'n');
-
-    // Prise en compte du decalage de l'origine
-    // printf("Orig = %d, %d \n", orig[0], orig[1]);
     for (int i=0; i < linedata->len_data-1; i++) 
     {
         ImageLineEpaisseur(fig->img,\
@@ -538,7 +542,8 @@ void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
                                     const int pts[], int* pts_dessin)
 {
     // Taile de la zone de dessin
-    const int w_dessin = fig->img->sx - fig->orig[0] - fig->margin[0] - 1;
+    // (Nx-1) - orig X (0) - margin X (0) - padX droite (1)
+    const int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
 
     for (int i = 0; i < len_pts; i++)
     {
@@ -554,8 +559,8 @@ void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
                                     const int pts[], int* pts_dessin)
 {
     // Taile de la zone de dessin
-
-    const int h_dessin = fig->orig[1] - fig->pad[1] - fig->margin[1];   
+    // Orig - padding haut (0) - margin Y (1)
+    const int h_dessin = fig->orig[1] - fig->padY[0] - fig->margin[1];   
     for (int i = 0; i < len_pts; i++)
     {
         pts_dessin[i] = -(pts[i] * h_dessin) / fig->max_Y;
@@ -600,7 +605,8 @@ int GetCouleur(gdImagePtr im_fig, const int couleur[3])
 }
 
 /* --------------------------------------------------------------------------- */
-void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2])
+void Init_figure(Figure *fig, int figsize[2],\
+                int padX[2], int padY[2], int margin[2])
 {
 
     /* Initialisation de tous les parametres*/
@@ -608,14 +614,16 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2])
     // ATTENTION ! Important d'utiliser True Color au lieu de gdImageColor ... 
     // Ecrasement des plots un peu bizarre sinon ...
     fig->img = gdImageCreateTrueColor(figsize[0],figsize[1]);
-    fig->pad[0] = pad[0];
-    fig->pad[1] = pad[1];
-    fig->orig[0] = fig->pad[0];
-    fig->orig[1] = fig->img->sy - fig->pad[1] -1;
+    fig->padX[0] = padX[0]; /**< left */
+    fig->padX[1] = padX[1]; /**< right */
+    fig->padY[0] = padY[0]; /**< haut */
+    fig->padY[1] = padY[1]; /**< bas */   
+    fig->orig[0] = fig->padX[0];
+    fig->orig[1] = (fig->img->sy-1) - fig->padY[1];
     fig->margin[0] = margin[0];
     fig->margin[1] = margin[1];
 
-    int col_fond[3]   = {37, 44, 56};     // bleu-gris
+    int col_fond[3] = {37, 44, 56};     // bleu-gris
     int col_cvs[3] = {0, 0, 0}; 
     int col_axes[3] = {255, 255, 255}; 
 
@@ -679,7 +687,7 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
     linedata->max_Y = Maxval_array(linedata->y, linedata->len_data);
     linedata->label = label;
     linedata->linestyle = linestyle;
-    print_arr1D(len_data, linedata->y, 'n');
+    // print_arr1D(len_data, linedata->y, 'n');
 }
 
 /* --------------------------------------------------------------------------- */
@@ -752,7 +760,7 @@ void Update_fig(Figure *fig, LineData *linedata)
         exit(EXIT_FAILURE);
     }
 
-    // Index = nb line - 1
+    // Index = nb line - 1 : on remplit les linedata de la figure
     fig->linedata[fig->nb_linedata-1] = linedata;
 
     // Print_debug_ld(fig->linedata[fig->nb_linedata]);
@@ -763,14 +771,80 @@ void Update_fig(Figure *fig, LineData *linedata)
 }
 
 /* --------------------------------------------------------------------------- */
+void Make_annotation(Figure *fig, char* text, char* font, int size, int color[3],\
+                    int decalage_X, int decalage_Y)
+{
+    // Pos avec decalage : Y decal autre sens
+    // Prise en compte de la longueur du label
+    int posX_xlabel = 5 + decalage_X;
+    int posY_xlabel = (fig->img->sy-1) - 5 - decalage_Y; 
+
+    // int brect[8] = {0};
+    gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img, color), font,\
+                                size, 0., posX_xlabel, posY_xlabel, text);    
+    //Avoid memory leaks
+    gdFontCacheShutdown();
+    // printf("%s \n", errStringFT); 
+}
+
+/* --------------------------------------------------------------------------- */
+void Make_subtitle(Figure *fig, Date *date_debut, Date *date_fin,\
+                     char* subtitle, char* font, int size, int color[3],\
+                        int bbox_title[8], int decalage_X, int decalage_Y)
+{
+    Datetick datetick_debut;
+    Datetick datetick_fin;
+    Init_Datetick(&datetick_debut,date_debut,date_debut);
+    Init_Datetick(&datetick_fin,date_fin,date_debut);
+    strcat(subtitle, datetick_debut.labeldate);
+    strcat(subtitle, " au ");
+    strcat(subtitle,datetick_fin.labeldate);
+    printf("%s \n", subtitle);
+
+    int ecartY_title = 4;
+    int posX_subtitle = (bbox_title[1]-bbox_title[0])/2 -strlen(subtitle);
+    int posY_subtitle = bbox_title[1] + size + ecartY_title; 
+
+    gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img, color), font,\
+                                size, 0., posX_subtitle, posY_subtitle, subtitle);    
+    //Avoid memory leaks
+    gdFontCacheShutdown();
+}
+
+
+/* --------------------------------------------------------------------------- */
+int *Make_title(Figure *fig, char* title, char* font, int size, int color[3],\
+                    int decalage_X, int decalage_Y)
+{
+    // Pos avec decalage : Y decal autre sens
+    // Prise en compte de la longueur du label
+    int posX_xlabel = fig->orig[0] + (fig->img->sx - fig->padX[0] - fig->padX[1])/2\
+                             - (strlen(title) * size/3) + decalage_X;
+    int posY_xlabel = fig->img->sy - (fig->padY[1] - 3*fig->padY[1]/4) - decalage_Y; 
+
+    static int brect_title[8] = {0};
+    gdImageStringFT(fig->img, brect_title,\
+                            GetCouleur(fig->img, color), font,\
+                                size, 0., posX_xlabel, posY_xlabel, title);    
+    //Avoid memory leaks
+    gdFontCacheShutdown();
+    // printf("%s \n", errStringFT); 
+
+    return brect_title;
+}
+
+
+/* --------------------------------------------------------------------------- */
 void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
                     int decalage_X, int decalage_Y)
 {
     // Pos avec decalage : Y decal autre sens
     // Prise en compte de la longueur du label
-    int posX_xlabel = fig->orig[0] + (fig->img->sx - fig->pad[0])/2 - \
+    int posX_xlabel = fig->orig[0] + (fig->img->sx - fig->padX[0] - fig->padX[1])/2 - \
                               (strlen(xlabel) * size/3) + decalage_X;
-    int posY_xlabel = fig->img->sy - (fig->pad[1]/10)                 - decalage_Y; 
+    int posY_xlabel = fig->img->sy - (fig->padY[1] - fig->padY[1]/3) + decalage_Y; 
 
     // int brect[8] = {0};
     gdImageStringFT(fig->img, NULL,\
@@ -781,15 +855,16 @@ void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
     // printf("%s \n", errStringFT); 
 }
 
+
 /* --------------------------------------------------------------------------- */
 void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
                      int decalage_X, int decalage_Y)
 {
     // Pos avec decalage : Y decal autre sens
-    int posX_ylabel = fig->pad[0]/2 - fig->pad[0]/4      + decalage_X;
+    int posX_ylabel = fig->padX[0]/2 - fig->padX[0]/4      + decalage_X;
 
     // Prise en compte de la longueur du label
-    int posY_ylabel = (fig->orig[1] + (fig->pad[1]))/2 + \
+    int posY_ylabel = (fig->orig[1] + (fig->padY[0]))/2 + \
                             (strlen(ylabel) * size/3)  + decalage_Y;   
 
     int brect[8] = {0};
@@ -797,7 +872,7 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
                             GetCouleur(fig->img, color), font,\
                                 size, Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
 
-    printf("%s \n", errStringFT); 
+    // printf("%s \n", errStringFT); 
     //Avoid memory leaks
     gdFontCacheShutdown();
 }
@@ -809,7 +884,7 @@ void Make_legend(Figure *fig, char* font, int size,\
     // Position des 8 legendes possibles
     int w_img = fig->img->sx;
     int pos_midX = w_img/2 + 5;
-    printf("Done here.\n");
+    // printf("Done here.\n");
 
     int pos_X[8] = {30  + decal_X, 30  + decal_X,\
                     30  + decal_X, 30  + decal_X,\
@@ -875,13 +950,13 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
     int itv_sec = fig->max_X / nb_itv;
 
     // Largeur canvas
-    int l_canvas = fig->img->sx-1 - fig->orig[0];
+    int l_canvas = (fig->img->sx-1) - fig->orig[0] - fig->padX[1];
     // On pense a enlever la marge Y pour calculer l'ecart entre tick maj
     int l_max = l_canvas - fig->margin[0];
 
     // Intervalle entre 2 ticks en pix
     int itv_pixels = (itv_sec*l_max) / fig->max_X;
-    printf("Itv X en px = %d \n", itv_pixels);
+    // printf("Itv X en px = %d \n", itv_pixels);
 
     // Style tick
     int w_tick = 2;
@@ -896,11 +971,11 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
     Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
 
     // Plot ticks
-    char tickVal[12];
-
-    for (int i = 0; i <= nb_ticks; i++)
+    // printf("Nb ticks : %d \n", nb_ticks);
+    for (int i = 0; i < nb_ticks; i++)
     {
-      
+        // printf("Tick : %d \n", i);
+
         // tick
         ImageLineEpaisseur(fig->img,\
                         fig->orig[0] + i*itv_pixels,\
@@ -914,7 +989,7 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
                         fig->orig[0] + i*itv_pixels,\
                         fig->orig[1],\
                         fig->orig[0] + i*itv_pixels,\
-                        fig->pad[1],\
+                        fig->padY[0],\
                         &style_linegrid);        
 
         time_t t_tick = date_init.ctime + i*itv_sec;
@@ -924,24 +999,24 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
 
         char tickdate[6];
         strftime(tickdate, 6, "%d/%m", tm_tick);
-        printf("%s \n", tickdate);
+        // printf("%s \n", tickdate);
 
         char tickhour[6];
         strftime(tickhour, 6, "%H:%M", tm_tick);
-        printf("%s \n", tickhour);
+        // printf("%s \n", tickhour);
 
 
         gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img, style_tick.color), font,\
                                 fontsize, 0.,\
-                                fig->pad[0]/2 -10 + i*itv_pixels ,\
+                                fig->padX[0]/2 -10 + i*itv_pixels ,\
                                 fig->orig[1] + (long_tick+2) + fontsize,\
                                 tickdate);
 
         gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img, style_tick.color), font,\
                                 fontsize, 0.,\
-                                fig->pad[0]/2 -10 + i*itv_pixels + fontsize/2,\
+                                fig->padX[0]/2 -10 + i*itv_pixels + fontsize/2,\
                                 fig->orig[1] + 2*((long_tick) + fontsize),\
                                 tickhour);
                                 
@@ -997,7 +1072,7 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
     }    
     // printf("Nb ticks  = %d \n", nb_ticks);
 
-    int h_canvas = fig->img->sy - 2*fig->pad[1];
+    int h_canvas = fig->img->sy - fig->padY[0] - fig->padY[1];
     // On pense a enlever la marge Y pour calculer l'ecart entre tick maj
     // Pos de maxY repere figure = h_canvas - fig->margin[1]
     int h_max = h_canvas - fig->margin[1];
@@ -1028,20 +1103,20 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
     {
         sprintf(tickVal, "%d", i*itv);
 
-        // tick
+        // tick : facteur 0.5 ajouté pour gerer les nombres pairs/impais de px
         ImageLineEpaisseur(fig->img,\
                         fig->orig[0]-long_tick-2,\
-                            fig->orig[1] - i*itv_pixels,\
+                            fig->orig[1] - i*(itv_pixels+0.5),\
                         fig->orig[0]-2,\
-                            fig->orig[1] - i*itv_pixels,\
+                            fig->orig[1] - i*(itv_pixels+0.5),\
                         &style_tick);
 
         // gridline
         ImageLineEpaisseur(fig->img,\
                         fig->orig[0],\
-                            fig->orig[1] - i*itv_pixels,\
-                        fig->img->sx,\
-                            fig->orig[1] - i*itv_pixels,\
+                            fig->orig[1] - i*(itv_pixels+0.5),\
+                        (fig->img->sx-1) - fig->padX[1],\
+                            fig->orig[1] - i*(itv_pixels+0.5),\
                         &style_linegrid);        
 
 
