@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 
     // Parametres generaux
     char *dir_figures= "./figures/"; /**< Path folder save fig*/
-    int figsize[2] = {800, 700};     /**< Dimension figure */
+    int figsize[2] = {900, 700};     /**< Dimension figure */
     int padX[2] = {90,0};            /**< pad zone de dessin gauche et droite*/
     int padY[2] = {90,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
@@ -89,14 +89,25 @@ int main(int argc, char* argv[])
     int tickSize = 12;               /**< taille de police des ticks*/
     int w_lines = 3;                 /**< epaisseur des traits*/
     int ms = 6;                      /**< marker size */
-    // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
-    char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
-    char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
-    // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
-    // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
-    char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
 
-    // Creation de la figure
+    // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
+
+    // char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    char* fontLight = "/usr/share/fonts/lato/Lato-Light.ttf";
+
+    // char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
+    char* fontLightIt = "/usr/share/fonts/lato/Lato-LightItalic.ttf";    
+
+    // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
+    // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
+
+    // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
+    // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
+
+    // char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
+    char* fontMed = "/usr/share/fonts/lato/Lato-MediumItalic.ttf";
+
+    // Creation de la figure ------------------------------------------------------------
     Figure fig1;
     Init_figure(&fig1, figsize, padX, padY, margin);
 
@@ -127,7 +138,7 @@ int main(int argc, char* argv[])
         Init_linedata(&(lines[st]), nb_rows_par_station, \
                     vect_time, \
                     vect_nb_dispo[st], tableau_adresses_fav[st], &(linestyles[st]));
-        Update_fig(&fig1, &(lines[st]));
+        Add_line_to_fig(&fig1, &(lines[st]));
     }
 
     /* Make ylabel  ----------  A mettre apres update fig */
@@ -143,7 +154,7 @@ int main(int argc, char* argv[])
 
     /* Make title */
     char *title = "Evolution du nombre de bornes Belib disponibles (stations favorites)";
-    int decalx_title = 30, decaly_title = 15;
+    int decalx_title = 0, decaly_title = 15;
     int *bbox_title;     /**< bbox : so, se, ne, no */
     bbox_title = Make_title(&fig1, title, fontMed, titleSize, white, decalx_title, decaly_title);
 
@@ -182,14 +193,10 @@ int main(int argc, char* argv[])
 
     /* Plot lines */
     for (int st = 0; st < nb_stations_fav; st++)
-    {
         PlotLine(&fig1, &(lines[st]));
-    }
-    // PlotLine(&fig1, &(lines[0]));
 
 
      /* Sauvegarde du fichier png */
-    // const char *filename_fig1= "fig1_occupe.png";
     const char *filename_fig1= "fig1_disponible.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
@@ -198,7 +205,49 @@ int main(int argc, char* argv[])
     /* Destroy the image in memory. */
     gdImageDestroy(fig1.img);
 
+
+    // ========================================================================
+    // Creation de la figure 2 : barplot des statuts des bornes par station
+    // pour la derniere recolte
+    // ========================================================================
+
+    // Creation de la figure ------------------------------------------------------------
+    Figure fig2;
+    Init_figure(&fig2, figsize, padX, padY, margin);
+
     
+    Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
+
+    int nb_tot_bornes;
+    BarData barplots[nb_stations_fav]; /**< vecteur de bardata pour chaque station*/
+
+    for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
+        nb_tot_bornes=0;
+        for (int statut = disponible; statut <= inconnu; statut ++)
+            nb_tot_bornes += tableau_statuts_fav[st_barplot][nb_rows_par_station-1][statut];
+            
+        Init_bardata(&(barplots[st_barplot]), nb_statuts, nb_tot_bornes, tableau_statuts_fav[st_barplot][nb_rows_par_station-1], color_lines, tableau_adresses_fav[st_barplot]);
+
+        // Update des data de l'objet figure (gestion des max, posX des barplot)
+        Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
+    }
+
+    for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
+        // Print_debug_bd(fig2.bardata[st_barplot], 'y');
+        PlotBarplot(&fig2, fig2.bardata[st_barplot]);
+    }
+        
+
+     /* Sauvegarde du fichier png */
+    const char *filename_fig2= "fig2_test.png";
+    Save_to_png(&fig2, dir_figures, filename_fig2);
+
+    // Destroying img 
+    gdImageDestroy(fig2.img);
+
+
+
+
     // Clean alloc
     free_tab_char1(tableau_adresses_fav, nb_stations_fav);
 

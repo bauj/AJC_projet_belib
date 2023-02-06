@@ -22,7 +22,7 @@ int bleu_clair[3]   = {166, 206, 227};   //bleu_clair
 int rouge_clair[3]  = {251, 154, 153};   //rouge_clair
 int violet_clair[3] = {202, 178, 214};   //violet_clair
 int violet_fonce[3] = {152,  78, 163};   //violet_fonce
-const int color_lines[10][3] = {\
+int color_lines[10][3] = {\
                     { 51, 160,  44},
                     {255, 127,   0},
                     { 31, 120, 180},

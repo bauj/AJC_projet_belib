@@ -27,16 +27,9 @@ typedef struct BarData_s {
     size_t nb_ctg;        /**< Nombre de categories*/
     size_t nb_tot;        /**< Nombre total d'éléments dans l'ensemble des ctg*/
     int *nb_in_ctg;        /**< Vecteur contenant le nombre d'elements par ctg */
-    int *colors;           /**< Vecteur contenant une couleur pour chaque ctg*/
+    int (*colors)[3];        /**< Vecteur contenant une couleur pour chaque ctg*/
     char* label;           /**< Label associé au BarData */
-} BarData; 
-
-typedef struct BarData_s {
-    size_t nb_ctg;        /**< Nombre de categories*/
-    size_t nb_tot;        /**< Nombre total d'éléments dans l'ensemble des ctg*/
-    int *nb_in_ctg;        /**< Vecteur contenant le nombre d'elements par ctg */
-    int *colors[3];           /**< Vecteur contenant une couleur pour chaque ctg*/
-    char* label;           /**< Label associé au BarData */
+    int idx;                /**< Index donné lorsqu'ajouté à la figure (pour posX)*/
 } BarData; 
 
 /* --------------------------------------------------------------------------- */
@@ -81,6 +74,7 @@ typedef struct LineData_s {
 typedef struct Figure_s {
     gdImage *img;        /**< Pointeur sur objet gdImage */
     size_t nb_linedata;  /**< Nombre de linedata dans la figure */
+    size_t nb_bardata;  /**< Nombre de linedata dans la figure */
     LineData **linedata;  /**< Vecteur de LineData */
     BarData **bardata;   /**< Vecteur de BarData */
     int max_X;           /**< max de l'ensemble des max_X de linedata[] */
@@ -109,7 +103,8 @@ typedef struct Figure_s {
  * @param colors 
  * @param label 
  */
-void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int *nb_in_ctg,int *colors[3], char* label);
+void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int nb_in_ctg[nb_ctg],\
+                int colors[nb_ctg][3], char* label);
 
 
 /**
@@ -445,7 +440,7 @@ void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
     pngout_fig = fopen(path_outputFig, "wb");
 
     /* Output the image to the disk file in PNG format. */
-    gdImagePng(fig->img, pngout_fig);
+    gdImagePngEx(fig->img, pngout_fig,5);
 
     /* Close the files. */
     fclose(pngout_fig);
@@ -571,6 +566,60 @@ void PlotLine(Figure *fig, LineData *linedata)
     free(y_plot);
 }
 
+int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
+                                    const int pts[]);
+
+/* --------------------------------------------------------------------------- */
+void PlotBarplot(Figure *fig, BarData *bardata)
+{
+    int *y_bars = \
+        Transform_data_to_plot_bar(fig, bardata->nb_ctg, bardata->nb_in_ctg);   
+
+    print_arr1D(bardata->nb_ctg,  bardata->nb_in_ctg, 'n');
+    print_arr1D(bardata->nb_ctg, y_bars, 'n');
+    // Plot les rectangles
+    int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
+
+    //intervalle en px entre 2 centres de barplot selon X
+    int itv_posX = w_dessin/(fig->nb_bardata+1); 
+    
+    int posX_center = fig->orig[0] + bardata->idx * itv_posX;
+
+    printf("posX center : %d \n", posX_center);
+
+    gdImageFilledRectangle(fig->img, \
+            posX_center - itv_posX/3, fig->orig[1]+ y_bars[0],\
+            posX_center + itv_posX/3, fig->orig[1],\
+            GetCouleur(fig->img, bardata->colors[0]));
+
+    gdImageFilledRectangle(fig->img, \
+            posX_center - itv_posX/3, fig->orig[1]+ y_bars[1],\
+            posX_center + itv_posX/3, fig->orig[1]+ y_bars[0],\
+            GetCouleur(fig->img, bardata->colors[1]));
+
+
+    free(y_bars);
+}
+
+/* --------------------------------------------------------------------------- */
+int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
+                                    const int pts[])
+{
+    const int h_dessin = fig->orig[1] - fig->padY[0] - fig->margin[1];   
+    
+    // MALLOC
+    int *y_dessin_ctg = malloc(nb_ctg * sizeof(int));
+
+    for (int i = 0; i < nb_ctg; i++) {
+        if (i == 0)
+            y_dessin_ctg[i] = -(pts[i] * h_dessin) / fig->max_Y;
+        else
+            y_dessin_ctg[i] = y_dessin_ctg[i-1] - (pts[i] * h_dessin) / fig->max_Y;
+    }
+
+    return y_dessin_ctg;
+}      
+
 /* --------------------------------------------------------------------------- */
 void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
                                     const int pts[], int* pts_dessin)
@@ -586,7 +635,7 @@ void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
     }
 
 }
-
+                            
 
 /* --------------------------------------------------------------------------- */
 void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
@@ -648,7 +697,6 @@ void Init_figure(Figure *fig, int figsize[2],\
     // ATTENTION ! Important d'utiliser True Color au lieu de gdImageColor ... 
     // Ecrasement des plots un peu bizarre sinon ...
     fig->img = gdImageCreateTrueColor(figsize[0],figsize[1]);
-    gdImageSetResolution(fig->img , 96,96);
 
     fig->padX[0] = padX[0]; /**< left */
     fig->padX[1] = padX[1]; /**< right */
@@ -670,6 +718,7 @@ void Init_figure(Figure *fig, int figsize[2],\
         fig->color_axes[i] = col_axes[i];
     }
     fig->nb_linedata = 0;
+    fig->nb_bardata  = 0;
     fig->linedata = NULL;
     fig->bardata = NULL;
     
@@ -711,15 +760,15 @@ void Change_fig_axes_color(Figure *fig, int color[3])
 }
 
 /* --------------------------------------------------------------------------- */
-void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int *nb_in_ctg,\
-                int *colors[3], char* label)
+void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int nb_in_ctg[nb_ctg],\
+                int colors[nb_ctg][3], char* label)
 {
     bardata->nb_ctg = nb_ctg;
     bardata->nb_tot = nb_tot;
     bardata->nb_in_ctg = nb_in_ctg;
     bardata->colors = colors;
     bardata->label = label;
-
+    bardata->idx = 0;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -790,12 +839,13 @@ void Print_debug_bd(BarData *bardata, char w_cat)
 {
     printf("*** Debug bardata --------------------------\n");
     printf("* Label    = %s \n",  bardata->label);
-    printf("* Len data = %d \n",  bardata->nb_tot);
-    printf("* Nb cat   = %d \n",  bardata->nb_ctg);
+    printf("* Len data = %ld \n", bardata->nb_tot);
+    printf("* Nb cat   = %ld \n", bardata->nb_ctg);
     if (w_cat == 'y') {
         printf("* Vecteur nb_in_ctg : \n");
-        for (int i = 0; i < nb_ctg; i++){
-            printf("  * Cat %i : nb_ctg[i]; Couleur : %d, %d, %d\n",\
+        for (int i = 0; i < bardata->nb_ctg; i++){
+            printf("  * Cat %d : %d ; Couleur : %d, %d, %d\n",\
+                    i, bardata->nb_in_ctg[i],
                     bardata->colors[i][0],\
                     bardata->colors[i][1],\
                     bardata->colors[i][2]);
@@ -859,6 +909,7 @@ void Add_barplot_to_fig(Figure *fig, BarData *bardata)
     fig->max_X = 0;
     fig->max_Y = Max_int(fig->max_Y, bardata->nb_tot);
 
+    bardata->idx = fig->nb_bardata; // On update l'index du bardata, pour posX
 }
 
 /* --------------------------------------------------------------------------- */
@@ -894,8 +945,8 @@ void Make_subtitle(Figure *fig, Date *date_debut, Date *date_fin,\
     printf("%s \n", subtitle);
 
     int ecartY_title = 4;
-    int posX_subtitle = (bbox_title[1]-bbox_title[0])/2 -strlen(subtitle);
-    int posY_subtitle = bbox_title[1] + size + ecartY_title; 
+    int posX_subtitle = (bbox_title[2]-bbox_title[0])/2;
+    int posY_subtitle = bbox_title[1] + size + ecartY_title - decalage_Y; 
 
     gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img, color), font,\
@@ -911,8 +962,9 @@ int *Make_title(Figure *fig, char* title, char* font, int size, int color[3],\
 {
     // Pos avec decalage : Y decal autre sens
     // Prise en compte de la longueur du label
-    int posX_xlabel = fig->orig[0] + (fig->img->sx - fig->padX[0] - fig->padX[1])/2\
-                             - (strlen(title) * size/3) + decalage_X;
+    int largeur_cvs = (fig->img->sx-1 - fig->padX[0] - fig->padX[1]);
+    int centre_cvs =  fig->orig[0] + largeur_cvs/2;
+    int posX_xlabel = centre_cvs - (strlen(title) * size/3.7) + decalage_X;
     int posY_xlabel = fig->img->sy - (fig->padY[1] - 3*fig->padY[1]/4) - decalage_Y; 
 
     static int brect_title[8] = {0};
@@ -964,7 +1016,7 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
                                 size, Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
 
     if (errStringFT != NULL)
-        printf("Erreur : police introuvable ou autre probleme police.");
+        printf("> Warning: police introuvable ou autre probleme police.\n");
 
     //Avoid memory leaks
     gdFontCacheShutdown();
