@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
     // Recuperation du nombre de lignes par station
     int nb_rows_par_station = Get_nb_rows_par_station(db_belib);
-
+    printf(" > Nb rows : %d \n", nb_rows_par_station);
     // Recuperation des adresses des stations en favoris
     char *tableau_adresses_fav[nb_stations_fav];
     Get_adresses_fav(db_belib, tableau_adresses_fav, nb_stations_fav);
@@ -86,9 +86,9 @@ int main(int argc, char* argv[])
     int labelSize = 16;              /**< taille de police labels*/
     int tickSize = 12;               /**< taille de police des ticks*/
     int w_lines = 2;                 /**< epaisseur des traits*/
-    int ms = 3;                      /**< marker size */
-    char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
-
+    int ms = 6;                      /**< marker size */
+    // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
+    char* fontLabels = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
     // Creation de la figure
     Figure fig1;
     Init_figure(&fig1, figsize, pad, margin);
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
         Get_statut_station(nb_stations_fav, nb_rows_par_station, nb_statuts,\
                     vect_nb_dispo[st], \
                     tableau_statuts_fav,
-                    st, occupe);
+                    st, disponible);
 
         if (st % 2 != 0) {
             printf("st     : %d \n", st);
@@ -145,8 +145,9 @@ int main(int argc, char* argv[])
     /* Make X ticks and grid line*/
     Make_xticks_xgrid(&fig1, fontLabels, tickSize, tableau_date_recolte_fav[0]);
 
-    /* Make Y ticks and grid line*/
+    // /* Make Y ticks and grid line*/
     Make_yticks_ygrid(&fig1, fontLabels, tickSize);
+    printf("Done here.\n");
 
     /* Make legend */
     int decalx_leg = 0, decaly_leg = 0, ecart = 2;
@@ -157,21 +158,8 @@ int main(int argc, char* argv[])
     {
         PlotLine(&fig1, &(lines[st]));
     }
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
-    PlotLine(&fig1, &(lines[0]));
+    // PlotLine(&fig1, &(lines[0]));
+
 
      /* Sauvegarde du fichier png */
     // const char *filename_fig1= "fig1_occupe.png";

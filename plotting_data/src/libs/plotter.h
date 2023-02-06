@@ -809,6 +809,7 @@ void Make_legend(Figure *fig, char* font, int size,\
     // Position des 8 legendes possibles
     int w_img = fig->img->sx;
     int pos_midX = w_img/2 + 5;
+    printf("Done here.\n");
 
     int pos_X[8] = {30  + decal_X, 30  + decal_X,\
                     30  + decal_X, 30  + decal_X,\
@@ -927,7 +928,7 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
 
         char tickhour[6];
         strftime(tickhour, 6, "%H:%M", tm_tick);
-        printf("%s \n", tickdate);
+        printf("%s \n", tickhour);
 
 
         gdImageStringFT(fig->img, NULL,\
@@ -949,6 +950,7 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
 
     //Avoid memory leaks
     gdFontCacheShutdown();
+
 }
 
 /* --------------------------------------------------------------------------- */
