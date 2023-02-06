@@ -68,8 +68,8 @@ int main(int argc, char* argv[])
                                  tableau_statuts_fav);
 
     // Verif que ca colle avec la db
-    // Print_tableau_fav(nb_stations_fav, nb_rows_par_station, nb_statuts,\
-    //         tableau_statuts_fav, tableau_date_recolte_fav, tableau_adresses_fav);
+    /*Print_tableau_fav(nb_stations_fav, nb_rows_par_station, nb_statuts,\
+             tableau_statuts_fav, tableau_date_recolte_fav, tableau_adresses_fav);*/
     
     // Fermeture db
     sqlite3_close(db_belib);
@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
     // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
     char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
     char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
-    char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
-    char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
+    // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
+    // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
     char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
 
     // Creation de la figure
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
     int decalx_subtitle = 0, decaly_subtitle = 0;
     Init_Date(&date_debut, tableau_date_recolte_fav[0].datestr);
     Init_Date(&date_fin, tableau_date_recolte_fav[nb_rows_par_station-1].datestr);
-    Make_subtitle(&fig1, &date_debut, &date_fin, &subtitle, fontMed, titleSize, white, \
+    Make_subtitle(&fig1, &date_debut, &date_fin, subtitle, fontMed, titleSize, white, \
                                 bbox_title, decalx_subtitle, decaly_subtitle);
 
     /* Make github link */

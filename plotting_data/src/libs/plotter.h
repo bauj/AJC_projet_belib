@@ -533,15 +533,15 @@ void PlotLine(Figure *fig, LineData *linedata)
                 linedata->linestyle);
 
         
-        // PlotPoint(fig,\
-        //     x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
+        /* PlotPoint(fig,\
+            x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
 
-        // if (i == linedata->len_data-2) {
-        //     PlotPoint(fig,\
-        //                     x_plot[i+1] + fig->orig[0],\
-        //                     y_plot[i+1] + fig->orig[1],\
-        //                     linedata->linestyle);
-        // }
+        if (i == linedata->len_data-2) {
+            PlotPoint(fig,\
+                            x_plot[i+1] + fig->orig[0],\
+                            y_plot[i+1] + fig->orig[1],\
+                            linedata->linestyle);
+        } */
 
     }
 
@@ -886,7 +886,9 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
                             GetCouleur(fig->img, color), font,\
                                 size, Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
 
-    // printf("%s \n", errStringFT); 
+    if (errStringFT != NULL)
+        printf("Erreur : police introuvable ou autre probleme police.");
+
     //Avoid memory leaks
     gdFontCacheShutdown();
 }
@@ -976,7 +978,6 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
     int w_tick = 2;
     int w_linegrid = 0.5;
     int long_tick = 9;
-    int long_tick_min = 5;
 
     LineStyle style_tick;
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
