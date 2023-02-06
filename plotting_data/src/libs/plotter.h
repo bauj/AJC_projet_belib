@@ -17,6 +17,21 @@
 #define PI 3.141592
 
 /* --------------------------------------------------------------------------- */
+/**
+ * @brief Structure stockant des donnees par categorie en les associant a des 
+ * couleurs dans le but de tracer un BarPlot les représentant.
+ * Dans le cadre de Belib : un BarData par station.
+ * 
+ */
+typedef struct BarData_s {
+    size_t nb_ctg;        /**< Nombre de categories*/
+    size_t nb_tot;        /**< Nombre total d'éléments dans l'ensemble des ctg*/
+    int *nb_in_ctg;        /**< Vecteur contenant le nombre d'elements par ctg */
+    int *colors;           /**< Vecteur contenant une couleur pour chaque ctg*/
+    char* label;           /**< Label associé au BarData */
+} BarData; 
+
+/* --------------------------------------------------------------------------- */
 // Structures -> Check l'ordre des arguments pour la contiguite memoire
 /* --------------------------------------------------------------------------- */
 
@@ -518,19 +533,16 @@ void PlotLine(Figure *fig, LineData *linedata)
                 linedata->linestyle);
 
         
-        PlotPoint(fig,\
-            x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
+        // PlotPoint(fig,\
+        //     x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], linedata->linestyle);
 
-        if (i == linedata->len_data-2) {
-            PlotPoint(fig,\
-                            x_plot[i+1] + fig->orig[0],\
-                            y_plot[i+1] + fig->orig[1],\
-                            linedata->linestyle);
-        }
+        // if (i == linedata->len_data-2) {
+        //     PlotPoint(fig,\
+        //                     x_plot[i+1] + fig->orig[0],\
+        //                     y_plot[i+1] + fig->orig[1],\
+        //                     linedata->linestyle);
+        // }
 
-        // gdImageLine(fig->img, x_plot[i]   + fig->orig[0],   y_plot[i] + fig->orig[1],\
-        //         x_plot[i+1] + fig->orig[0], y_plot[i+1] + fig->orig[1],\
-        //             GetCouleur(fig->img, linedata->linestyle->color));
     }
 
     free(x_plot);
@@ -614,6 +626,8 @@ void Init_figure(Figure *fig, int figsize[2],\
     // ATTENTION ! Important d'utiliser True Color au lieu de gdImageColor ... 
     // Ecrasement des plots un peu bizarre sinon ...
     fig->img = gdImageCreateTrueColor(figsize[0],figsize[1]);
+    gdImageSetResolution(fig->img , 96,96);
+
     fig->padX[0] = padX[0]; /**< left */
     fig->padX[1] = padX[1]; /**< right */
     fig->padY[0] = padY[0]; /**< haut */
@@ -790,7 +804,7 @@ void Make_annotation(Figure *fig, char* text, char* font, int size, int color[3]
 
 /* --------------------------------------------------------------------------- */
 void Make_subtitle(Figure *fig, Date *date_debut, Date *date_fin,\
-                     char* subtitle, char* font, int size, int color[3],\
+                     char subtitle[25], char* font, int size, int color[3],\
                         int bbox_title[8], int decalage_X, int decalage_Y)
 {
     Datetick datetick_debut;
@@ -1006,6 +1020,7 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
         // printf("%s \n", tickhour);
 
 
+        // tick label date
         gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img, style_tick.color), font,\
                                 fontsize, 0.,\
@@ -1013,6 +1028,7 @@ void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
                                 fig->orig[1] + (long_tick+2) + fontsize,\
                                 tickdate);
 
+        // tick label heure
         gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img, style_tick.color), font,\
                                 fontsize, 0.,\

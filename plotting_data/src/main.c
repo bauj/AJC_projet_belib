@@ -119,11 +119,10 @@ int main(int argc, char* argv[])
                     tableau_statuts_fav,
                     st, disponible);
 
-        if (st % 2 != 0) {
-            style_trait = ':';
-        } else {
-            style_trait = '-';
-        }
+        style_trait = '-';
+        // if (st % 2 != 0) {
+        //     style_trait = ':';
+
         Init_linestyle(&(linestyles[st]), style_trait, color_lines[st], w_lines,'o', ms);
         Init_linedata(&(lines[st]), nb_rows_par_station, \
                     vect_time, \
@@ -194,6 +193,8 @@ int main(int argc, char* argv[])
     const char *filename_fig1= "fig1_disponible.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
+    printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
+                            gdImageResolutionY(fig1.img) );                           
     /* Destroy the image in memory. */
     gdImageDestroy(fig1.img);
 
