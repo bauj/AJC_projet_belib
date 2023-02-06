@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
     int margin[2] = {10,10};         /**< margin zone de dessin*/
     int labelSize = 16;              /**< taille de police labels*/
     int tickSize = 12;               /**< taille de police des ticks*/
-    int w_lines = 3;                 /**< epaisseur des traits*/
-    int ms = 8;                      /**< marker size */
+    int w_lines = 2;                 /**< epaisseur des traits*/
+    int ms = 3;                      /**< marker size */
     char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
 
     // Creation de la figure
@@ -95,7 +95,8 @@ int main(int argc, char* argv[])
 
     /* Make ylabel  ----------  A mettre apres update fig */
     int decalx_Y = 10, decaly_Y = 0;    
-    char *ylabel = "Bornes occupées";
+    char *ylabel = "Bornes disponibles";
+    // char *ylabel = "Bornes occupées";
     Make_ylabel(&fig1, ylabel, fontLabels, labelSize, white, decalx_Y, decaly_Y);
 
 
@@ -173,7 +174,8 @@ int main(int argc, char* argv[])
     PlotLine(&fig1, &(lines[0]));
 
      /* Sauvegarde du fichier png */
-    const char *filename_fig1= "fig1_occupe.png";
+    // const char *filename_fig1= "fig1_occupe.png";
+    const char *filename_fig1= "fig1_disponible.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
     /* Destroy the image in memory. */

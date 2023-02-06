@@ -605,6 +605,8 @@ void Init_figure(Figure *fig, int figsize[2], int pad[2], int margin[2])
 
     /* Initialisation de tous les parametres*/
 
+    // ATTENTION ! Important d'utiliser True Color au lieu de gdImageColor ... 
+    // Ecrasement des plots un peu bizarre sinon ...
     fig->img = gdImageCreateTrueColor(figsize[0],figsize[1]);
     fig->pad[0] = pad[0];
     fig->pad[1] = pad[1];
