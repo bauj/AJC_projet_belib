@@ -123,7 +123,7 @@ typedef struct Figure_s {
     int color_axes[3];   /**< Couleur des axes*/
 } Figure;
 
-
+// casser figure en figure_linedata, figure_bardata, figure_flinedata !!
 
 /* --------------------------------------------------------------------------- */
 // Declaration fonctions
@@ -799,6 +799,7 @@ void Init_figure(Figure *fig, int figsize[2],\
         fig->color_cvs_bg[i] = col_cvs[i];        
         fig->color_axes[i] = col_axes[i];
     }
+
     fig->nb_linedata = 0;
     fig->nb_bardata  = 0;
     fig->linedata = NULL;
