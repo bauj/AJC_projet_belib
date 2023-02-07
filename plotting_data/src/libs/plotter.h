@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "getter.h"
 #include <gd.h>
+#include <math.h>
 
 #define PI 3.141592
 
@@ -445,7 +446,9 @@ void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
     /* Close the files. */
     fclose(pngout_fig);
 
+    // Free des tableau de data dans la figure
     free(fig->linedata);
+    free(fig->bardata);
 
 }
 
@@ -575,28 +578,31 @@ void PlotBarplot(Figure *fig, BarData *bardata)
     int *y_bars = \
         Transform_data_to_plot_bar(fig, bardata->nb_ctg, bardata->nb_in_ctg);   
 
-    print_arr1D(bardata->nb_ctg,  bardata->nb_in_ctg, 'n');
-    print_arr1D(bardata->nb_ctg, y_bars, 'n');
-    // Plot les rectangles
+    // largeur zone de dessin
     int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
 
-    //intervalle en px entre 2 centres de barplot selon X
+    // intervalle en px entre 2 centres de barplot selon X
     int itv_posX = w_dessin/(fig->nb_bardata+1); 
     
+    // position des ticks/centre des barplot selon X
     int posX_center = fig->orig[0] + bardata->idx * itv_posX;
 
-    printf("posX center : %d \n", posX_center);
+    // Plot les rectangles
+    int y1_rect = 0;
+    int y2_rect = fig->orig[1];
+    for (int ctg = 0; ctg < bardata->nb_ctg; ctg++)
+    {
+        y1_rect = fig->orig[1] + y_bars[ctg];
 
-    gdImageFilledRectangle(fig->img, \
-            posX_center - itv_posX/3, fig->orig[1]+ y_bars[0],\
-            posX_center + itv_posX/3, fig->orig[1],\
-            GetCouleur(fig->img, bardata->colors[0]));
+        if (y1_rect != y2_rect) {
+            gdImageFilledRectangle(fig->img, \
+                posX_center - itv_posX/4, y1_rect,\
+                posX_center + itv_posX/4, y2_rect,\
+                GetCouleur(fig->img, bardata->colors[ctg]));
+        }
 
-    gdImageFilledRectangle(fig->img, \
-            posX_center - itv_posX/3, fig->orig[1]+ y_bars[1],\
-            posX_center + itv_posX/3, fig->orig[1]+ y_bars[0],\
-            GetCouleur(fig->img, bardata->colors[1]));
-
+        y2_rect = y1_rect;
+    }
 
     free(y_bars);
 }
@@ -942,7 +948,6 @@ void Make_subtitle(Figure *fig, Date *date_debut, Date *date_fin,\
     strcat(subtitle, datetick_debut.labeldate);
     strcat(subtitle, " au ");
     strcat(subtitle,datetick_fin.labeldate);
-    printf("%s \n", subtitle);
 
     int ecartY_title = 4;
     int posX_subtitle = (bbox_title[2]-bbox_title[0])/2;
@@ -1079,8 +1084,83 @@ void Make_legend(Figure *fig, char* font, int size,\
     gdFontCacheShutdown();
 }
 
+void Make_xticks_barplot(Figure *fig, char* font, int fontsize);
+
+void Make_xticks_barplot(Figure *fig, char* font, int fontsize) {
+
+    // largeur zone de dessin
+    int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
+
+    // intervalle en px entre 2 centres de barplot selon X
+    int itv_posX = w_dessin/(fig->nb_bardata+1); 
+    
+    // position des ticks/centre des barplot selon X
+    int posX_center = 0;
+
+    // position des labels
+    int posX_label = 0;
+    int posY_label = 0;
+
+    // Recuperation de la longueur du label en px
+    int brect[8] = {0};
+    int len_label_px = 0;
+
+    // Style tick
+    int w_tick = 2;
+    // int w_linegrid = 0.5;
+    int long_tick = 9;
+    float angle_label = 20.;
+    
+    LineStyle style_tick;
+    Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, 'o', 8);
+
+    for (int bp = 0; bp < fig->nb_bardata ; bp ++)
+    {
+        posX_center = fig->orig[0] + fig->bardata[bp]->idx * itv_posX;
+        printf("Pos X bp %d center : %d \n", bp, posX_center);
+
+        // plot tick
+        ImageLineEpaisseur(fig->img,\
+                        posX_center,\
+                        fig->orig[1]+2,\
+                        posX_center,\
+                        fig->orig[1] + long_tick +2,\
+                        &style_tick);
+        
+
+        // tick label
+        // Fake call : recuperation du brect sur le label horizontal
+        // On ecrit en 0,0
+        gdImageStringFT(fig->img, brect,\
+                            gdTiled, font,\
+                                fontsize, 0.,\
+                                0, 0,\
+                                fig->bardata[bp]->label);   
+
+        // Longueur de l'adresse en px                                
+        len_label_px = brect[2] - brect[0];
+        printf("Label  : %s \n", fig->bardata[bp]->label);
+        printf("Len label in px : %d \n", len_label_px);
+
+        posX_label = (int)(len_label_px * cos(Deg2rad(angle_label)));
+        posY_label = (int)(len_label_px * sin(Deg2rad(angle_label)));
+
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img, color_lines[bp]), font,\
+                                fontsize, Deg2rad(angle_label),\
+                                posX_center - posX_label,\
+                                fig->orig[1] + (long_tick*3) + posY_label,\
+                                fig->bardata[bp]->label);
+
+    }
+
+    //Avoid memory leaks
+    gdFontCacheShutdown();
+
+}
+
 /* --------------------------------------------------------------------------- */
-void Make_xticks_xgrid(Figure *fig, char* font, int fontsize, Date date_init)
+void Make_xticks_xgrid_time(Figure *fig, char* font, int fontsize, Date date_init)
 {
     if (fig->max_X == 0)
     {

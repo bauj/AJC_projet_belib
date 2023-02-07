@@ -43,7 +43,8 @@ int main(int argc, char* argv[])
 
     // Recuperation du nombre de lignes par station
     int nb_rows_par_station = Get_nb_rows_par_station(db_belib);
-    printf(" > Nb rows : %d \n", nb_rows_par_station);
+    // printf(" > Nb rows : %d \n", nb_rows_par_station);
+
     // Recuperation des adresses des stations en favoris
     char *tableau_adresses_fav[nb_stations_fav];
     Get_adresses_fav(db_belib, tableau_adresses_fav, nb_stations_fav);
@@ -92,11 +93,11 @@ int main(int argc, char* argv[])
 
     // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
 
-    // char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
-    char* fontLight = "/usr/share/fonts/lato/Lato-Light.ttf";
+    char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
+    // char* fontLight = "/usr/share/fonts/lato/Lato-Light.ttf";
 
-    // char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
-    char* fontLightIt = "/usr/share/fonts/lato/Lato-LightItalic.ttf";    
+    char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
+    // char* fontLightIt = "/usr/share/fonts/lato/Lato-LightItalic.ttf";    
 
     // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
     // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
@@ -104,8 +105,8 @@ int main(int argc, char* argv[])
     // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
     // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
 
-    // char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
-    char* fontMed = "/usr/share/fonts/lato/Lato-MediumItalic.ttf";
+    char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
+    // char* fontMed = "/usr/share/fonts/lato/Lato-MediumItalic.ttf";
 
     // Creation de la figure ------------------------------------------------------------
     Figure fig1;
@@ -181,7 +182,7 @@ int main(int argc, char* argv[])
     Make_annotation(&fig1, sign, fontLightIt, size_sign, white, decalx_sign, decaly_sign);
 
     /* Make X ticks and grid line*/
-    Make_xticks_xgrid(&fig1, fontLight, tickSize, tableau_date_recolte_fav[0]);
+    Make_xticks_xgrid_time(&fig1, fontLight, tickSize, tableau_date_recolte_fav[0]);
 
     // /* Make Y ticks and grid line*/
     Make_yticks_ygrid(&fig1, fontLight, tickSize);
@@ -200,8 +201,10 @@ int main(int argc, char* argv[])
     const char *filename_fig1= "fig1_disponible.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
-    printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
-                            gdImageResolutionY(fig1.img) );                           
+    /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
+                             gdImageResolutionY(fig1.img) );                           
+    */
+
     /* Destroy the image in memory. */
     gdImageDestroy(fig1.img);
 
@@ -215,23 +218,41 @@ int main(int argc, char* argv[])
     Figure fig2;
     Init_figure(&fig2, figsize, padX, padY, margin);
 
+    // Ajout du ylabel
+    decalx_Y = 10, decaly_Y = 0;    
+    ylabel = "Bornes Belib";
+    Make_ylabel(&fig2, ylabel, fontLight, labelSize, white, decalx_Y, decaly_Y);
+
+
+    // Recuperation derniere date de recolte    
+    // Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
+
     
-    Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
-
     int nb_tot_bornes;
-    BarData barplots[nb_stations_fav]; /**< vecteur de bardata pour chaque station*/
+    // Definition d'un vecteur de bardata pour chaque station
+    BarData barplots[nb_stations_fav]; 
 
+    // Initialisation de chaque bardata
     for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
         nb_tot_bornes=0;
         for (int statut = disponible; statut <= inconnu; statut ++)
             nb_tot_bornes += tableau_statuts_fav[st_barplot][nb_rows_par_station-1][statut];
             
-        Init_bardata(&(barplots[st_barplot]), nb_statuts, nb_tot_bornes, tableau_statuts_fav[st_barplot][nb_rows_par_station-1], color_lines, tableau_adresses_fav[st_barplot]);
+        Init_bardata(&(barplots[st_barplot]), nb_statuts, nb_tot_bornes,\
+             tableau_statuts_fav[st_barplot][nb_rows_par_station-1],\
+              color_ctg, tableau_adresses_fav[st_barplot]);
 
         // Update des data de l'objet figure (gestion des max, posX des barplot)
         Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
     }
 
+    // Ajout des yticks et des ygrid (avant plot pour eviter de plotter par dessus)
+    Make_yticks_ygrid(&fig2, fontLight, tickSize);
+
+    // Ajout des xticks 
+    Make_xticks_barplot(&fig2, fontMed, tickSize);
+
+    // Plot des barplots
     for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
         // Print_debug_bd(fig2.bardata[st_barplot], 'y');
         PlotBarplot(&fig2, fig2.bardata[st_barplot]);
