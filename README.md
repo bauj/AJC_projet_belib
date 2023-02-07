@@ -91,7 +91,7 @@ la forme d'une chaine de caractères.
  la forme d'une chaine de caractères (de type "0.5km").
 
 
-## Lecture bdd sqlite et plotting      :soon:
+## Lecture bdd sqlite et plotting      :heavy_check_mark:
  
 + Section réalisée en C avec les bibliothèques sqlite3 et libgd. 
 + Proof of concept : Exec cross-compilé avec ouverture et fermetude de db 
@@ -102,9 +102,19 @@ occupés et en maintenance (courbes) pour les stations en favoris.
     + Fig 2 : Histogramme des statuts des points de charge des stations favs au
 moment de la derniere recolte.
 
++ Construction de tout une bibliotheque de plot permettant une utilisation 
+simple de GD.
+
 + Fichiers figures enregistrés au format PNG.
 
-+ Passer un coup de Valgrind + ElectricFence <!-- :heavy_check_mark: -->
++ Passer un coup de Valgrind + ElectricFence :heavy_check_mark:
+
+## Recuperation map statique avec marqueurs :soon:
+
++ Utilisation de l'API mapbox
+
++ Recuperation d'une carte statique avec les marqueurs sur les positions GPS 
+des stations.
 
 ## Update page HTML et CSS      :soon:
 
