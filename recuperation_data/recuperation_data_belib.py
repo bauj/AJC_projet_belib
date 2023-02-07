@@ -172,7 +172,7 @@ def def_row_general(daterecolte_, n_dispo, n_occup, n_inc, n_main, \
 def transform_dict_station(list_records):
 
     now = datetime.now()
-    date_recolte = now.strftime("%Y-%m-%dT%H-%MTZD")
+    date_recolte = now.strftime("%Y-%m-%dT%H:%MZ")
 
     # check si liste non vide
 
@@ -269,7 +269,7 @@ def update_general(path_db):
     raw_data_general = ujson.loads(resp.data)["records"] 
 
     now = datetime.now()
-    date_recolte = now.strftime("%Y-%m-%dT%H-%MTZD")
+    date_recolte = now.strftime("%Y-%m-%dT%H:%MZ")
 
     data_general = def_row_general(date_recolte, *[0]*9)
 
