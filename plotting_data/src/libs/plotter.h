@@ -57,7 +57,7 @@ typedef struct LineStyle_s {
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief Structure associant un vecteur de donnees labelisé à un LineStyle
+ * @brief Structure associant un vecteur de donnees (int) labelisé à un LineStyle
  * 
  */
 typedef struct LineData_s {
@@ -69,6 +69,22 @@ typedef struct LineData_s {
     char* label;
     LineStyle *linestyle;  /**< LineStyle */
 } LineData; 
+
+/* --------------------------------------------------------------------------- */
+/**
+ * @brief Structure associant un vecteur de donnees (float) labelisé à un LineStyle
+ * 
+ */
+typedef struct fLineData_s {
+    size_t len_data;      /**< Taille du vecteur de data */
+    float *x;               /**< Vecteur de data X */
+    float *y;               /**< Vecteur de data Y */
+    float max_X;            /**< Maximum des valeurs X */
+    float max_Y;            /**< Maximum des valeurs Y */
+    char* label;
+    LineStyle *linestyle;  /**< LineStyle */
+} fLineData; 
+
 
 /* --------------------------------------------------------------------------- */
 /**
@@ -97,6 +113,7 @@ typedef struct Figure_s {
     Font fonts[6];       /**< Fonts used in the fig*/
     int max_X;           /**< max de l'ensemble des max_X de linedata[] */
     int max_Y;           /**< max de l'ensemble des max_Y de linedata[] */
+    float fmax_Y;        /**< max de l'ensemble des max_Y (float) de linedata[] */
     int padX[2];         /**< Padding gauche/droite pour definir canvas (cvs) et orig */
     int padY[2];         /**< Padding haut/bas pour definir canvas (cvs) et orig */
     int orig[2];         /**< Coordonnees de l'origine des plots */    
