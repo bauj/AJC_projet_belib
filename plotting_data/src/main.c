@@ -83,34 +83,16 @@ int main(int argc, char* argv[])
     char *dir_figures= "./figures/"; /**< Path folder save fig*/
     int figsize[2] = {900, 700};     /**< Dimension figure */
     int padX[2] = {90,0};            /**< pad zone de dessin gauche et droite*/
-    int padY[2] = {90,160};          /**< pad zone de dessin haut et bas*/
+    int padY[2] = {120,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
-    int labelSize = 15;              /**< taille de police labels*/
-    int titleSize = 18;              /**< taille de police labels*/
-    int tickSize = 12;               /**< taille de police des ticks*/
+
     int w_lines = 3;                 /**< epaisseur des traits*/
     int ms = 6;                      /**< marker size */
 
-    // char* fontLabels = "/usr/share/fonts/dejavu-sans-mono-fonts/DejaVuSansMono.ttf"; /**< chemin vers police 1 */
-
-    char* fontLight = "/usr/share/fonts/truetype/lato/Lato-Light.ttf";
-    // char* fontLight = "/usr/share/fonts/lato/Lato-Light.ttf";
-
-    char* fontLightIt = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
-    // char* fontLightIt = "/usr/share/fonts/lato/Lato-LightItalic.ttf";    
-
-    // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
-    // char* fontThin = "/usr/share/fonts/truetype/lato/Lato-Thin.ttf";
-
-    // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
-    // char* fontBold = "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf";
-
-    char* fontMed = "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf";
-    // char* fontMed = "/usr/share/fonts/lato/Lato-MediumItalic.ttf";
-
     // Creation de la figure ------------------------------------------------------------
     Figure fig1;
-    Init_figure(&fig1, figsize, padX, padY, margin);
+    char wAxes = 'n';
+    Init_figure(&fig1, figsize, padX, padY, margin, wAxes);
 
     // Recup vecteur temps
     int vect_time[nb_rows_par_station];
@@ -143,54 +125,61 @@ int main(int argc, char* argv[])
     }
 
     /* Make ylabel  ----------  A mettre apres update fig */
-    int decalx_Y = 10, decaly_Y = 0;    
+    int decalx_Y = 20, decaly_Y = 0;    
     char *ylabel = "Bornes disponibles";
-    // char *ylabel = "Bornes occupées";
-    Make_ylabel(&fig1, ylabel, fontLight, labelSize, white, decalx_Y, decaly_Y);
+    Change_fontsize(&fig1, label_f, 16);    
 
-    /* Make xlabel */
-    char *xlabel = "Date";
-    int decalx_X = -5, decaly_X = 15;
-    Make_xlabel(&fig1, xlabel, fontLight, labelSize, white, decalx_X, decaly_X);
+    // char *ylabel = "Bornes occupées";
+    Make_ylabel(&fig1, ylabel, decalx_Y, decaly_Y);
+
+    // /* Make xlabel */
+    // char *xlabel = "Date";
+    // int decalx_X = -5, decaly_X = 15;
+    // Make_xlabel(&fig1, xlabel, decalx_X, decaly_X);
 
     /* Make title */
     char *title = "Evolution du nombre de bornes Belib disponibles (stations favorites)";
-    int decalx_title = 0, decaly_title = 15;
+    int decalx_title = -30, decaly_title = 15;
     int *bbox_title;     /**< bbox : so, se, ne, no */
-    bbox_title = Make_title(&fig1, title, fontMed, titleSize, white, decalx_title, decaly_title);
+    bbox_title = Make_title(&fig1, title, decalx_title, decaly_title);
 
-    
     /* Make subtitle */
-    char subtitle[25] = "du ";  
     Date date_debut;
     Date date_fin;
-    int decalx_subtitle = 0, decaly_subtitle = 0;
     Init_Date(&date_debut, tableau_date_recolte_fav[0].datestr);
     Init_Date(&date_fin, tableau_date_recolte_fav[nb_rows_par_station-1].datestr);
-    Make_subtitle(&fig1, &date_debut, &date_fin, subtitle, fontMed, titleSize, white, \
-                                bbox_title, decalx_subtitle, decaly_subtitle);
+
+        // Construction du sous titre "du .... au ... "
+    char subtitle[25] = "";  
+    Const_str_dudate1_audate2(&date_debut, &date_fin, subtitle);
+    
+    int decalx_subtitle = 0, decaly_subtitle = 0;
+    Make_subtitle(&fig1, subtitle, bbox_title, decalx_subtitle, decaly_subtitle);
+
+    /* Make X ticks and grid line*/
+    Make_xticks_xgrid_time(&fig1, tableau_date_recolte_fav[0]);
+
+    /* Make Y ticks and grid line*/
+    char wTicks = 'n';
+    char *path_f_med = "fonts/Lato-Medium.ttf";
+    Change_font(&fig1, ticklabel_f, path_f_med);
+    Change_fontsize(&fig1, ticklabel_f, 14);    
+    Make_yticks_ygrid(&fig1, wTicks);
+
+    /* Make legend */
+    int decalx_leg = 0, decaly_leg = 0, ecart = 8;
+    Make_legend(&fig1, decalx_leg, decaly_leg, ecart);
 
     /* Make github link */
     char *github = "https://github.com/bauj/AJC_projet_belib";
     int decalx_github = 0, decaly_github = 0;
-    Make_annotation(&fig1, github, fontLightIt, 10, white, decalx_github, decaly_github);
+    Make_annotation(&fig1, github, decalx_github, decaly_github);
 
     /* Make copyright */
     char *sign = "\u00a9 2023 by Juba Hamma";
-    int size_sign = 10;
     int decalx_sign = fig1.img->sx- strlen(sign)*7, decaly_sign = 0;
-    Make_annotation(&fig1, sign, fontLightIt, size_sign, white, decalx_sign, decaly_sign);
+    Make_annotation(&fig1, sign, decalx_sign, decaly_sign);
 
-    /* Make X ticks and grid line*/
-    Make_xticks_xgrid_time(&fig1, fontLight, tickSize, tableau_date_recolte_fav[0]);
-
-    // /* Make Y ticks and grid line*/
-    Make_yticks_ygrid(&fig1, fontLight, tickSize);
-    // printf("Done here.\n");
-
-    /* Make legend */
-    int decalx_leg = 0, decaly_leg = 0, ecart = 2;
-    Make_legend(&fig1, fontLight, 11, decalx_leg, decaly_leg, ecart);
 
     /* Plot lines */
     for (int st = 0; st < nb_stations_fav; st++)
@@ -216,17 +205,10 @@ int main(int argc, char* argv[])
 
     // Creation de la figure ------------------------------------------------------------
     Figure fig2;
-    Init_figure(&fig2, figsize, padX, padY, margin);
-
-    // Ajout du ylabel
-    decalx_Y = 10, decaly_Y = 0;    
-    ylabel = "Bornes Belib";
-    Make_ylabel(&fig2, ylabel, fontLight, labelSize, white, decalx_Y, decaly_Y);
-
-
-    // Recuperation derniere date de recolte    
-    // Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
-
+    padY[0] = 90;
+    padY[1] = 230;
+    wAxes = 'n';
+    Init_figure(&fig2, figsize, padX, padY, margin, wAxes);
     
     int nb_tot_bornes;
     // Definition d'un vecteur de bardata pour chaque station
@@ -238,7 +220,7 @@ int main(int argc, char* argv[])
         for (int statut = disponible; statut <= inconnu; statut ++)
             nb_tot_bornes += tableau_statuts_fav[st_barplot][nb_rows_par_station-1][statut];
             
-        Init_bardata(&(barplots[st_barplot]), nb_statuts, nb_tot_bornes,\
+        Init_bardata(&(barplots[st_barplot]), nb_statuts, labels_ctg, nb_tot_bornes,\
              tableau_statuts_fav[st_barplot][nb_rows_par_station-1],\
               color_ctg, tableau_adresses_fav[st_barplot]);
 
@@ -246,28 +228,70 @@ int main(int argc, char* argv[])
         Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
     }
 
-    // Ajout des yticks et des ygrid (avant plot pour eviter de plotter par dessus)
-    Make_yticks_ygrid(&fig2, fontLight, tickSize);
+    // // Ajout du ylabel
+    // decalx_Y = 10, decaly_Y = 0;    
+    // ylabel = "Bornes Belib";
+    // Make_ylabel(&fig2, ylabel, decalx_Y, decaly_Y);
 
-    // Ajout des xticks 
-    Make_xticks_barplot(&fig2, fontMed, tickSize);
+    // Ajout des yticks et des ygrid (avant plot pour eviter de plotter par dessus)
+    wTicks = 'n';
+    Change_font(&fig2, ticklabel_f, path_f_med);
+    Change_fontsize(&fig2, ticklabel_f, 14);
+    Make_yticks_ygrid(&fig2, wTicks);
+
+    // Ajout des xticks
+    float angle_labels = 20.;
+    Change_fontsize(&fig2, ticklabel_f, 13);
+    Make_xticks_barplot(&fig2, angle_labels);
+
+    /* Make legend */
+    Change_font(&fig2, leg_f, path_f_med);
+    Change_fontsize(&fig2, leg_f, 13);
+    decalx_leg = 0, decaly_leg = 0, ecart = 2;
+    Make_legend_barplot(&fig2, decalx_leg, decaly_leg, ecart);
+
+    /* Make github link */
+    decalx_github = 0, decaly_github = 0;
+    Make_annotation(&fig2, github, decalx_github, decaly_github);
+
+    /* Make copyright */
+    Make_annotation(&fig2, sign, decalx_sign, decaly_sign);
 
     // Plot des barplots
+    char wlabels = 'y';
     for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
         // Print_debug_bd(fig2.bardata[st_barplot], 'y');
-        PlotBarplot(&fig2, fig2.bardata[st_barplot]);
+        PlotBarplot(&fig2, fig2.bardata[st_barplot], wlabels);
     }
-        
+
+    /* Make title */
+    title = "Disponibilité des bornes Belib (stations favorites)";
+    decalx_title = 0, decaly_title = 0;
+    bbox_title = Make_title(&fig2, title, decalx_title, decaly_title);
+
+    /* Make subtitle */
+        // Recuperation derniere date de recolte    
+    Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
+    // Print_debug_date(&last_date_recolte, 'y');
+
+    char subtitle2[70];
+    sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
+                     last_date_recolte.tm.tm_mday,\
+                     last_date_recolte.tm.tm_mon+1,\
+                     (last_date_recolte.tm.tm_year+1900)%2000,\
+                     last_date_recolte.tm.tm_hour,\
+                     last_date_recolte.tm.tm_min);
+
+    decalx_subtitle = 0, decaly_subtitle = 0;
+
+    Make_subtitle(&fig2, subtitle2, bbox_title, decalx_subtitle, decaly_subtitle);
 
      /* Sauvegarde du fichier png */
-    const char *filename_fig2= "fig2_test.png";
+    const char *filename_fig2= "fig2_barplot.png";
     Save_to_png(&fig2, dir_figures, filename_fig2);
 
     // Destroying img 
     gdImageDestroy(fig2.img);
-
-
-
 
     // Clean alloc
     free_tab_char1(tableau_adresses_fav, nb_stations_fav);

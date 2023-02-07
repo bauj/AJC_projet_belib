@@ -18,6 +18,9 @@
 #define PI 3.141592
 
 /* --------------------------------------------------------------------------- */
+typedef enum {label_f, annotation_f, title_f, ticklabel_f, subtitle_f, leg_f} fontsFig;
+
+/* --------------------------------------------------------------------------- */
 /**
  * @brief Structure stockant des donnees par categorie en les associant a des 
  * couleurs dans le but de tracer un BarPlot les représentant.
@@ -26,6 +29,7 @@
  */
 typedef struct BarData_s {
     size_t nb_ctg;        /**< Nombre de categories*/
+    char **ctg_names;     /**< Labels des categories*/
     size_t nb_tot;        /**< Nombre total d'éléments dans l'ensemble des ctg*/
     int *nb_in_ctg;        /**< Vecteur contenant le nombre d'elements par ctg */
     int (*colors)[3];        /**< Vecteur contenant une couleur pour chaque ctg*/
@@ -68,6 +72,18 @@ typedef struct LineData_s {
 
 /* --------------------------------------------------------------------------- */
 /**
+ * @brief Structure stockant les infos d'une police
+ * 
+ */
+typedef struct Font_s {
+    char* path;         /**< Chemin vers le fichier police*/
+    int size;           /**< Taille de la police*/
+    int color[3];       /**< Couleur de la police (rgb) */
+} Font;
+
+
+/* --------------------------------------------------------------------------- */
+/**
  * @brief Structure stockant un ensemble de LineData et de données relatives à la
  * création d'une figure
  * 
@@ -78,6 +94,7 @@ typedef struct Figure_s {
     size_t nb_bardata;  /**< Nombre de linedata dans la figure */
     LineData **linedata;  /**< Vecteur de LineData */
     BarData **bardata;   /**< Vecteur de BarData */
+    Font fonts[6];       /**< Fonts used in the fig*/
     int max_X;           /**< max de l'ensemble des max_X de linedata[] */
     int max_Y;           /**< max de l'ensemble des max_Y de linedata[] */
     int padX[2];         /**< Padding gauche/droite pour definir canvas (cvs) et orig */
@@ -88,6 +105,7 @@ typedef struct Figure_s {
     int color_cvs_bg[3]; /**< Couleur du fond du canvas */
     int color_axes[3];   /**< Couleur des axes*/
 } Figure;
+
 
 
 /* --------------------------------------------------------------------------- */
@@ -104,8 +122,9 @@ typedef struct Figure_s {
  * @param colors 
  * @param label 
  */
-void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int nb_in_ctg[nb_ctg],\
-                int colors[nb_ctg][3], char* label);
+void Init_bardata(BarData *bardata, int nb_ctg, char *labels_ctg[nb_ctg],\
+                    int nb_tot, int nb_in_ctg[nb_ctg], \
+                        int colors[nb_ctg][3], char* label);
 
 
 /**
@@ -304,7 +323,7 @@ void Change_fig_bg(Figure *fig, int color[3]);
  * @param margin 
  */
 void Init_figure(Figure *fig, int figsize[2],\
-            int padX[2], int padY[2], int margin[2]);
+            int padX[2], int padY[2], int margin[2], char wAxes);
 
 /* --------------------------------------------------------------------------- */
 /**
@@ -365,7 +384,7 @@ int Min_int(int x, int y);
  * @param decalage_X 
  * @param decalage_Y 
  */
-void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
+void Make_xlabel(Figure *fig, char* xlabel,\
              int decalage_X, int decalage_Y);
 
 /* --------------------------------------------------------------------------- */
@@ -380,7 +399,7 @@ void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
  * @param decalage_X 
  * @param decalage_Y 
  */
-void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
+void Make_ylabel(Figure *fig, char* ylabel,\
              int decalage_X, int decalage_Y);
 
 /* --------------------------------------------------------------------------- */
@@ -388,24 +407,20 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
  * @brief 
  * 
  * @param fig 
- * @param font 
- * @param size 
  * @param decal_X 
  * @param decal_Y 
  * @param ecart 
  */
-void Make_legend(Figure *fig, char* font, int size, int decal_X, int decal_Y, \
-            int ecart);
+void Make_legend(Figure *fig, int decal_X, int decal_Y, int ecart);
 
 /* --------------------------------------------------------------------------- */
 /**
  * @brief 
  * 
  * @param fig 
- * @param font 
- * @param fontsize 
+ * @param wTicks 
  */
-void Make_yticks_ygrid(Figure *fig, char* font, int fontsize);
+void Make_yticks_ygrid(Figure *fig, char wTicks);
 
 
 /* --------------------------------------------------------------------------- */
@@ -572,8 +587,29 @@ void PlotLine(Figure *fig, LineData *linedata)
 int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
                                     const int pts[]);
 
+
 /* --------------------------------------------------------------------------- */
-void PlotBarplot(Figure *fig, BarData *bardata)
+void Change_font(Figure *fig, int textType, char* path_f)
+{
+    fig->fonts[textType].path = path_f;
+}
+
+/* --------------------------------------------------------------------------- */
+void Change_fontsize(Figure *fig, int textType, int size)
+{
+    fig->fonts[textType].size = size;
+}
+
+/* --------------------------------------------------------------------------- */
+void Change_fontcolor(Figure *fig, int textType, int color[3])
+{
+    for (int i = 0; i < 3; i++)
+        fig->fonts[textType].color[i] = color[i];
+}
+
+
+/* --------------------------------------------------------------------------- */
+void PlotBarplot(Figure *fig, BarData *bardata, char wlabels)
 {
     int *y_bars = \
         Transform_data_to_plot_bar(fig, bardata->nb_ctg, bardata->nb_in_ctg);   
@@ -590,18 +626,43 @@ void PlotBarplot(Figure *fig, BarData *bardata)
     // Plot les rectangles
     int y1_rect = 0;
     int y2_rect = fig->orig[1];
+
     for (int ctg = 0; ctg < bardata->nb_ctg; ctg++)
     {
         y1_rect = fig->orig[1] + y_bars[ctg];
 
+        // Dessins rect 
         if (y1_rect != y2_rect) {
+            // Ajout des labels
+            if (wlabels == 'y') {
+                int posX_label = posX_center + itv_posX/3 - 6;
+                int posY_label = y2_rect - (y2_rect-y1_rect)/2 \
+                                + fig->fonts[label_f].size / 2;
+
+                char nb_in_ctg[fig->max_Y]; // pas de surprises
+                sprintf(nb_in_ctg, "%d", bardata->nb_in_ctg[ctg]);
+
+                gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img,\
+                            bardata->colors[ctg]),\
+                            fig->fonts[title_f].path,\
+                            fig->fonts[label_f].size,\
+                            0.,\
+                            posX_label,\
+                            posY_label,\
+                            nb_in_ctg);  
+            }
+
+            // Plot rect
             gdImageFilledRectangle(fig->img, \
                 posX_center - itv_posX/4, y1_rect,\
                 posX_center + itv_posX/4, y2_rect,\
                 GetCouleur(fig->img, bardata->colors[ctg]));
         }
 
+        // Update y2=y1
         y2_rect = y1_rect;
+
     }
 
     free(y_bars);
@@ -641,7 +702,7 @@ void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
     }
 
 }
-                            
+                           
 
 /* --------------------------------------------------------------------------- */
 void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
@@ -650,8 +711,7 @@ void Transform_dataY_to_plot(Figure *fig, size_t len_pts, \
     // Taile de la zone de dessin
     // Orig - padding haut (0) - margin Y (1)
     const int h_dessin = fig->orig[1] - fig->padY[0] - fig->margin[1];   
-    for (int i = 0; i < len_pts; i++)
-    {
+    for (int i = 0; i < len_pts; i++){
         pts_dessin[i] = -(pts[i] * h_dessin) / fig->max_Y;
         // printf("Point : %d, %d \n", i, pts_dessin[i]);
     }
@@ -695,7 +755,7 @@ int GetCouleur(gdImagePtr im_fig, const int couleur[3])
 
 /* --------------------------------------------------------------------------- */
 void Init_figure(Figure *fig, int figsize[2],\
-                int padX[2], int padY[2], int margin[2])
+                int padX[2], int padY[2], int margin[2], char wAxes)
 {
 
     /* Initialisation de tous les parametres*/
@@ -717,8 +777,7 @@ void Init_figure(Figure *fig, int figsize[2],\
     int col_cvs[3] = {0, 0, 0}; 
     int col_axes[3] = {255, 255, 255}; 
 
-    for (int i = 0; i < 3; i++)
-    {
+    for (int i = 0; i < 3; i++) {
         fig->color_bg[i] = col_fond[i];
         fig->color_cvs_bg[i] = col_cvs[i];        
         fig->color_axes[i] = col_axes[i];
@@ -727,9 +786,39 @@ void Init_figure(Figure *fig, int figsize[2],\
     fig->nb_bardata  = 0;
     fig->linedata = NULL;
     fig->bardata = NULL;
+
+    // Fonts
+    fig->fonts[label_f].path = "fonts/Lato-Regular.ttf";
+    fig->fonts[title_f].path = "fonts/Lato-Medium.ttf";
+    fig->fonts[annotation_f].path = "fonts/Lato-LightItalic.ttf";
+    fig->fonts[ticklabel_f].path = "fonts/Lato-Regular.ttf";
+    fig->fonts[subtitle_f].path = "fonts/Lato-Medium.ttf";
+    fig->fonts[leg_f].path = "fonts/Lato-Regular.ttf";
+
+    fig->fonts[label_f].size = 15;
+    fig->fonts[title_f].size = 18;
+    fig->fonts[annotation_f].size = 10;
+    fig->fonts[ticklabel_f].size = 13;
+    fig->fonts[subtitle_f].size = 14;
+    fig->fonts[leg_f].size = 11;
+
+    for (int i = 0; i < 3; i++) {
+        fig->fonts[label_f].color[i] = col_axes[i];
+        fig->fonts[title_f].color[i] = col_axes[i];
+        fig->fonts[annotation_f].color[i] = col_axes[i];
+        fig->fonts[ticklabel_f].color[i] = col_axes[i];
+        fig->fonts[subtitle_f].color[i] = col_axes[i];
+        fig->fonts[leg_f].color[i] = col_axes[i];
+    }
     
+    // Lenovo PC
+    // fig.fonts[0] = "/usr/share/fonts/lato/Lato-Light.ttf";
+    // fig.fonts[1] = "/usr/share/fonts/lato/Lato-Medium.ttf";
+    // fig.fonts[2] = "/usr/share/fonts/lato/Lato-LightItalic.ttf";
+
     Make_background(fig, fig->color_bg, fig->color_cvs_bg);
-    Make_support_axes(fig, fig->color_axes);
+    if ( wAxes == 'y')
+        Make_support_axes(fig, fig->color_axes);
 
     fig->max_X = 0;
     fig->max_Y = 0;
@@ -766,10 +855,12 @@ void Change_fig_axes_color(Figure *fig, int color[3])
 }
 
 /* --------------------------------------------------------------------------- */
-void Init_bardata(BarData *bardata, int nb_ctg, int nb_tot, int nb_in_ctg[nb_ctg],\
-                int colors[nb_ctg][3], char* label)
+void Init_bardata(BarData *bardata, int nb_ctg, char *labels_ctg[nb_ctg],\
+                    int nb_tot, int nb_in_ctg[nb_ctg], \
+                        int colors[nb_ctg][3], char* label)
 {
     bardata->nb_ctg = nb_ctg;
+    bardata->ctg_names = labels_ctg;
     bardata->nb_tot = nb_tot;
     bardata->nb_in_ctg = nb_in_ctg;
     bardata->colors = colors;
@@ -919,7 +1010,7 @@ void Add_barplot_to_fig(Figure *fig, BarData *bardata)
 }
 
 /* --------------------------------------------------------------------------- */
-void Make_annotation(Figure *fig, char* text, char* font, int size, int color[3],\
+void Make_annotation(Figure *fig, char* text,\
                     int decalage_X, int decalage_Y)
 {
     // Pos avec decalage : Y decal autre sens
@@ -929,53 +1020,71 @@ void Make_annotation(Figure *fig, char* text, char* font, int size, int color[3]
 
     // int brect[8] = {0};
     gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, color), font,\
-                                size, 0., posX_xlabel, posY_xlabel, text);    
+                    GetCouleur(fig->img,
+                    fig->fonts[annotation_f].color),\
+                    fig->fonts[annotation_f].path,\
+                    fig->fonts[annotation_f].size,\
+                    0., posX_xlabel, posY_xlabel, text);
+
     //Avoid memory leaks
     gdFontCacheShutdown();
     // printf("%s \n", errStringFT); 
 }
 
 /* --------------------------------------------------------------------------- */
-void Make_subtitle(Figure *fig, Date *date_debut, Date *date_fin,\
-                     char subtitle[25], char* font, int size, int color[3],\
-                        int bbox_title[8], int decalage_X, int decalage_Y)
+void Make_subtitle(Figure *fig, char* subtitle,\
+                int bbox_title[8], int decalage_X, int decalage_Y)
 {
-    Datetick datetick_debut;
-    Datetick datetick_fin;
-    Init_Datetick(&datetick_debut,date_debut,date_debut);
-    Init_Datetick(&datetick_fin,date_fin,date_debut);
-    strcat(subtitle, datetick_debut.labeldate);
-    strcat(subtitle, " au ");
-    strcat(subtitle,datetick_fin.labeldate);
 
-    int ecartY_title = 4;
-    int posX_subtitle = (bbox_title[2]-bbox_title[0])/2;
-    int posY_subtitle = bbox_title[1] + size + ecartY_title - decalage_Y; 
+    int ecartY_title = 6;
+    int posX_subtitle = bbox_title[0] + (bbox_title[2]-bbox_title[0])/2 \
+                    - strlen(subtitle) * fig->fonts[subtitle_f].size / 3;
+    int posY_subtitle = bbox_title[1] + fig->fonts[subtitle_f].size \
+                    + ecartY_title - decalage_Y; 
 
     gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, color), font,\
-                                size, 0., posX_subtitle, posY_subtitle, subtitle);    
+                            GetCouleur(fig->img,\
+                                fig->fonts[subtitle_f].color),
+                            fig->fonts[subtitle_f].path,\
+                            fig->fonts[subtitle_f].size,\
+                            0., posX_subtitle, posY_subtitle, subtitle);    
     //Avoid memory leaks
     gdFontCacheShutdown();
 }
 
+/* --------------------------------------------------------------------------- */
+void Const_str_dudate1_audate2(Date *date1, Date *date2, char* str_out)
+{
+    Datetick datetick_debut;
+    Datetick datetick_fin;
+    Init_Datetick(&datetick_debut, date1,date1);
+    Init_Datetick(&datetick_fin, date2, date2);
+
+    strcat(str_out, "du ");
+    strcat(str_out, datetick_debut.labeldate);
+    strcat(str_out, " au ");
+    strcat(str_out, datetick_fin.labeldate);
+}
 
 /* --------------------------------------------------------------------------- */
-int *Make_title(Figure *fig, char* title, char* font, int size, int color[3],\
+int *Make_title(Figure *fig, char* title,\
                     int decalage_X, int decalage_Y)
 {
     // Pos avec decalage : Y decal autre sens
     // Prise en compte de la longueur du label
     int largeur_cvs = (fig->img->sx-1 - fig->padX[0] - fig->padX[1]);
     int centre_cvs =  fig->orig[0] + largeur_cvs/2;
-    int posX_xlabel = centre_cvs - (strlen(title) * size/3.7) + decalage_X;
+    int posX_xlabel = centre_cvs - (strlen(title) \
+                        * fig->fonts[title_f].size/3.7) + decalage_X;
     int posY_xlabel = fig->img->sy - (fig->padY[1] - 3*fig->padY[1]/4) - decalage_Y; 
 
     static int brect_title[8] = {0};
     gdImageStringFT(fig->img, brect_title,\
-                            GetCouleur(fig->img, color), font,\
-                                size, 0., posX_xlabel, posY_xlabel, title);    
+                            GetCouleur(fig->img,\
+                                fig->fonts[title_f].color),\
+                            fig->fonts[title_f].path,\
+                            fig->fonts[title_f].size,\
+                            0., posX_xlabel, posY_xlabel, title);    
     //Avoid memory leaks
     gdFontCacheShutdown();
     // printf("%s \n", errStringFT); 
@@ -985,19 +1094,24 @@ int *Make_title(Figure *fig, char* title, char* font, int size, int color[3],\
 
 
 /* --------------------------------------------------------------------------- */
-void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
+void Make_xlabel(Figure *fig, char* xlabel,\
                     int decalage_X, int decalage_Y)
 {
     // Pos avec decalage : Y decal autre sens
     // Prise en compte de la longueur du label
-    int posX_xlabel = fig->orig[0] + (fig->img->sx - fig->padX[0] - fig->padX[1])/2 - \
-                              (strlen(xlabel) * size/3) + decalage_X;
+    int posX_xlabel = fig->orig[0] +\
+                     (fig->img->sx - fig->padX[0] - fig->padX[1])/2 \
+                  - (strlen(xlabel) * fig->fonts[label_f].size / 3) + decalage_X;
+                  
     int posY_xlabel = fig->img->sy - (fig->padY[1] - fig->padY[1]/3) + decalage_Y; 
 
     // int brect[8] = {0};
     gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, color), font,\
-                                size, 0., posX_xlabel, posY_xlabel, xlabel);    
+                            GetCouleur(fig->img,\
+                                fig->fonts[label_f].color),\
+                            fig->fonts[label_f].path,\
+                            fig->fonts[label_f].size,\
+                            0., posX_xlabel, posY_xlabel, xlabel);    
     //Avoid memory leaks
     gdFontCacheShutdown();
     // printf("%s \n", errStringFT); 
@@ -1005,7 +1119,7 @@ void Make_xlabel(Figure *fig, char* xlabel, char* font, int size, int color[3],\
 
 
 /* --------------------------------------------------------------------------- */
-void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
+void Make_ylabel(Figure *fig, char* ylabel,\
                      int decalage_X, int decalage_Y)
 {
     // Pos avec decalage : Y decal autre sens
@@ -1013,12 +1127,16 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
 
     // Prise en compte de la longueur du label
     int posY_ylabel = (fig->orig[1] + (fig->padY[0]))/2 + \
-                            (strlen(ylabel) * size/3)  + decalage_Y;   
+                            (strlen(ylabel) * fig->fonts[label_f].size/3)\
+                             + decalage_Y;   
 
     int brect[8] = {0};
     char *errStringFT = gdImageStringFT(fig->img, brect,\
-                            GetCouleur(fig->img, color), font,\
-                                size, Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
+                            GetCouleur(fig->img,\
+                            fig->fonts[label_f].color),
+                            fig->fonts[label_f].path,\
+                            fig->fonts[label_f].size,\
+                            Deg2rad(90.), posX_ylabel, posY_ylabel, ylabel);    
 
     if (errStringFT != NULL)
         printf("> Warning: police introuvable ou autre probleme police.\n");
@@ -1027,8 +1145,63 @@ void Make_ylabel(Figure *fig, char* ylabel, char* font, int size, int color[3],\
     gdFontCacheShutdown();
 }
 
+void Make_xticks_barplot(Figure *fig, float angle_labels);
+void Make_legend_barplot(Figure *fig,\
+                    int decal_X, int decal_Y, int ecart);
+
+
 /* --------------------------------------------------------------------------- */
-void Make_legend(Figure *fig, char* font, int size,\
+void Make_legend_barplot(Figure *fig,\
+                    int decal_X, int decal_Y, int ecart)
+{
+    // Position des 4 legendes possibles
+    int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
+    int pos_midX = fig->orig[0] + w_dessin/2 + 5;
+    
+    int pos_X[4] = {\
+                fig->orig[0] + 5 + decal_X, fig->orig[0] + 5 + decal_X,\
+                pos_midX + decal_X, pos_midX + decal_X};
+
+    int ecart_base = 20;
+    int ecart_Y = ecart_base + ecart;
+
+    int pos_Y[4] = {  (fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    2*(fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                      (fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    2*(fig->fonts[leg_f].size + ecart_Y) - decal_Y};
+
+    LineStyle linestyle1;
+    Init_linestyle(&linestyle1, ' ', color_lines[0], 0, 'o', 4);
+
+    int h_rect = 15;
+    int l_rect = 30;
+    int posX_label = 0;
+    int posY_label = 0;
+
+    for (int i = 0; i < fig->bardata[0]->nb_ctg ; i++) {
+        // Plot petits rectangles legendes
+        gdImageFilledRectangle(fig->img,\
+                    pos_X[i], pos_Y[i]-h_rect,\
+                    pos_X[i]+l_rect, pos_Y[i],\
+                    GetCouleur(fig->img, fig->bardata[0]->colors[i]));
+
+        // Labels
+        posX_label = pos_X[i]+l_rect+10;
+        posY_label = pos_Y[i] ;
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img,\
+                            fig->fonts[leg_f].color),
+                            fig->fonts[leg_f].path,\
+                            fig->fonts[leg_f].size,\
+                            0, posX_label, posY_label,\
+                                fig->bardata[0]->ctg_names[i]);  
+        
+    }                 
+
+}
+
+/* --------------------------------------------------------------------------- */
+void Make_legend(Figure *fig,\
                     int decal_X, int decal_Y, int ecart)
 {
     // Position des 8 legendes possibles
@@ -1036,17 +1209,21 @@ void Make_legend(Figure *fig, char* font, int size,\
     int pos_midX = w_img/2 + 5;
     // printf("Done here.\n");
 
-    int pos_X[8] = {30  + decal_X, 30  + decal_X,\
-                    30  + decal_X, 30  + decal_X,\
+    int pos_X[8] = {fig->orig[0] + 5 + decal_X, fig->orig[0] + 5  + decal_X,\
+                    fig->orig[0] + 5  + decal_X, fig->orig[0] + 5  + decal_X,\
                     pos_midX + decal_X, pos_midX + decal_X,\
                     pos_midX + decal_X, pos_midX + decal_X};
 
-    int ecart_base = 6;
+    int ecart_base = 8;
     int ecart_Y = ecart_base + ecart;
-    int pos_Y[8] = {  (size + ecart_Y) - decal_Y,  2*(size + ecart_Y) - decal_Y,\
-                    3*(size + ecart_Y) - decal_Y,  4*(size + ecart_Y) - decal_Y,\
-                      (size + ecart_Y) - decal_Y,  2*(size + ecart_Y) - decal_Y,\
-                    3*(size + ecart_Y) - decal_Y,  4*(size + ecart_Y) - decal_Y};
+    int pos_Y[8] = {  (fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    2*(fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    3*(fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    4*(fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                      (fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    2*(fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    3*(fig->fonts[leg_f].size + ecart_Y) - decal_Y,\
+                    4*(fig->fonts[leg_f].size + ecart_Y) - decal_Y};
 
     // Longueur petit trait
     int long_trait_leg = 30;
@@ -1054,26 +1231,29 @@ void Make_legend(Figure *fig, char* font, int size,\
     int decalage_trait_leg = long_trait_leg + 10;
 
     // Print des petits traits de legende pour chaque plot
-
-    for (int i = 0; i < fig->nb_linedata; i++)
-    { 
+    for (int i = 0; i < fig->nb_linedata; i++) { 
         ImageLineEpaisseur(fig->img,\
-                    pos_X[i]                   ,   pos_Y[i]-size/2,\
-                    pos_X[i]+long_trait_leg,   pos_Y[i]-size/2,\
+                    pos_X[i],\
+                    pos_Y[i] - fig->fonts[leg_f].size/2,\
+                    pos_X[i] + long_trait_leg,\
+                    pos_Y[i] - fig->fonts[leg_f].size/2,\
                     fig->linedata[i]->linestyle);
     }
 
     char *errStringFT;
     int brect[8] = {0};
-    int white[3]  = {255, 255, 255};   //white
 
     for (int i = 0; i < fig->nb_linedata; i++)
     {
         errStringFT= gdImageStringFT(fig->img, brect,\
-                            GetCouleur(fig->img, white), font,\
-                                size, 0.,\
-                                decalage_trait_leg+pos_X[i], pos_Y[i],\
-                                fig->linedata[i]->label);        
+                            GetCouleur(fig->img,\
+                                fig->fonts[leg_f].color),\
+                            fig->fonts[leg_f].path,\
+                            fig->fonts[leg_f].size,\
+                            0.,\
+                            decalage_trait_leg + pos_X[i],\
+                            pos_Y[i],\
+                            fig->linedata[i]->label);        
     }
 
     if (errStringFT != NULL) {
@@ -1084,10 +1264,10 @@ void Make_legend(Figure *fig, char* font, int size,\
     gdFontCacheShutdown();
 }
 
-void Make_xticks_barplot(Figure *fig, char* font, int fontsize);
 
-void Make_xticks_barplot(Figure *fig, char* font, int fontsize) {
-
+/* --------------------------------------------------------------------------- */
+void Make_xticks_barplot(Figure *fig, float angle_labels)
+{
     // largeur zone de dessin
     int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
 
@@ -1109,15 +1289,14 @@ void Make_xticks_barplot(Figure *fig, char* font, int fontsize) {
     int w_tick = 2;
     // int w_linegrid = 0.5;
     int long_tick = 9;
-    float angle_label = 20.;
-    
+   
     LineStyle style_tick;
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, 'o', 8);
 
     for (int bp = 0; bp < fig->nb_bardata ; bp ++)
     {
+        // pos centre de la barre
         posX_center = fig->orig[0] + fig->bardata[bp]->idx * itv_posX;
-        printf("Pos X bp %d center : %d \n", bp, posX_center);
 
         // plot tick
         ImageLineEpaisseur(fig->img,\
@@ -1132,25 +1311,27 @@ void Make_xticks_barplot(Figure *fig, char* font, int fontsize) {
         // Fake call : recuperation du brect sur le label horizontal
         // On ecrit en 0,0
         gdImageStringFT(fig->img, brect,\
-                            gdTiled, font,\
-                                fontsize, 0.,\
-                                0, 0,\
-                                fig->bardata[bp]->label);   
+                            gdTransparent,\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size, 0.,\
+                            0, 0,\
+                            fig->bardata[bp]->label);   
 
         // Longueur de l'adresse en px                                
         len_label_px = brect[2] - brect[0];
-        printf("Label  : %s \n", fig->bardata[bp]->label);
-        printf("Len label in px : %d \n", len_label_px);
 
-        posX_label = (int)(len_label_px * cos(Deg2rad(angle_label)));
-        posY_label = (int)(len_label_px * sin(Deg2rad(angle_label)));
+        posX_label = (int)(len_label_px * cos(Deg2rad(angle_labels)));
+        posY_label = (int)(len_label_px * sin(Deg2rad(angle_labels)));
 
         gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, color_lines[bp]), font,\
-                                fontsize, Deg2rad(angle_label),\
-                                posX_center - posX_label,\
-                                fig->orig[1] + (long_tick*3) + posY_label,\
-                                fig->bardata[bp]->label);
+                            GetCouleur(fig->img,\
+                                    color_lines[bp]),\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size,\
+                            Deg2rad(angle_labels),\
+                            posX_center - posX_label,\
+                            fig->orig[1] + (long_tick*3) + posY_label,\
+                            fig->bardata[bp]->label);
 
     }
 
@@ -1160,7 +1341,7 @@ void Make_xticks_barplot(Figure *fig, char* font, int fontsize) {
 }
 
 /* --------------------------------------------------------------------------- */
-void Make_xticks_xgrid_time(Figure *fig, char* font, int fontsize, Date date_init)
+void Make_xticks_xgrid_time(Figure *fig, Date date_init)
 {
     if (fig->max_X == 0)
     {
@@ -1230,21 +1411,26 @@ void Make_xticks_xgrid_time(Figure *fig, char* font, int fontsize, Date date_ini
         // printf("%s \n", tickhour);
 
 
+        int xlabel_date = fig->padX[0]/2 -10 + i*itv_pixels;
+        int ylabel_date = fig->orig[1] + (long_tick+2) + fig->fonts[ticklabel_f].size;
         // tick label date
         gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, style_tick.color), font,\
-                                fontsize, 0.,\
-                                fig->padX[0]/2 -10 + i*itv_pixels ,\
-                                fig->orig[1] + (long_tick+2) + fontsize,\
-                                tickdate);
+                            GetCouleur(fig->img,\
+                                fig->fonts[ticklabel_f].color),\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size,\
+                            0.,\
+                            xlabel_date, ylabel_date, tickdate);
 
+        int xlabel_hour = fig->padX[0]/2 -10 + i*itv_pixels + fig->fonts[ticklabel_f].size/2;
+        int ylabel_hour = fig->orig[1] + 2*((long_tick) + fig->fonts[ticklabel_f].size);
         // tick label heure
         gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, style_tick.color), font,\
-                                fontsize, 0.,\
-                                fig->padX[0]/2 -10 + i*itv_pixels + fontsize/2,\
-                                fig->orig[1] + 2*((long_tick) + fontsize),\
-                                tickhour);
+                            GetCouleur(fig->img,\
+                                fig->fonts[ticklabel_f].color),\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size,\
+                            0.,xlabel_hour, ylabel_hour, tickhour);
                                 
         // printf("%d\n", i);
     }
@@ -1255,7 +1441,7 @@ void Make_xticks_xgrid_time(Figure *fig, char* font, int fontsize, Date date_ini
 }
 
 /* --------------------------------------------------------------------------- */
-void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
+void Make_yticks_ygrid(Figure *fig, char wTicks)
 {
     if (fig->max_Y == 0)
     {
@@ -1312,30 +1498,20 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
     // Style tick
     int w_tick = 2;
     int w_linegrid = 0.5;
-    int long_tick = 9;
-    int long_tick_min = 5;
     LineStyle style_tick;
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
-
+    int long_tick = 0;
+    int long_tick_min = 0;
     LineStyle style_linegrid;
     Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
 
     // Plot ticks
-  
-
     char tickVal[12];
 
     for (int i = 1; i <= nb_ticks; i++)
     {
         sprintf(tickVal, "%d", i*itv);
 
-        // tick : facteur 0.5 ajouté pour gerer les nombres pairs/impais de px
-        ImageLineEpaisseur(fig->img,\
-                        fig->orig[0]-long_tick-2,\
-                            fig->orig[1] - i*(itv_pixels+0.5),\
-                        fig->orig[0]-2,\
-                            fig->orig[1] - i*(itv_pixels+0.5),\
-                        &style_tick);
 
         // gridline
         ImageLineEpaisseur(fig->img,\
@@ -1345,31 +1521,45 @@ void Make_yticks_ygrid(Figure *fig, char* font, int fontsize)
                             fig->orig[1] - i*(itv_pixels+0.5),\
                         &style_linegrid);        
 
+        if (wTicks == 'y') {
+            long_tick = 9;
+            long_tick_min = 5;
+            // tick : facteur 0.5 ajouté pour gerer les nombres pairs/impais de px
+            ImageLineEpaisseur(fig->img,\
+                            fig->orig[0]-long_tick-2,\
+                                fig->orig[1] - i*(itv_pixels+0.5),\
+                            fig->orig[0]-2,\
+                                fig->orig[1] - i*(itv_pixels+0.5),\
+                            &style_tick);
 
-        if (itv_minor != 0) {
+            if (itv_minor != 0) {
 
-            for (int j = 1; j < nb_ticks_min; j++)
-            {
-                int itv_ytickmin = fig->orig[1] - (i-1)*itv_pixels - j*(itv_pixels/(nb_ticks_min));
-                
-                ImageLineEpaisseur(fig->img,\
-                                fig->orig[0]-long_tick_min-2,\
-                                    itv_ytickmin,\
-                                fig->orig[0]-2,\
-                                    itv_ytickmin,\
-                                &style_tick);            
+                for (int j = 1; j < nb_ticks_min; j++)
+                {
+                    int itv_ytickmin = fig->orig[1] - (i-1)*itv_pixels - j*(itv_pixels/(nb_ticks_min));
+                    
+                    ImageLineEpaisseur(fig->img,\
+                                    fig->orig[0]-long_tick_min-2,\
+                                        itv_ytickmin,\
+                                    fig->orig[0]-2,\
+                                        itv_ytickmin,\
+                                    &style_tick);            
+                }
             }
         }
 
-        // printf("Tick val : %s \n", tickVal);
-        gdImageStringFT(fig->img, NULL,\
-                            GetCouleur(fig->img, style_tick.color), font,\
-                                fontsize, 0.,\
-                                fig->orig[0]-(long_tick+2)-strlen(tickVal)*fontsize,\
-                                fig->orig[1] - i*itv_pixels + fontsize/2,\
-                                tickVal);
+        int posX_ticklab = fig->orig[0]-(long_tick+2) \
+                            - strlen(tickVal) * fig->fonts[ticklabel_f].size;
+        int posY_ticklab = fig->orig[1] - i*itv_pixels \
+                            + fig->fonts[ticklabel_f].size / 2;
 
-        // printf("%d\n", i);
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img,\
+                                    style_tick.color),\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size,\
+                                0., posX_ticklab, posY_ticklab, tickVal);
+
     }
 
     //Avoid memory leaks

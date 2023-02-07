@@ -171,12 +171,12 @@ void Print_debug_date(Date *dateobj, char debugmode)
     if (debugmode == 'y') {
         printf("# -----------------------------------------\n");
         printf("> Date obj debug : \n");
-        printf("  tm.datestr : %s\n", dateobj->datestr);
-        printf("  tm.year    : %d\n", dateobj->tm.tm_year+1900);
-        printf("  tm.mon     : %d\n", dateobj->tm.tm_mon+1);
-        printf("  tm.dom     : %d\n", dateobj->tm.tm_mday);
-        printf("  tm.hour    : %d\n", dateobj->tm.tm_hour);
-        printf("  tm.min     : %d\n", dateobj->tm.tm_min);
+        printf("  datestr : %s\n", dateobj->datestr);
+        printf("  year    : %d\n", dateobj->tm.tm_year+1900);
+        printf("  mon     : %d\n", dateobj->tm.tm_mon+1);
+        printf("  dom     : %d\n", dateobj->tm.tm_mday);
+        printf("  hour    : %d\n", dateobj->tm.tm_hour);
+        printf("  min     : %d\n", dateobj->tm.tm_min);
         printf("  ctime      : %ld\n", dateobj->ctime);
         printf("# -----------------------------------------\n");
     } else if (debugmode == 'n') {

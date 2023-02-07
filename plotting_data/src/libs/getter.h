@@ -195,6 +195,7 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
     strcpy(req, query_statuts_stations_fav);
     strcat(req, "\'");
     strcat(req, tableau_adresses_fav[station]);
+    strcat(req, " Paris"); // on l'ajoute vu qu'on le supprime dans Get_adresse
     strcat(req, "\';");
 
     return req;
@@ -288,7 +289,7 @@ void Get_adresses_fav(sqlite3 *db_belib, \
                 char **tableau_adresses_fav, int nb_stations_fav)
 {
 
-    int len_max = 70;
+    int len_max = 100;
     // Declaration statement
     sqlite3_stmt *stmt;
 
@@ -311,8 +312,10 @@ void Get_adresses_fav(sqlite3 *db_belib, \
         if (step == SQLITE_ROW) 
         {
             tableau_adresses_fav[i] = (char *)malloc(len_max*sizeof(char));
-            strcpy(tableau_adresses_fav[i], (char *)sqlite3_column_text(stmt, 0));
-            // printf("Adresse %d : %s \n", i+1, tableau_adresses_fav[i]);
+            // On supprime " Paris" en fin de chaine
+            strncpy(tableau_adresses_fav[i],\
+                (char *)sqlite3_column_text(stmt, 0),\
+                strlen((char *)sqlite3_column_text(stmt, 0))-6);
         }
         // ELIF STOP
     }
