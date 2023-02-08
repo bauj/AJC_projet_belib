@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     int padY[2] = {120,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
 
-    int w_lines = 8;                 /**< epaisseur des traits*/
+    int w_lines = 5;                 /**< epaisseur des traits*/
     int ms = 6;                      /**< marker size */
 
     // Creation de la figure ------------------------------------------------------------
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
                     vect_nb_dispo[st], tableau_adresses_fav[st], &(linestyles[st]));
         Add_line_to_fig(&fig1, &(lines[st]));
     }
-
+    
     /* Make ylabel  ----------  A mettre apres update fig */
     int decalx_Y = 20, decaly_Y = 0;    
     char *ylabel = "Bornes disponibles";
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 
 
      /* Sauvegarde du fichier png */
-    const char *filename_fig1= "fig1_disponible_w8.png";
+    const char *filename_fig1= "fig1_disponible_w5_AA.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
     /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\

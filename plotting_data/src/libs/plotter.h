@@ -508,9 +508,10 @@ void ImageLineEpaisseur(gdImagePtr im_fig,\
 {
                     
     gdImageSetThickness(im_fig, linestyle->w);
+    gdImageSetAntiAliased(im_fig, GetCouleur(im_fig, linestyle->color));
     if (linestyle->style == '-') {
         gdImageLine(im_fig, x1, y1,   x2,   y2,\
-                    GetCouleur(im_fig, linestyle->color));
+                   gdAntiAliased);
     } else if (linestyle->style == ':') {
         gdImageDashedLine(im_fig, x1, y1,   x2,   y2,\
                    GetCouleur(im_fig, linestyle->color));
