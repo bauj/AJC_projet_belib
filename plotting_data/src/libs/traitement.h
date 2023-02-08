@@ -13,6 +13,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
+
+#define PI 3.141592
 
 
 // ----------------------------------------------------------------------------
@@ -41,6 +44,28 @@ typedef struct Datetick_s {
     char labelh[6];    /**< string de type : HH:MM + '\0' */ 
 }   Datetick;
 
+
+
+/* --------------------------------------------------------------------------- */
+float Deg2rad(float angle);
+
+/* --------------------------------------------------------------------------- */
+int iMaxval_array(const int x_array[], size_t n);
+
+/* --------------------------------------------------------------------------- */
+float fMaxval_array(const float x_array[], size_t n);
+
+/* --------------------------------------------------------------------------- */
+int Max_int(int x, int y);
+
+/* --------------------------------------------------------------------------- */
+int Min_int(int x, int y);
+
+/* --------------------------------------------------------------------------- */
+float Max_float(float x, float y);
+
+/* --------------------------------------------------------------------------- */
+float Min_float(float x, float y);
 
 // ----------------------------------------------------------------------------
 void Init_Datetick(Datetick *datetick, Date *dateobj_i, Date *dateobj_init);
@@ -74,6 +99,63 @@ void Slice_str(const char *str_src, char *str_dest, int start,int end);
 void Slice_str(const char *str_src, char *str_dest, int start, int end)
 {
     strncpy(str_dest, str_src + start, end - start + 1);
+}
+
+
+/* --------------------------------------------------------------------------- */
+int iMaxval_array(const int x_array[], size_t n)
+{
+    int t, i;
+    t = x_array[0];
+    for(i = 1; i < n; i++)
+    {
+        t = (x_array[i] > t) ? x_array[i] : t;
+    }
+    return t;
+}
+
+/* --------------------------------------------------------------------------- */
+float fMaxval_array(const float x_array[], size_t n)
+{
+    int i;
+    float t;
+    t = x_array[0];
+    for(i = 1; i < n; i++)
+    {
+        t = (x_array[i] > t) ? x_array[i] : t;
+    }
+    return t;
+}
+
+/* --------------------------------------------------------------------------- */
+int Max_int(int x, int y) 
+{
+    return (x < y) ? y : x ;
+}
+
+/* --------------------------------------------------------------------------- */
+int Min_int(int x, int y) 
+{
+    return (x > y) ? y : x ;
+}
+
+/* --------------------------------------------------------------------------- */
+float Max_float(float x, float y) 
+{
+    return (x < y) ? y : x ;
+}
+
+/* --------------------------------------------------------------------------- */
+float Min_float(float x, float y) 
+{
+    return (x > y) ? y : x ;
+}
+
+
+/* --------------------------------------------------------------------------- */
+float Deg2rad(float angle)
+{
+    return angle*PI/180;
 }
 
 // ----------------------------------------------------------------------------

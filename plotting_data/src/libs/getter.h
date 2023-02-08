@@ -176,7 +176,53 @@ void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
     for (int i = 0; i < nb_rows; i++)
     {
         vect_statut[i] = tableau_statuts_fav[station][i][statut];
+        printf("%d \n", vect_statut[i]);
     }
+}
+
+
+
+/* --------------------------------------------------------------------------- */
+void Get_adresses_fav(sqlite3 *db_belib, \
+                char **tableau_adresses_fav, int nb_stations_fav)
+{
+
+    int len_max = 100;
+    // Declaration statement
+    sqlite3_stmt *stmt;
+
+    const char *query_adresse_stations_fav = \
+                "SELECT DISTINCT(adresse_station) FROM Stations_fav;";
+
+    // Test de la requete
+    if (sqlite3_prepare_v2(db_belib, query_adresse_stations_fav, -1, &stmt, NULL))
+    {
+        printf("Erreur SQL :\n");
+        printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
+                         sqlite3_errmsg(db_belib));
+        sqlite3_close(db_belib);
+        exit(EXIT_FAILURE);
+    }
+
+    // Application du statement et fermeture de la db
+    for (int i = 0; i < nb_stations_fav; i++) {
+        int step = sqlite3_step(stmt);
+        if (step == SQLITE_ROW) 
+        {
+            tableau_adresses_fav[i] = (char *)malloc(len_max*sizeof(char));
+            // On supprime " Paris" en fin de chaine
+            
+            strncpy(tableau_adresses_fav[i],\
+                (char *)sqlite3_column_text(stmt, 0),\
+                  strlen((char *)sqlite3_column_text(stmt, 0))-6);
+            tableau_adresses_fav[i][sizeof(tableau_adresses_fav[i])-1] = '\0';
+        }
+        // ELIF STOP
+    }
+
+    // Reset du stmt
+    sqlite3_finalize(stmt);
+
 }
 
 /* --------------------------------------------------------------------------- */
@@ -187,20 +233,23 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
                 Stations_fav WHERE adresse_station = ";
 
     int len_query_base = strlen(query_statuts_stations_fav);
-    int len_max_adresse = 70;
+    int len_max_adresse = 100;
     int len_query_station = len_query_base + len_max_adresse;
 
-    char *req = malloc(len_query_station*sizeof(char));
+    char *req = (char *)malloc(len_query_station*sizeof(char));
 
     strcpy(req, query_statuts_stations_fav);
+
     strcat(req, "\'");
+
     strcat(req, tableau_adresses_fav[station]);
+
     strcat(req, " Paris"); // on l'ajoute vu qu'on le supprime dans Get_adresse
+
     strcat(req, "\';");
 
     return req;
 }
-
 
 /* --------------------------------------------------------------------------- */
 void Get_statuts_station_fav(sqlite3 *db_belib,\
@@ -216,7 +265,7 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
 
         // Construction requete
         char *req_sql = Construct_req_station_statuts(station, tableau_adresses_fav);
-
+        
         // Test de la requete
         if (sqlite3_prepare_v2(db_belib, req_sql, -1, &stmt_station, NULL))
         {
@@ -284,46 +333,6 @@ void Get_date_recolte_fav(sqlite3 *db_belib, \
 }
 
 
-/* --------------------------------------------------------------------------- */
-void Get_adresses_fav(sqlite3 *db_belib, \
-                char **tableau_adresses_fav, int nb_stations_fav)
-{
-
-    int len_max = 100;
-    // Declaration statement
-    sqlite3_stmt *stmt;
-
-    const char *query_adresse_stations_fav = \
-                "SELECT DISTINCT(adresse_station) FROM Stations_fav;";
-
-    // Test de la requete
-    if (sqlite3_prepare_v2(db_belib, query_adresse_stations_fav, -1, &stmt, NULL))
-    {
-        printf("Erreur SQL :\n");
-        printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
-                         sqlite3_errmsg(db_belib));
-        sqlite3_close(db_belib);
-        exit(EXIT_FAILURE);
-    }
-
-    // Application du statement et fermeture de la db
-    for (int i = 0; i < nb_stations_fav; i++) {
-        int step = sqlite3_step(stmt);
-        if (step == SQLITE_ROW) 
-        {
-            tableau_adresses_fav[i] = (char *)malloc(len_max*sizeof(char));
-            // On supprime " Paris" en fin de chaine
-            strncpy(tableau_adresses_fav[i],\
-                (char *)sqlite3_column_text(stmt, 0),\
-                strlen((char *)sqlite3_column_text(stmt, 0))-6);
-        }
-        // ELIF STOP
-    }
-
-    // Reset du stmt
-    sqlite3_finalize(stmt);
-
-}
 
 /* --------------------------------------------------------------------------- */
 int Get_nb_rows_par_station(sqlite3 *db_belib)
@@ -443,7 +452,7 @@ void free_tab_char1(char **tableau_str, int len_tab)
  
 
 /* --------------------------------------------------------------------------- */
-void print_arr1D(int len_tab, int tab[len_tab], char col)
+void print_Iarr1D(int len_tab, int tab[len_tab], char col)
 {
     if (col=='y')
     {
@@ -457,5 +466,22 @@ void print_arr1D(int len_tab, int tab[len_tab], char col)
     }
     printf("\n");
 }
+
+/* --------------------------------------------------------------------------- */
+void print_Farr1D(int len_tab, float tab[len_tab], char col)
+{
+    if (col=='y')
+    {
+        for (int i=0; i< len_tab; i++ )
+            printf("%f\n", tab[i]);
+    } else if (col=='n') {
+        for (int i=0; i< len_tab; i++ )
+            printf("%f, ", tab[i]);
+    } else {
+        printf("\n");
+    }
+    printf("\n");
+}
+
  
 #endif /* GETTER_H */

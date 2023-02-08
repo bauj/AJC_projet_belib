@@ -11,7 +11,9 @@
 #include "libs/consts.h"
 #include "libs/traitement.h"
 #include "libs/getter.h"
-#include "libs/plotter.h"
+#include "libs/iplot.h"
+#include "libs/fplot.h"
+#include "libs/barplot.h"
 
 
 /* =========================================================================== */
@@ -90,20 +92,20 @@ int main(int argc, char* argv[])
     int ms = 6;                      /**< marker size */
 
     // Creation de la figure ------------------------------------------------------------
-    Figure fig1;
+    FigureILinePlot fig1;
     char wAxes = 'n';
-    Init_figure(&fig1, figsize, padX, padY, margin, wAxes);
+    Init_fig_ILinePlot(&fig1, figsize, padX, padY, margin, wAxes);
 
-    // Recup vecteur temps
+    // // Recup vecteur temps
     int vect_time[nb_rows_par_station];
     Get_time_vect(nb_rows_par_station, vect_time, tableau_date_recolte_fav);
-    // print_arr1D(nb_rows_par_station, vect_time, 'n');
+    // print_Iarr1D(nb_rows_par_station, vect_time, 'n');
 
     // Recup vecteurs Y dans les linedata de la figure 
     int vect_nb_dispo[nb_stations_fav][nb_rows_par_station]; /**< vecteur nb _disponible 
     par station*/
     char style_trait;
-    LineData lines[nb_stations_fav]; /**< vecteur de linedata pour chaque station*/
+    iLineData lines[nb_stations_fav]; /**< vecteur de linedata pour chaque station*/
     LineStyle linestyles[nb_stations_fav];  /**< vecteur de linestyle pour chaque station*/
 
     for (int st = 0; st < nb_stations_fav; st ++)
@@ -118,19 +120,22 @@ int main(int argc, char* argv[])
         //     style_trait = ':';
 
         Init_linestyle(&(linestyles[st]), style_trait, color_lines[st], w_lines,'o', ms);
-        Init_linedata(&(lines[st]), nb_rows_par_station, \
+        Init_ilinedata(&(lines[st]), nb_rows_par_station, \
                     vect_time, \
                     vect_nb_dispo[st], tableau_adresses_fav[st], &(linestyles[st]));
-        Add_line_to_fig(&fig1, &(lines[st]));
+        // printf("MAX X : %d \n", iMaxval_array(vect_time, nb_rows_par_station));
+        printf("MAX Y : %d \n", iMaxval_array(vect_nb_dispo[st], nb_rows_par_station));
+                    
+        Add_Iline_to_fig(&fig1, &(lines[st]));
     }
     
     /* Make ylabel  ----------  A mettre apres update fig */
     int decalx_Y = 20, decaly_Y = 0;    
     char *ylabel = "Bornes disponibles";
-    Change_fontsize(&fig1, label_f, 16);    
+    Change_fontsize(fig1.fig, label_f, 16);    
 
     // char *ylabel = "Bornes occupées";
-    Make_ylabel(&fig1, ylabel, decalx_Y, decaly_Y);
+    Make_ylabel(fig1.fig, ylabel, decalx_Y, decaly_Y);
 
     // /* Make xlabel */
     // char *xlabel = "Date";
@@ -141,7 +146,7 @@ int main(int argc, char* argv[])
     char *title = "Evolution du nombre de bornes Belib disponibles (stations favorites)";
     int decalx_title = -30, decaly_title = 15;
     int *bbox_title;     /**< bbox : so, se, ne, no */
-    bbox_title = Make_title(&fig1, title, decalx_title, decaly_title);
+    bbox_title = Make_title(fig1.fig, title, decalx_title, decaly_title);
 
     /* Make subtitle */
     Date date_debut;
@@ -154,146 +159,148 @@ int main(int argc, char* argv[])
     Const_str_dudate1_audate2(&date_debut, &date_fin, subtitle);
     
     int decalx_subtitle = 0, decaly_subtitle = 0;
-    Make_subtitle(&fig1, subtitle, bbox_title, decalx_subtitle, decaly_subtitle);
+    Make_subtitle(fig1.fig, subtitle, bbox_title, decalx_subtitle, decaly_subtitle);
 
     /* Make X ticks and grid line*/
-    Make_xticks_xgrid_time(&fig1, tableau_date_recolte_fav[0]);
+    Make_Ixticks_xgrid_time(&fig1, tableau_date_recolte_fav[0]);
 
     /* Make Y ticks and grid line*/
     char wTicks = 'n';
     char *path_f_med = "fonts/Lato-Medium.ttf";
-    Change_font(&fig1, ticklabel_f, path_f_med);
-    Change_fontsize(&fig1, ticklabel_f, 14);    
-    Make_yticks_ygrid(&fig1, wTicks);
+    Change_font(fig1.fig, ticklabel_f, path_f_med);
+    Change_fontsize(fig1.fig, ticklabel_f, 14);    
+    Make_Iyticks_ygrid(&fig1, wTicks);
 
-    /* Make legend */
-    int decalx_leg = 0, decaly_leg = 0, ecart = 8;
-    Make_legend(&fig1, decalx_leg, decaly_leg, ecart);
+    // /* Make legend */
+    // int decalx_leg = 0, decaly_leg = 0, ecart = 8;
+    // Make_Ilegend(&fig1, decalx_leg, decaly_leg, ecart);
 
-    /* Make github link */
-    char *github = "https://github.com/bauj/AJC_projet_belib";
-    int decalx_github = 0, decaly_github = 0;
-    Make_annotation(&fig1, github, decalx_github, decaly_github);
+    // /* Make github link */
+    // char *github = "https://github.com/bauj/AJC_projet_belib";
+    // int decalx_github = 0, decaly_github = 0;
+    // Make_annotation(fig1.fig, github, decalx_github, decaly_github);
 
-    /* Make copyright */
-    char *sign = "\u00a9 2023 by Juba Hamma";
-    int decalx_sign = fig1.img->sx- strlen(sign)*7, decaly_sign = 0;
-    Make_annotation(&fig1, sign, decalx_sign, decaly_sign);
-
-
-    /* Plot lines */
-    for (int st = 0; st < nb_stations_fav; st++)
-        PlotLine(&fig1, &(lines[st]));
+    // /* Make copyright */
+    // char *sign = "\u00a9 2023 by Juba Hamma";
+    // int decalx_sign = fig1.fig->img->sx - strlen(sign)*7, decaly_sign = 0;
+    // Make_annotation(fig1.fig, sign, decalx_sign, decaly_sign);
 
 
-     /* Sauvegarde du fichier png */
-    const char *filename_fig1= "fig1_disponible_w5_AA.png";
-    Save_to_png(&fig1, dir_figures, filename_fig1);
+    // /* Plot lines */
+    // for (int st = 0; st < nb_stations_fav; st++)
+    //     PlotILine(&fig1, &(lines[st]));
 
-    /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
-                             gdImageResolutionY(fig1.img) );                           
-    */
 
-    /* Destroy the image in memory. */
-    gdImageDestroy(fig1.img);
+    //  /* Sauvegarde du fichier png */
+    // const char *filename_fig1= "fig1_TEST.png";
+    // Save_to_png(fig1.fig, dir_figures, filename_fig1);
 
+    // /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
+    //                          gdImageResolutionY(fig1.img) );                           
+    // */
+
+
+    // Free figure data
+    Free_figILdata(&fig1);
+
+    
 
     // ========================================================================
     // Creation de la figure 2 : barplot des statuts des bornes par station
     // pour la derniere recolte
     // ========================================================================
 
-    // Creation de la figure ------------------------------------------------------------
-    Figure fig2;
-    padY[0] = 90;
-    padY[1] = 230;
-    wAxes = 'n';
-    Init_figure(&fig2, figsize, padX, padY, margin, wAxes);
+    // // Creation de la figure ------------------------------------------------------------
+    // Figure fig2;
+    // padY[0] = 90;
+    // padY[1] = 230;
+    // wAxes = 'n';
+    // Init_figure(&fig2, figsize, padX, padY, margin, wAxes);
     
-    int nb_tot_bornes;
-    // Definition d'un vecteur de bardata pour chaque station
-    BarData barplots[nb_stations_fav]; 
+    // int nb_tot_bornes;
+    // // Definition d'un vecteur de bardata pour chaque station
+    // BarData barplots[nb_stations_fav]; 
 
-    // Initialisation de chaque bardata
-    for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
-        nb_tot_bornes=0;
-        for (int statut = disponible; statut <= inconnu; statut ++)
-            nb_tot_bornes += tableau_statuts_fav[st_barplot][nb_rows_par_station-1][statut];
+    // // Initialisation de chaque bardata
+    // for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
+    //     nb_tot_bornes=0;
+    //     for (int statut = disponible; statut <= inconnu; statut ++)
+    //         nb_tot_bornes += tableau_statuts_fav[st_barplot][nb_rows_par_station-1][statut];
             
-        Init_bardata(&(barplots[st_barplot]), nb_statuts, labels_ctg, nb_tot_bornes,\
-             tableau_statuts_fav[st_barplot][nb_rows_par_station-1],\
-              color_ctg, tableau_adresses_fav[st_barplot]);
+    //     Init_bardata(&(barplots[st_barplot]), nb_statuts, labels_ctg, nb_tot_bornes,\
+    //          tableau_statuts_fav[st_barplot][nb_rows_par_station-1],\
+    //           color_ctg, tableau_adresses_fav[st_barplot]);
 
-        // Update des data de l'objet figure (gestion des max, posX des barplot)
-        Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
-    }
+    //     // Update des data de l'objet figure (gestion des max, posX des barplot)
+    //     Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
+    // }
 
-    // // Ajout du ylabel
-    // decalx_Y = 10, decaly_Y = 0;    
-    // ylabel = "Bornes Belib";
-    // Make_ylabel(&fig2, ylabel, decalx_Y, decaly_Y);
+    // // // Ajout du ylabel
+    // // decalx_Y = 10, decaly_Y = 0;    
+    // // ylabel = "Bornes Belib";
+    // // Make_ylabel(&fig2, ylabel, decalx_Y, decaly_Y);
 
-    // Ajout des yticks et des ygrid (avant plot pour eviter de plotter par dessus)
-    wTicks = 'n';
-    Change_font(&fig2, ticklabel_f, path_f_med);
-    Change_fontsize(&fig2, ticklabel_f, 14);
-    Make_yticks_ygrid(&fig2, wTicks);
+    // // Ajout des yticks et des ygrid (avant plot pour eviter de plotter par dessus)
+    // wTicks = 'n';
+    // Change_font(&fig2, ticklabel_f, path_f_med);
+    // Change_fontsize(&fig2, ticklabel_f, 14);
+    // Make_yticks_ygrid(&fig2, wTicks);
 
-    // Ajout des xticks
-    float angle_labels = 20.;
-    Change_fontsize(&fig2, ticklabel_f, 13);
-    Make_xticks_barplot(&fig2, angle_labels);
+    // // Ajout des xticks
+    // float angle_labels = 20.;
+    // Change_fontsize(&fig2, ticklabel_f, 13);
+    // Make_xticks_barplot(&fig2, angle_labels);
 
-    /* Make legend */
-    Change_font(&fig2, leg_f, path_f_med);
-    Change_fontsize(&fig2, leg_f, 13);
-    decalx_leg = 0, decaly_leg = 0, ecart = 2;
-    Make_legend_barplot(&fig2, decalx_leg, decaly_leg, ecart);
+    // /* Make legend */
+    // Change_font(&fig2, leg_f, path_f_med);
+    // Change_fontsize(&fig2, leg_f, 13);
+    // decalx_leg = 0, decaly_leg = 0, ecart = 2;
+    // Make_legend_barplot(&fig2, decalx_leg, decaly_leg, ecart);
 
-    /* Make github link */
-    decalx_github = 0, decaly_github = 0;
-    Make_annotation(&fig2, github, decalx_github, decaly_github);
+    // /* Make github link */
+    // decalx_github = 0, decaly_github = 0;
+    // Make_annotation(&fig2, github, decalx_github, decaly_github);
 
-    /* Make copyright */
-    Make_annotation(&fig2, sign, decalx_sign, decaly_sign);
+    // /* Make copyright */
+    // Make_annotation(&fig2, sign, decalx_sign, decaly_sign);
 
-    // Plot des barplots
-    char wlabels = 'y';
-    for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
-        // Print_debug_bd(fig2.bardata[st_barplot], 'y');
-        PlotBarplot(&fig2, fig2.bardata[st_barplot], wlabels);
-    }
+    // // Plot des barplots
+    // char wlabels = 'y';
+    // for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++) {
+    //     // Print_debug_bd(fig2.bardata[st_barplot], 'y');
+    //     PlotBarplot(&fig2, fig2.bardata[st_barplot], wlabels);
+    // }
 
-    /* Make title */
-    title = "Disponibilité des bornes Belib (stations favorites)";
-    decalx_title = 0, decaly_title = 0;
-    bbox_title = Make_title(&fig2, title, decalx_title, decaly_title);
+    // /* Make title */
+    // title = "Disponibilité des bornes Belib (stations favorites)";
+    // decalx_title = 0, decaly_title = 0;
+    // bbox_title = Make_title(&fig2, title, decalx_title, decaly_title);
 
-    /* Make subtitle */
-        // Recuperation derniere date de recolte    
-    Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
-    // Print_debug_date(&last_date_recolte, 'y');
+    // /* Make subtitle */
+    //     // Recuperation derniere date de recolte    
+    // Date last_date_recolte = tableau_date_recolte_fav[nb_rows_par_station-1];
+    // // Print_debug_date(&last_date_recolte, 'y');
 
-    char subtitle2[70];
-    sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
-                     last_date_recolte.tm.tm_mday,\
-                     last_date_recolte.tm.tm_mon+1,\
-                     (last_date_recolte.tm.tm_year+1900)%2000,\
-                     last_date_recolte.tm.tm_hour,\
-                     last_date_recolte.tm.tm_min);
+    // char subtitle2[70];
+    // sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
+    //                  last_date_recolte.tm.tm_mday,\
+    //                  last_date_recolte.tm.tm_mon+1,\
+    //                  (last_date_recolte.tm.tm_year+1900)%2000,\
+    //                  last_date_recolte.tm.tm_hour,\
+    //                  last_date_recolte.tm.tm_min);
 
-    decalx_subtitle = 0, decaly_subtitle = 0;
+    // decalx_subtitle = 0, decaly_subtitle = 0;
 
-    Make_subtitle(&fig2, subtitle2, bbox_title, decalx_subtitle, decaly_subtitle);
+    // Make_subtitle(&fig2, subtitle2, bbox_title, decalx_subtitle, decaly_subtitle);
 
-     /* Sauvegarde du fichier png */
-    const char *filename_fig2= "fig2_barplot.png";
-    Save_to_png(&fig2, dir_figures, filename_fig2);
+    //  /* Sauvegarde du fichier png */
+    // const char *filename_fig2= "fig2_barplot.png";
+    // Save_to_png(&fig2, dir_figures, filename_fig2);
 
-    // Destroying img 
-    gdImageDestroy(fig2.img);
+    // // Destroying img 
+    // gdImageDestroy(fig2.img);
 
-    // Clean alloc
+    // // Clean alloc
     free_tab_char1(tableau_adresses_fav, nb_stations_fav);
 
     return 0;
