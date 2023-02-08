@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     int padY[2] = {120,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
 
-    int w_lines = 3;                 /**< epaisseur des traits*/
+    int w_lines = 8;                 /**< epaisseur des traits*/
     int ms = 6;                      /**< marker size */
 
     // Creation de la figure ------------------------------------------------------------
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 
 
      /* Sauvegarde du fichier png */
-    const char *filename_fig1= "fig1_disponible.png";
+    const char *filename_fig1= "fig1_disponible_w8.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
 
     /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
