@@ -342,23 +342,32 @@ int main(int argc, char* argv[])
     padY[0] = 120;
     padY[1] = 160;
    
-    wAxes = 'y';
+    char wAxes = 'y';
     Init_figure(&fig3, figsize, padX, padY, margin, wAxes);
 
     /* Make ylabel  ----------  A mettre apres update fig */
-    decalx_Y = 20, decaly_Y = 0;    
-    ylabel = "Moyenne horaire des bornes disponibles";
+    int decalx_Y = 20, decaly_Y = 0;    
+    char *ylabel = "Moyenne horaire des bornes disponibles";
     Change_fontsize(&fig3, label_f, 14);    
     Make_ylabel(&fig3, ylabel, decalx_Y, decaly_Y);
 
     /* Make title */
-    title = "\u00c9volution de la moyenne horaire des bornes Belib disponibles";
-    decalx_title = -30, decaly_title = 15;
+    char *title = "\u00c9volution de la moyenne horaire des bornes Belib disponibles";
+    int decalx_title = -30, decaly_title = 15;
+    int *bbox_title;     /**< bbox : so, se, ne, no */
     bbox_title = Make_title(&fig3, title, decalx_title, decaly_title);
 
     /* Make subtitle */
+    Date date_debut;
+    Date date_fin;
+    Init_Date(&date_debut, tableau_date_recolte_fav[0].datestr);
+    Init_Date(&date_fin, tableau_date_recolte_fav[nb_rows_par_station-1].datestr);
         // Construction du sous titre "du .... au ... "
+    char subtitle[25] = "";  
+    Const_str_dudate1_audate2(&date_debut, &date_fin, subtitle);
+    int decalx_subtitle = 0, decaly_subtitle = 0;
     Make_subtitle(&fig3, subtitle, bbox_title, decalx_subtitle, decaly_subtitle);
+
 
     // Data
     // Vecteur X = tableau_avg_hours
@@ -367,7 +376,6 @@ int main(int argc, char* argv[])
     LineStyle flinestyles[nb_stations_fav];  /**< vecteur de linestyle pour chaque station*/
     fLineData flines[nb_stations_fav];
 
-    w_lines = 3;
     for (int st = 0; st < nb_stations_fav; st ++)
     {
         style_trait = '-';
@@ -388,8 +396,8 @@ int main(int argc, char* argv[])
     Make_xticks_xgrid_time_avgH(&fig3, nb_rows_hours,tableau_avg_hours);
 
     /* Make Y ticks and grid line*/
-    wTicks = 'n';
-    path_f_med = "fonts/Lato-Medium.ttf";
+    char wTicks = 'n';
+    char *path_f_med = "fonts/Lato-Medium.ttf";
     Change_font(&fig3, ticklabel_f, path_f_med);
     Change_fontsize(&fig3, ticklabel_f, 14);    
     Make_fyticks_ygrid(&fig3, wTicks);
@@ -399,15 +407,8 @@ int main(int argc, char* argv[])
         PlotFLine(&fig3, &(flines[st]));
 
     /* Make legend */
-    decalx_leg = 0, decaly_leg = 0, ecart = 8;
+    int decalx_leg = 0, decaly_leg = 0, ecart = 8;
     Make_legend(&fig3, decalx_leg, decaly_leg, ecart);
-
-    /* Make github link */
-    decalx_github = 0, decaly_github = 0;
-    Make_annotation(&fig3, github, decalx_github, decaly_github);
-
-    /* Make copyright */
-    Make_annotation(&fig3, sign, decalx_sign, decaly_sign);
 
      /* Sauvegarde du fichier png */
     const char *filename_fig3= "fig3_avg_hour_dispo.png";

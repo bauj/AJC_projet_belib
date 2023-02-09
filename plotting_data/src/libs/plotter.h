@@ -77,10 +77,10 @@ typedef struct LineData_s {
  */
 typedef struct fLineData_s {
     size_t len_data;      /**< Taille du vecteur de data */
-    float *x;               /**< Vecteur de data X */
+    int *x;               /**< Vecteur de data X */
     float *y;               /**< Vecteur de data Y */
-    float max_X;            /**< Maximum des valeurs X */
-    float max_Y;            /**< Maximum des valeurs Y */
+    int  max_X;            /**< Maximum des valeurs X */
+    float fmax_Y;            /**< Maximum des valeurs Y */
     char* label;
     LineStyle *linestyle;  /**< LineStyle */
 } fLineData; 
@@ -107,7 +107,9 @@ typedef struct Font_s {
 typedef struct Figure_s {
     gdImage *img;        /**< Pointeur sur objet gdImage */
     size_t nb_linedata;  /**< Nombre de linedata dans la figure */
+    size_t nb_flinedata;  /**< Nombre de linedata dans la figure */
     size_t nb_bardata;  /**< Nombre de linedata dans la figure */
+    fLineData **flinedata;  /**< Vecteur de fLineData */
     LineData **linedata;  /**< Vecteur de LineData */
     BarData **bardata;   /**< Vecteur de BarData */
     Font fonts[6];       /**< Fonts used in the fig*/
@@ -439,6 +441,13 @@ void Make_legend(Figure *fig, int decal_X, int decal_Y, int ecart);
  */
 void Make_yticks_ygrid(Figure *fig, char wTicks);
 
+/* --------------------------------------------------------------------------- */
+int *Transform_fdataY_to_plot(Figure *fig, size_t len_pts, \
+                                    const float pts[]);
+
+/* --------------------------------------------------------------------------- */
+int *Transform_fdataX_to_plot(Figure *fig, size_t len_pts,\
+                                    const int pts[]);
 
 /* --------------------------------------------------------------------------- */
 // Définition des fonctions
@@ -449,6 +458,30 @@ int Maxval_array(const int x_array[], size_t n)
 {
     int t, i;
     t = x_array[0];
+    for(i = 1; i < n; i++)
+    {
+        t = (x_array[i] > t) ? x_array[i] : t;
+    }
+    return t;
+}
+
+/* --------------------------------------------------------------------------- */
+int Minval_array(const int x_array[], size_t n)
+{
+    int t, i;
+    t = x_array[0];
+    for(i = 1; i < n; i++)
+    {
+        t = (x_array[i] > t) ? t : x_array[i];
+    }
+    return t;
+}
+
+/* --------------------------------------------------------------------------- */
+float fMaxval_array(const float x_array[], size_t n)
+{
+    int i;
+    float t = x_array[0];
     for(i = 1; i < n; i++)
     {
         t = (x_array[i] > t) ? x_array[i] : t;
@@ -479,6 +512,7 @@ void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
     fclose(pngout_fig);
 
     // Free des tableau de data dans la figure
+    free(fig->flinedata);
     free(fig->linedata);
     free(fig->bardata);
 
@@ -508,10 +542,10 @@ void ImageLineEpaisseur(gdImagePtr im_fig,\
 {
                     
     gdImageSetThickness(im_fig, linestyle->w);
-    gdImageSetAntiAliased(im_fig, GetCouleur(im_fig, linestyle->color));
+    // gdImageSetAntiAliased(im_fig, GetCouleur(im_fig, linestyle->color));
     if (linestyle->style == '-') {
         gdImageLine(im_fig, x1, y1,   x2,   y2,\
-                   gdAntiAliased);
+                   GetCouleur(im_fig, linestyle->color));
     } else if (linestyle->style == ':') {
         gdImageDashedLine(im_fig, x1, y1,   x2,   y2,\
                    GetCouleur(im_fig, linestyle->color));
@@ -602,9 +636,103 @@ void PlotLine(Figure *fig, LineData *linedata)
     free(y_plot);
 }
 
+/* --------------------------------------------------------------------------- */
+void PlotFLine(Figure *fig, fLineData *flinedata)
+{
+    int *x_plot = Transform_fdataX_to_plot(fig, flinedata->len_data, flinedata->x);
+    int *y_plot = Transform_fdataY_to_plot(fig, flinedata->len_data, flinedata->y);
+
+    for (int i=0; i < flinedata->len_data-1; i++) 
+    {
+        
+        ImageLineEpaisseur(fig->img,\
+                x_plot[i]   + fig->orig[0],   y_plot[i] + fig->orig[1],\
+                x_plot[i+1] + fig->orig[0], y_plot[i+1] + fig->orig[1],\
+                flinedata->linestyle);
+
+        
+        PlotPoint(fig,\
+            x_plot[i] + fig->orig[0], y_plot[i] + fig->orig[1], flinedata->linestyle);
+
+        if (i == flinedata->len_data-2) {
+            PlotPoint(fig,\
+                            x_plot[i+1] + fig->orig[0],\
+                            y_plot[i+1] + fig->orig[1],\
+                            flinedata->linestyle);
+        }
+
+    }
+
+    free(x_plot);
+    free(y_plot);
+}
+
+/* --------------------------------------------------------------------------- */
+int *Transform_fdataX_to_plot(Figure *fig, size_t len_pts,\
+                                             const int pts[])
+{
+    // Taile de la zone de dessin
+    // (Nx-1) - orig X (0) - margin X (0) - padX droite (1)
+    const int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
+    
+    printf("fig margin 0 : %d \n", fig->margin[0]);
+    printf("fig padX 1   : %d \n", fig->padX[1]);
+
+    int *pts_dessin = malloc(len_pts * sizeof(int));
+    int itv_pixels = (w_dessin) / (fig->max_X - pts[0]);
+
+    for (int i = 0; i < len_pts; i++) {
+        // Decalage de l'origine au point initial (lorsque ne debute pas à 0)
+        pts_dessin[i] = i * itv_pixels;
+        // pts_dessin[i] = pts_dessin[i] - pts_dessin[0]; 
+        // printf("Point : %d, %d \n", i, pts_dessin[i]);
+    }
+
+    return pts_dessin;
+
+}
+
+/* --------------------------------------------------------------------------- */
+int *Transform_fdataY_to_plot(Figure *fig, size_t len_pts, \
+                                    const float pts[])
+{
+    // Taile de la zone de dessin
+    // Orig - padding haut (0) - margin Y (1)
+    const int h_dessin = fig->orig[1] - fig->padY[0] - fig->margin[1];   
+
+    int *pts_dessin = malloc(len_pts * sizeof(float));
+
+    for (int i = 0; i < len_pts; i++) {
+        pts_dessin[i] = -(pts[i] * h_dessin) / fig->fmax_Y;
+        // printf("Point : %d, %d \n", i, pts_dessin[i]);
+    }
+
+    return pts_dessin;
+}
+
+
+/* --------------------------------------------------------------------------- */
 int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
                                     const int pts[]);
 
+/* --------------------------------------------------------------------------- */
+int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
+                                    const int pts[])
+{
+    const int h_dessin = fig->orig[1] - fig->padY[0] - fig->margin[1];   
+    
+    // MALLOC
+    int *y_dessin_ctg = malloc(nb_ctg * sizeof(int));
+
+    for (int i = 0; i < nb_ctg; i++) {
+        if (i == 0)
+            y_dessin_ctg[i] = -(pts[i] * h_dessin) / fig->max_Y;
+        else
+            y_dessin_ctg[i] = y_dessin_ctg[i-1] - (pts[i] * h_dessin) / fig->max_Y;
+    }
+
+    return y_dessin_ctg;
+}      
 
 /* --------------------------------------------------------------------------- */
 void Change_font(Figure *fig, int textType, char* path_f)
@@ -686,24 +814,7 @@ void PlotBarplot(Figure *fig, BarData *bardata, char wlabels)
     free(y_bars);
 }
 
-/* --------------------------------------------------------------------------- */
-int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
-                                    const int pts[])
-{
-    const int h_dessin = fig->orig[1] - fig->padY[0] - fig->margin[1];   
-    
-    // MALLOC
-    int *y_dessin_ctg = malloc(nb_ctg * sizeof(int));
 
-    for (int i = 0; i < nb_ctg; i++) {
-        if (i == 0)
-            y_dessin_ctg[i] = -(pts[i] * h_dessin) / fig->max_Y;
-        else
-            y_dessin_ctg[i] = y_dessin_ctg[i-1] - (pts[i] * h_dessin) / fig->max_Y;
-    }
-
-    return y_dessin_ctg;
-}      
 
 /* --------------------------------------------------------------------------- */
 void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
@@ -715,7 +826,7 @@ void Transform_dataX_to_plot(Figure *fig, size_t len_pts,\
 
     for (int i = 0; i < len_pts; i++)
     {
-        pts_dessin[i] = (pts[i] * w_dessin) / fig->max_X;
+        pts_dessin[i] = ((pts[i]-pts[0]) * w_dessin) / (fig->max_X-pts[0]);
         // printf("Point : %d, %d \n", i, pts_dessin[i]);
     }
 
@@ -801,11 +912,6 @@ void Init_figure(Figure *fig, int figsize[2],\
         fig->color_axes[i] = col_axes[i];
     }
 
-    fig->nb_linedata = 0;
-    fig->nb_bardata  = 0;
-    fig->linedata = NULL;
-    fig->bardata = NULL;
-
     // Fonts
     fig->fonts[label_f].path = "fonts/Lato-Regular.ttf";
     fig->fonts[title_f].path = "fonts/Lato-Medium.ttf";
@@ -839,8 +945,17 @@ void Init_figure(Figure *fig, int figsize[2],\
     if ( wAxes == 'y')
         Make_support_axes(fig, fig->color_axes);
 
+
+    fig->nb_flinedata = 0;
+    fig->nb_linedata = 0;
+    fig->nb_bardata  = 0;
+    fig->flinedata = NULL;
+    fig->linedata = NULL;
+    fig->bardata = NULL;
+
     fig->max_X = 0;
     fig->max_Y = 0;
+    fig->fmax_Y = 0.;
 }
 
 /* --------------------------------------------------------------------------- */
@@ -884,6 +999,7 @@ void Init_bardata(BarData *bardata, int nb_ctg, char *labels_ctg[nb_ctg],\
     bardata->nb_in_ctg = nb_in_ctg;
     bardata->colors = colors;
     bardata->label = label;
+
     bardata->idx = 0;
 }
 
@@ -904,6 +1020,23 @@ void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],
     // print_arr1D(len_data, linedata->y, 'n');
 }
 
+
+/* --------------------------------------------------------------------------- */
+void Init_flinedata(fLineData *flinedata, int len_data, int ptx[], float pty[],
+                    char* label, LineStyle *linestyle)
+{
+    
+    flinedata->len_data = len_data;
+    flinedata->x = ptx; 
+    flinedata->y = pty;
+    flinedata->max_X = Maxval_array(flinedata->x, flinedata->len_data);
+    flinedata->fmax_Y = fMaxval_array(flinedata->y, flinedata->len_data);
+    flinedata->label = label;
+    flinedata->linestyle = linestyle;
+
+    // print_arr1D(len_data, linedata->y, 'n');
+}
+
 /* --------------------------------------------------------------------------- */
 void Init_linestyle(LineStyle *linestyle, char style,\
         const int color[3], int width, char marker, int ms)
@@ -917,6 +1050,20 @@ void Init_linestyle(LineStyle *linestyle, char style,\
     linestyle->marker = marker;
     linestyle->ms = ms;
 }
+
+/* --------------------------------------------------------------------------- */
+void Print_debug_fig(Figure *fig)
+{
+    printf("*** Debug Figure\n");
+    printf("* Nb bardata   = %ld \n",  fig->nb_bardata);
+    printf("* Nb linedata  = %ld \n",  fig->nb_linedata);
+    printf("* Nb flinedata = %ld \n",  fig->nb_flinedata);
+    printf("* Max x        = %d \n",   fig->max_X);
+    printf("* Max y (int)  = %d \n",   fig->max_Y);
+    printf("* Max y (float)= %.2f \n", fig->fmax_Y);
+    printf("*** End Figure\n");
+}
+
 
 /* --------------------------------------------------------------------------- */
 void Print_debug_ls(LineStyle *linestyle)
@@ -951,6 +1098,25 @@ void Print_debug_ld(LineData *linedata, char w_xy)
 }
 
 /* --------------------------------------------------------------------------- */
+void Print_debug_fld(fLineData *flinedata, char w_xy)
+{
+    printf("*** Debug flinedata --------------------------\n");
+    printf("* Label    = %s \n",   flinedata->label);
+    printf("* Len data = %ld \n",  flinedata->len_data);
+    printf("* Max X    = %d \n",   flinedata->max_X);
+    printf("* Max Y    = %.1f \n", flinedata->fmax_Y);
+    if (w_xy == 'y') {
+        printf("* Vecteur X : \n");
+        print_arr1D(flinedata->len_data, flinedata->x, 'n');
+        printf("* Vecteur Y : \n");
+        print_farr1D(flinedata->len_data, flinedata->y, 'n');
+    }    
+    Print_debug_ls(flinedata->linestyle);
+    printf("*** End flinedata ----------------------------\n\n");
+}
+
+
+/* --------------------------------------------------------------------------- */
 void Print_debug_bd(BarData *bardata, char w_cat)
 {
     printf("*** Debug bardata --------------------------\n");
@@ -972,6 +1138,12 @@ void Print_debug_bd(BarData *bardata, char w_cat)
 
 /* --------------------------------------------------------------------------- */
 int Max_int(int x, int y) 
+{
+    return (x < y) ? y : x ;
+}
+
+/* --------------------------------------------------------------------------- */
+float Max_float(float x, float y) 
 {
     return (x < y) ? y : x ;
 }
@@ -1006,6 +1178,27 @@ void Add_line_to_fig(Figure *fig, LineData *linedata)
 
 
 /* --------------------------------------------------------------------------- */
+void Add_fline_to_fig(Figure *fig, fLineData *flinedata)
+{
+    fig->nb_flinedata++;
+    fig->flinedata = (fLineData **)realloc(fig->flinedata, fig->nb_flinedata*sizeof(fLineData));
+
+    if (fig->flinedata == NULL) {
+        printf("Erreur : Pas assez de memoire.\n");
+        free(fig->flinedata);
+        exit(EXIT_FAILURE);
+    }
+
+    // Index = nb line - 1 : on remplit les linedata de la figure
+    fig->flinedata[fig->nb_flinedata-1] = flinedata;
+
+    // Print_debug_ld(fig->linedata[fig->nb_linedata]);
+
+    fig->max_X = Max_int(fig->max_X, flinedata->max_X);
+    fig->fmax_Y = Max_float(fig->fmax_Y, flinedata->fmax_Y);
+}   
+
+/* --------------------------------------------------------------------------- */
 void Add_barplot_to_fig(Figure *fig, BarData *bardata)
 {
     fig->nb_bardata++;
@@ -1021,7 +1214,6 @@ void Add_barplot_to_fig(Figure *fig, BarData *bardata)
     fig->bardata[fig->nb_bardata-1] = bardata;
 
     // Print_debug_ld(fig->linedata[fig->nb_linedata]);
-
     fig->max_X = 0;
     fig->max_Y = Max_int(fig->max_Y, bardata->nb_tot);
 
@@ -1249,36 +1441,70 @@ void Make_legend(Figure *fig,\
     // Decalage apres trait
     int decalage_trait_leg = long_trait_leg + 10;
 
-    // Print des petits traits de legende pour chaque plot
-    for (int i = 0; i < fig->nb_linedata; i++) { 
-        ImageLineEpaisseur(fig->img,\
-                    pos_X[i],\
-                    pos_Y[i] - fig->fonts[leg_f].size/2,\
-                    pos_X[i] + long_trait_leg,\
-                    pos_Y[i] - fig->fonts[leg_f].size/2,\
-                    fig->linedata[i]->linestyle);
-    }
-
     char *errStringFT;
     int brect[8] = {0};
 
-    for (int i = 0; i < fig->nb_linedata; i++)
-    {
-        errStringFT= gdImageStringFT(fig->img, brect,\
-                            GetCouleur(fig->img,\
-                                fig->fonts[leg_f].color),\
-                            fig->fonts[leg_f].path,\
-                            fig->fonts[leg_f].size,\
-                            0.,\
-                            decalage_trait_leg + pos_X[i],\
-                            pos_Y[i],\
-                            fig->linedata[i]->label);        
-    }
+    if ( (fig->nb_linedata != 0) && (fig->nb_flinedata == 0) ) { 
+        /* Pour les LineData*/
+        // Print des petits traits de legende pour chaque plot
+        for (int i = 0; i < fig->nb_linedata; i++) { 
+            ImageLineEpaisseur(fig->img,\
+                        pos_X[i],\
+                        pos_Y[i] - fig->fonts[leg_f].size/2,\
+                        pos_X[i] + long_trait_leg,\
+                        pos_Y[i] - fig->fonts[leg_f].size/2,\
+                        fig->linedata[i]->linestyle);
+        }
 
-    if (errStringFT != NULL) {
-        printf("%s\n", errStringFT);
-    }
+        for (int i = 0; i < fig->nb_linedata; i++)
+        {
+            errStringFT=gdImageStringFT(fig->img, brect,\
+                                GetCouleur(fig->img,\
+                                    fig->fonts[leg_f].color),\
+                                fig->fonts[leg_f].path,\
+                                fig->fonts[leg_f].size,\
+                                0.,\
+                                decalage_trait_leg + pos_X[i],\
+                                pos_Y[i],\
+                                fig->linedata[i]->label);        
+        }
 
+        if (errStringFT != NULL) {
+            printf("%s\n", errStringFT);
+        }
+
+    } else if ( (fig->nb_linedata == 0) && (fig->nb_flinedata != 0) ) {
+
+        /* Pour les FLineData*/
+        // Print des petits traits de legende pour chaque plot
+        for (int i = 0; i < fig->nb_flinedata; i++) { 
+            ImageLineEpaisseur(fig->img,\
+                        pos_X[i],\
+                        pos_Y[i] - fig->fonts[leg_f].size/2,\
+                        pos_X[i] + long_trait_leg,\
+                        pos_Y[i] - fig->fonts[leg_f].size/2,\
+                        fig->flinedata[i]->linestyle);
+        }
+
+
+        for (int i = 0; i < fig->nb_flinedata; i++)
+        {
+            errStringFT= gdImageStringFT(fig->img, brect,\
+                                GetCouleur(fig->img,\
+                                    fig->fonts[leg_f].color),\
+                                fig->fonts[leg_f].path,\
+                                fig->fonts[leg_f].size,\
+                                0.,\
+                                decalage_trait_leg + pos_X[i],\
+                                pos_Y[i],\
+                                fig->flinedata[i]->label);        
+        }
+
+        if (errStringFT != NULL) {
+            printf("%s\n", errStringFT);
+        }        
+
+    }
     //Avoid memory leaks
     gdFontCacheShutdown();
 }
@@ -1352,6 +1578,89 @@ void Make_xticks_barplot(Figure *fig, float angle_labels)
                             fig->orig[1] + (long_tick*3) + posY_label,\
                             fig->bardata[bp]->label);
 
+    }
+
+    //Avoid memory leaks
+    gdFontCacheShutdown();
+
+}
+
+/* --------------------------------------------------------------------------- */
+void Make_xticks_xgrid_time_avgH(Figure *fig, int nb_ticks,\
+            int tableau_avg_hours[nb_ticks])
+{
+    if (fig->max_X == 0)
+    {
+        printf("Erreur : pas de ticks pour un max a 0.");
+        exit(EXIT_FAILURE);
+    }
+    
+    int nb_itv = nb_ticks-1;
+
+    // Intervalles entre 2 ticks
+    int itv_tickh = 1;
+
+    // Largeur canvas
+    int l_canvas = (fig->img->sx-1) - fig->orig[0] - fig->padX[1];
+    // On pense a enlever la marge Y pour calculer l'ecart entre tick maj
+    int l_max = l_canvas - fig->margin[0];
+
+    // Intervalle entre 2 ticks en pix
+    int itv_pixels = (itv_tickh*l_max) / (fig->max_X - fig->flinedata[0]->x[0]);
+    // printf("Itv X en px = %d \n", itv_pixels);
+
+    // Style tick
+    int w_tick = 2;
+    int w_linegrid = 0.5;
+    int long_tick = 9;
+
+    LineStyle style_tick;
+    Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
+
+    LineStyle style_linegrid;
+    Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
+
+    // Plot ticks
+    // printf("Nb ticks : %d \n", nb_ticks);
+    for (int i = 0; i < nb_ticks; i++)
+    {
+        printf("Tick : %d \n", i);
+
+        // tick
+        ImageLineEpaisseur(fig->img,\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->orig[1]+2,\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->orig[1] + long_tick +2,\
+                        &style_tick);
+
+        //gridline
+        ImageLineEpaisseur(fig->img,\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->orig[1],\
+                        fig->orig[0] + i*itv_pixels,\
+                        fig->padY[0],\
+                        &style_linegrid);        
+
+        char tickAvgH[6];
+        sprintf(tickAvgH, "%2dh", i+fig->flinedata[0]->x[0]);
+
+        int xlabel_date = fig->orig[0] - \
+                strlen(tickAvgH)*fig->fonts[ticklabel_f].size/3.7 + i*itv_pixels;
+
+        int ylabel_date = fig->orig[1] + \
+                (long_tick+10) + fig->fonts[ticklabel_f].size;
+        // tick label date
+        if (fig->flinedata[0]->x[i]%2 != 0) {
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img,\
+                                fig->fonts[ticklabel_f].color),\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size,\
+                            0.,\
+                            xlabel_date, ylabel_date, tickAvgH);
+        }
+        
     }
 
     //Avoid memory leaks
@@ -1457,6 +1766,119 @@ void Make_xticks_xgrid_time(Figure *fig, Date date_init)
     //Avoid memory leaks
     gdFontCacheShutdown();
 
+}
+
+
+/* --------------------------------------------------------------------------- */
+void Make_fyticks_ygrid(Figure *fig, char wTicks)
+{
+    if (fig->fmax_Y == 0)
+    {
+        printf("Erreur : pas de ticks pour un max a 0.");
+        exit(EXIT_FAILURE);
+    }
+
+    // int nb_ticks = Min_int(fig->max_Y, 10);
+    // printf("Nb ticks  = %d \n", nb_ticks);
+
+    // int itv = fig->max_Y / nb_ticks;
+    // printf("Itv       = %d \n", itv);
+
+    int itv=0, itv_minor=0;
+    if (fig->fmax_Y <= 10) {
+        itv = 1;
+        itv_minor = 0;
+    } else if (fig->fmax_Y <= 20)
+    {
+        itv = 2;
+        itv_minor = 1;
+    } else if (fig->fmax_Y <= 50)
+    {
+        itv = 5;
+        itv_minor = 1;
+    } else if (fig->fmax_Y <= 100)
+    {
+        itv = 10;
+        itv_minor = 2;
+    }
+    
+    // printf("Itv       = %d \n", itv);
+    // printf("Itv minor = %d \n", itv_minor);
+    int nb_ticks = fig->fmax_Y / itv;
+
+    int nb_ticks_min = 0;    
+    if (itv_minor != 0) {
+        nb_ticks_min= (fig->fmax_Y / itv_minor) / nb_ticks;
+        // printf("Nb ticks min = %d \n", nb_ticks_min);
+    }    
+    // printf("Nb ticks  = %d \n", nb_ticks);
+
+    int h_canvas = fig->img->sy - fig->padY[0] - fig->padY[1];
+    // On pense a enlever la marge Y pour calculer l'ecart entre tick maj
+    // Pos de maxY repere figure = h_canvas - fig->margin[1]
+    int h_max = h_canvas - fig->margin[1];
+    // printf("h max     = %d \n", h_max);
+
+    // int ecart_major = ( h_canvas - fig->margin[1] ) / (nb_interv)  ; 
+
+    int itv_pixels = (itv*h_max) / fig->fmax_Y;
+    // printf("Itv px     = %d \n", itv_pixels);
+
+    // Style tick
+    int w_tick = 2;
+    int w_linegrid = 0.5;
+    LineStyle style_tick;
+    Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
+    int long_tick = 0;
+    int long_tick_min = 0;
+    LineStyle style_linegrid;
+    Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
+
+    // Plot ticks
+    char tickVal[12];
+
+    for (int i = 1; i <= nb_ticks; i++)
+    {
+        sprintf(tickVal, "%d", i*itv);
+
+
+        // gridline
+        ImageLineEpaisseur(fig->img,\
+                        fig->orig[0],\
+                            fig->orig[1] - i*(itv_pixels+0.5),\
+                        (fig->img->sx-1) - fig->padX[1],\
+                            fig->orig[1] - i*(itv_pixels+0.5),\
+                        &style_linegrid);        
+
+        // ticks
+        if (wTicks == 'y') {
+            long_tick = 9;
+            long_tick_min = 5;
+            // tick : facteur 0.5 ajouté pour gerer les nombres pairs/impais de px
+            ImageLineEpaisseur(fig->img,\
+                            fig->orig[0]-long_tick-2,\
+                                fig->orig[1] - i*(itv_pixels+0.5),\
+                            fig->orig[0]-2,\
+                                fig->orig[1] - i*(itv_pixels+0.5),\
+                            &style_tick);
+        }
+
+        int posX_ticklab = fig->orig[0]-(long_tick+2) \
+                            - strlen(tickVal) * fig->fonts[ticklabel_f].size;
+        int posY_ticklab = fig->orig[1] - i*itv_pixels \
+                            + fig->fonts[ticklabel_f].size / 2;
+
+        gdImageStringFT(fig->img, NULL,\
+                            GetCouleur(fig->img,\
+                                    style_tick.color),\
+                            fig->fonts[ticklabel_f].path,\
+                            fig->fonts[ticklabel_f].size,\
+                                0., posX_ticklab, posY_ticklab, tickVal);
+
+    }
+
+    //Avoid memory leaks
+    gdFontCacheShutdown();
 }
 
 /* --------------------------------------------------------------------------- */

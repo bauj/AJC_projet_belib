@@ -110,6 +110,13 @@ void Get_statuts_station_fav(sqlite3 *db_belib,char **tableau_adresses_fav,\
 char *Construct_req_station_statuts(int station, char **tableau_adresses_fav);
 
 
+
+
+/* --------------------------------------------------------------------------- */
+char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav);
+
+
+
 /* --------------------------------------------------------------------------- */
 /**
  * @brief 
@@ -179,6 +186,80 @@ void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
     }
 }
 
+
+/* --------------------------------------------------------------------------- */
+int Get_nb_avg_hours(sqlite3 *db_belib)
+{
+        // Declaration statement
+    sqlite3_stmt *stmt;
+
+    int nb_avg_hours = 0;
+
+    const char *query_nb_avg_hours = \
+            "SELECT COUNT(DISTINCT(strftime(\'%H\', date_recolte))) as Hour FROM Stations_fav;";
+    
+    // Test de la requete
+    if (sqlite3_prepare_v2(db_belib, query_nb_avg_hours,-1, &stmt, NULL))
+    {
+        printf("Erreur SQL :\n");
+        printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
+                         sqlite3_errmsg(db_belib));
+        sqlite3_close(db_belib);
+        exit(EXIT_FAILURE);
+    }
+
+    // Application du statement et fermeture de la db
+    int step = sqlite3_step(stmt);
+
+    // int nb_col = sqlite3_column_count(stmt);
+
+    if (step == SQLITE_ROW) 
+    {
+        nb_avg_hours = sqlite3_column_int(stmt, 0);
+    }
+    // printf("Nb station favs : %d \n",sqlite3_column_int(stmt, 0));
+
+    // Reset du stmt
+    sqlite3_finalize(stmt);
+
+    return nb_avg_hours;
+}
+
+/* --------------------------------------------------------------------------- */
+void Get_avg_hours(sqlite3 *db_belib, int nb_rows_hours,\
+                        int tableau_avg_hours[nb_rows_hours])
+{
+    // Declaration statement
+    sqlite3_stmt *stmt;
+
+    const char *query_avg_hours = \
+        "SELECT (strftime(\'%H\', date_recolte)) as Hour FROM Stations_fav \
+            GROUP BY (strftime(\'%H\', date_recolte));";
+
+    // Test de la requete
+    if (sqlite3_prepare_v2(db_belib, query_avg_hours, -1, &stmt, NULL))
+    {
+        printf("Erreur SQL :\n");
+        printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
+                         sqlite3_errmsg(db_belib));
+        sqlite3_close(db_belib);
+        exit(EXIT_FAILURE);
+    }
+
+    // Application du statement et fermeture de la db
+    for (int i = 0; i < nb_rows_hours; i++) {
+        int step = sqlite3_step(stmt);
+        if (step == SQLITE_ROW) 
+        {
+            tableau_avg_hours[i] = (int) strtol( (char *)sqlite3_column_text(stmt, 0), NULL, 10);
+        }
+        // ELIF STOP
+    }
+
+    // Reset du stmt
+    sqlite3_finalize(stmt);    
+}
+
 /* --------------------------------------------------------------------------- */
 char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
 {
@@ -195,12 +276,76 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
     strcpy(req, query_statuts_stations_fav);
     strcat(req, "\'");
     strcat(req, tableau_adresses_fav[station]);
-    strcat(req, " Paris"); // on l'ajoute vu qu'on le supprime dans Get_adresse
+    // strcat(req, " Paris"); // on l'ajoute vu qu'on le supprime dans Get_adresse
     strcat(req, "\';");
 
     return req;
 }
 
+
+/* --------------------------------------------------------------------------- */
+char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav)
+{
+    const char *query_statuts_stations_avg_dispo = \
+            "SELECT AVG(disponible) as Avg_dispo FROM Stations_fav WHERE adresse_station = ";
+
+    int len_query_base = strlen(query_statuts_stations_avg_dispo);
+    int len_max_adresse = 200; // comprend le reste de la req plus bas
+    int len_query_station = len_query_base + len_max_adresse;
+
+    char *req = malloc(len_query_station*sizeof(char));
+
+    strcpy(req, query_statuts_stations_avg_dispo);
+    strcat(req, "\'");
+    strcat(req, tableau_adresses_fav[station]);
+    strcat(req, "\' ");
+    strcat(req, "GROUP BY strftime(\'%H\', date_recolte);");
+
+    return req;
+}
+
+
+/* --------------------------------------------------------------------------- */
+void Get_avg_dispo_station(sqlite3 *db_belib, \
+                        char **tableau_adresses_fav,\
+                        int nb_stations_fav, int nb_rows_hours, \
+                        float tableau_avg_dispo_station[nb_stations_fav][nb_rows_hours])
+{
+    for (int station = 0; station < nb_stations_fav; station++)
+    {
+        // Declaration statement
+        sqlite3_stmt *stmt_station;
+
+        // Construction requete
+        char *req_sql = Construct_req_station_avg_dispo(station, tableau_adresses_fav);
+        // printf("Req : %s \n", req_sql);
+
+        // Test de la requete
+        if (sqlite3_prepare_v2(db_belib, req_sql, -1, &stmt_station, NULL))
+        {
+            printf("Erreur SQL :\n");
+            printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
+                            sqlite3_errmsg(db_belib));
+            sqlite3_close(db_belib);
+            exit(EXIT_FAILURE);
+        }
+
+        // Application du statement : on recupere les statuts
+        for (int h = 0; h < nb_rows_hours; h++) {
+            int step = sqlite3_step(stmt_station);
+            if (step == SQLITE_ROW) 
+            {
+                tableau_avg_dispo_station[station][h] = \
+                        (float)sqlite3_column_double(stmt_station, 0);
+            }
+        }
+
+        // Reset du stmt
+        sqlite3_finalize(stmt_station);
+
+        free(req_sql);
+    }
+}
 
 /* --------------------------------------------------------------------------- */
 void Get_statuts_station_fav(sqlite3 *db_belib,\
@@ -313,9 +458,9 @@ void Get_adresses_fav(sqlite3 *db_belib, \
         {
             tableau_adresses_fav[i] = (char *)malloc(len_max*sizeof(char));
             // On supprime " Paris" en fin de chaine
-            strncpy(tableau_adresses_fav[i],\
-                (char *)sqlite3_column_text(stmt, 0),\
-                strlen((char *)sqlite3_column_text(stmt, 0))-6);
+            strcpy(tableau_adresses_fav[i],\
+                (char *)sqlite3_column_text(stmt, 0)); 
+                //, strlen((char *)sqlite3_column_text(stmt, 0))-6);
         }
         // ELIF STOP
     }
@@ -457,5 +602,22 @@ void print_arr1D(int len_tab, int tab[len_tab], char col)
     }
     printf("\n");
 }
- 
+
+
+/* --------------------------------------------------------------------------- */
+void print_farr1D(int len_tab, float tab[len_tab], char col)
+{
+    if (col=='y')
+    {
+        for (int i=0; i< len_tab; i++ )
+            printf("%.1f\n", tab[i]);
+    } else if (col=='n') {
+        for (int i=0; i< len_tab; i++ )
+            printf("%.1f, ", tab[i]);
+    } else {
+        printf("\n");
+    }
+    printf("\n");
+}
+
 #endif /* GETTER_H */
