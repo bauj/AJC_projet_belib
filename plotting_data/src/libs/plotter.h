@@ -1612,7 +1612,7 @@ void Make_xticks_xgrid_time_avgH(Figure *fig, int nb_ticks,\
     // Style tick
     int w_tick = 2;
     int w_linegrid = 0.5;
-    int long_tick = 9;
+    int long_tick = 4;
 
     LineStyle style_tick;
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');

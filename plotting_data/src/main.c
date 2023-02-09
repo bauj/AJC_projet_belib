@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
     padY[0] = 120;
     padY[1] = 160;
    
-    wAxes = 'y';
+    wAxes = 'n';
     Init_figure(&fig3, figsize, padX, padY, margin, wAxes);
 
     /* Make ylabel  ----------  A mettre apres update fig */
