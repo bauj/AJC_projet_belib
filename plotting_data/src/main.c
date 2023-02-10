@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
                         fichier en entrée. \n");
         exit(EXIT_FAILURE);
     }
-
+    
     // Instanciation db sqlite
     sqlite3 *db_belib;
 
@@ -84,14 +84,14 @@ int main(int argc, char* argv[])
     
     // Mean avg per hour
     int nb_rows_hours = Get_nb_avg_hours(db_belib);
-    printf("Nb d'heures pour calc moyenne : %d\n", nb_rows_hours);
+    // printf("Nb d'heures pour calc moyenne : %d\n", nb_rows_hours);
 
     // Recuperation vecteur des heures
     int tableau_avg_hours[nb_rows_hours];
     Get_avg_hours(db_belib, nb_rows_hours, tableau_avg_hours);
 
-    for (int i=0; i < nb_rows_hours; i++)
-        printf("avg hour %d : %d\n",i,tableau_avg_hours[i]);
+    // for (int i=0; i < nb_rows_hours; i++)
+    //     printf("avg hour %d : %d\n",i,tableau_avg_hours[i]);
 
     // Recuperation moyenne horaire dispo stations
     float tableau_avg_dispo_station[nb_stations_fav][nb_rows_hours];
@@ -112,8 +112,9 @@ int main(int argc, char* argv[])
     // ========================================================================
 
     // Parametres generaux
-    char *dir_figures= "./figures/"; /**< Path folder save fig*/
-    int figsize[2] = {900, 700};     /**< Dimension figure */
+    char *dir_figures= "/var/www/html/figures/"; /**< Path folder save fig*/
+    // char *dir_figures= "./figures/"; /**< Path folder save fig*/
+    int figsize[2] = {800, 700};     /**< Dimension figure */
     int padX[2] = {90,0};            /**< pad zone de dessin gauche et droite*/
     int padY[2] = {120,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
@@ -141,7 +142,7 @@ int main(int argc, char* argv[])
     char style_trait;
     LineData lines[nb_stations_fav]; /**< vecteur de linedata pour chaque station*/
     LineStyle linestyles[nb_stations_fav];  /**< vecteur de linestyle pour chaque station*/
-
+    
     for (int st = 0; st < nb_stations_fav; st ++)
     {
         Get_statut_station(nb_stations_fav, nb_rows_par_station, nb_statuts,\
@@ -196,7 +197,7 @@ int main(int argc, char* argv[])
 
     /* Make Y ticks and grid line*/
     char wTicks = 'n';
-    char *path_f_med = "fonts/Lato-Medium.ttf";
+    char *path_f_med = "/usr/share/fonts/truetype/lato/Lato-Medium.ttf";
     Change_font(&fig1, ticklabel_f, path_f_med);
     Change_fontsize(&fig1, ticklabel_f, 14);    
     Make_yticks_ygrid(&fig1, wTicks);
@@ -220,9 +221,11 @@ int main(int argc, char* argv[])
     for (int st = 0; st < nb_stations_fav; st++)
         PlotLine(&fig1, &(lines[st]));
 
+
      /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1_disponible.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
+
 
     /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
                              gdImageResolutionY(fig1.img) );                           
@@ -230,7 +233,6 @@ int main(int argc, char* argv[])
 
     /* Destroy the image in memory. */
     gdImageDestroy(fig1.img);
-
 
     // ========================================================================
     // Creation de la figure 2 : barplot des statuts des bornes par station
@@ -264,8 +266,9 @@ int main(int argc, char* argv[])
         // Update des data de l'objet figure (gestion des max, posX des barplot)
         Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
     }
-    for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++)
-        printf("%s \n", adresse_label[st_barplot]);
+
+    // for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++)
+    //     printf("%s \n", adresse_label[st_barplot]);
 
     // // Ajout du ylabel
     // decalx_Y = 10, decaly_Y = 0;    
@@ -318,7 +321,7 @@ int main(int argc, char* argv[])
                      last_date_recolte.tm.tm_mday,\
                      last_date_recolte.tm.tm_mon+1,\
                      (last_date_recolte.tm.tm_year+1900)%2000,\
-                     last_date_recolte.tm.tm_hour,\
+                     last_date_recolte.tm.tm_hour+1,\
                      last_date_recolte.tm.tm_min);
 
     decalx_subtitle = 0, decaly_subtitle = 0;
@@ -368,6 +371,7 @@ int main(int argc, char* argv[])
     fLineData flines[nb_stations_fav];
 
     w_lines = 3;
+    ms = 8;
     for (int st = 0; st < nb_stations_fav; st ++)
     {
         style_trait = '-';
@@ -382,16 +386,13 @@ int main(int argc, char* argv[])
         Add_fline_to_fig(&fig3, &(flines[st]));
     }
 
-    Print_debug_fig(&fig3);
+    // Print_debug_fig(&fig3);
 
     /* Make Xticks and grid line*/
     Make_xticks_xgrid_time_avgH(&fig3, nb_rows_hours,tableau_avg_hours);
 
     /* Make Y ticks and grid line*/
-    wTicks = 'n';
-    path_f_med = "fonts/Lato-Medium.ttf";
-    Change_font(&fig3, ticklabel_f, path_f_med);
-    Change_fontsize(&fig3, ticklabel_f, 14);    
+    wTicks = 'n'; 
     Make_fyticks_ygrid(&fig3, wTicks);
 
     /* Plot lines */
@@ -415,6 +416,7 @@ int main(int argc, char* argv[])
 
     // Destroying img 
     gdImageDestroy(fig3.img);
+
 
     // Clean alloc
     free_tab_char1(tableau_adresses_fav, nb_stations_fav);

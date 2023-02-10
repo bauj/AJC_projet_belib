@@ -500,7 +500,7 @@ void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig)
 {
     FILE *pngout_fig;
 
-    char path_outputFig[40] = {""};
+    char path_outputFig[400] = {""};
     strcat(path_outputFig, dir_figures);
     strcat(path_outputFig, filename_fig);
     pngout_fig = fopen(path_outputFig, "wb");
@@ -674,9 +674,6 @@ int *Transform_fdataX_to_plot(Figure *fig, size_t len_pts,\
     // Taile de la zone de dessin
     // (Nx-1) - orig X (0) - margin X (0) - padX droite (1)
     const int w_dessin = (fig->img->sx-1) - fig->orig[0] - fig->margin[0] - fig->padX[1];
-    
-    printf("fig margin 0 : %d \n", fig->margin[0]);
-    printf("fig padX 1   : %d \n", fig->padX[1]);
 
     int *pts_dessin = malloc(len_pts * sizeof(int));
     int itv_pixels = (w_dessin) / (fig->max_X - pts[0]);
@@ -913,12 +910,12 @@ void Init_figure(Figure *fig, int figsize[2],\
     }
 
     // Fonts
-    fig->fonts[label_f].path = "fonts/Lato-Regular.ttf";
-    fig->fonts[title_f].path = "fonts/Lato-Medium.ttf";
-    fig->fonts[annotation_f].path = "fonts/Lato-LightItalic.ttf";
-    fig->fonts[ticklabel_f].path = "fonts/Lato-Regular.ttf";
-    fig->fonts[subtitle_f].path = "fonts/Lato-Medium.ttf";
-    fig->fonts[leg_f].path = "fonts/Lato-Regular.ttf";
+    fig->fonts[label_f].path = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
+    fig->fonts[title_f].path = "/usr/share/fonts/truetype/lato/Lato-Medium.ttf";
+    fig->fonts[annotation_f].path = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
+    fig->fonts[ticklabel_f].path = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
+    fig->fonts[subtitle_f].path = "/usr/share/fonts/truetype/lato/Lato-Medium.ttf";
+    fig->fonts[leg_f].path = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
 
     fig->fonts[label_f].size = 15;
     fig->fonts[title_f].size = 18;
@@ -1416,8 +1413,8 @@ void Make_legend(Figure *fig,\
                     int decal_X, int decal_Y, int ecart)
 {
     // Position des 8 legendes possibles
-    int w_img = fig->img->sx;
-    int pos_midX = w_img/2 + 5;
+    int w_img = (fig->img->sx-1) - fig->orig[0];
+    int pos_midX = fig->orig[0] + w_img/2 + 5;
     // printf("Done here.\n");
 
     int pos_X[8] = {fig->orig[0] + 5 + decal_X, fig->orig[0] + 5  + decal_X,\
@@ -1595,8 +1592,6 @@ void Make_xticks_xgrid_time_avgH(Figure *fig, int nb_ticks,\
         exit(EXIT_FAILURE);
     }
     
-    int nb_itv = nb_ticks-1;
-
     // Intervalles entre 2 ticks
     int itv_tickh = 1;
 
@@ -1624,7 +1619,7 @@ void Make_xticks_xgrid_time_avgH(Figure *fig, int nb_ticks,\
     // printf("Nb ticks : %d \n", nb_ticks);
     for (int i = 0; i < nb_ticks; i++)
     {
-        printf("Tick : %d \n", i);
+        // printf("Tick : %d \n", i);
 
         // tick
         ImageLineEpaisseur(fig->img,\
@@ -1725,7 +1720,7 @@ void Make_xticks_xgrid_time(Figure *fig, Date date_init)
                         fig->padY[0],\
                         &style_linegrid);        
 
-        time_t t_tick = date_init.ctime + i*itv_sec;
+        time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
         struct tm *tm_tick;
         gmtime(&t_tick);
         tm_tick = gmtime(&t_tick);
@@ -1778,39 +1773,21 @@ void Make_fyticks_ygrid(Figure *fig, char wTicks)
         exit(EXIT_FAILURE);
     }
 
-    // int nb_ticks = Min_int(fig->max_Y, 10);
-    // printf("Nb ticks  = %d \n", nb_ticks);
-
-    // int itv = fig->max_Y / nb_ticks;
-    // printf("Itv       = %d \n", itv);
-
-    int itv=0, itv_minor=0;
+    int itv=0;
     if (fig->fmax_Y <= 10) {
         itv = 1;
-        itv_minor = 0;
-    } else if (fig->fmax_Y <= 20)
-    {
+    } else if (fig->fmax_Y <= 20) {
         itv = 2;
-        itv_minor = 1;
-    } else if (fig->fmax_Y <= 50)
-    {
+    } else if (fig->fmax_Y <= 50) {
         itv = 5;
-        itv_minor = 1;
-    } else if (fig->fmax_Y <= 100)
-    {
+    } else if (fig->fmax_Y <= 100) {
         itv = 10;
-        itv_minor = 2;
     }
     
     // printf("Itv       = %d \n", itv);
     // printf("Itv minor = %d \n", itv_minor);
     int nb_ticks = fig->fmax_Y / itv;
 
-    int nb_ticks_min = 0;    
-    if (itv_minor != 0) {
-        nb_ticks_min= (fig->fmax_Y / itv_minor) / nb_ticks;
-        // printf("Nb ticks min = %d \n", nb_ticks_min);
-    }    
     // printf("Nb ticks  = %d \n", nb_ticks);
 
     int h_canvas = fig->img->sy - fig->padY[0] - fig->padY[1];
@@ -1830,18 +1807,13 @@ void Make_fyticks_ygrid(Figure *fig, char wTicks)
     LineStyle style_tick;
     Init_linestyle(&style_tick, '-', fig->color_axes, w_tick, ' ', ' ');
     int long_tick = 0;
-    int long_tick_min = 0;
     LineStyle style_linegrid;
     Init_linestyle(&style_linegrid, '-', gris_grid, w_linegrid, ' ', ' ');
 
     // Plot ticks
     char tickVal[12];
 
-    for (int i = 1; i <= nb_ticks; i++)
-    {
-        sprintf(tickVal, "%d", i*itv);
-
-
+    for (int i = 1; i <= nb_ticks; i++) {
         // gridline
         ImageLineEpaisseur(fig->img,\
                         fig->orig[0],\
@@ -1853,7 +1825,6 @@ void Make_fyticks_ygrid(Figure *fig, char wTicks)
         // ticks
         if (wTicks == 'y') {
             long_tick = 9;
-            long_tick_min = 5;
             // tick : facteur 0.5 ajouté pour gerer les nombres pairs/impais de px
             ImageLineEpaisseur(fig->img,\
                             fig->orig[0]-long_tick-2,\
@@ -1867,6 +1838,9 @@ void Make_fyticks_ygrid(Figure *fig, char wTicks)
                             - strlen(tickVal) * fig->fonts[ticklabel_f].size;
         int posY_ticklab = fig->orig[1] - i*itv_pixels \
                             + fig->fonts[ticklabel_f].size / 2;
+
+        // Fabrication des tick labels
+        sprintf(tickVal, "%d", i*itv);
 
         gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img,\
