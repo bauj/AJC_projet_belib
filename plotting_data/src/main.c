@@ -13,6 +13,7 @@
 #include "libs/getter.h"
 #include "libs/plotter.h"
 
+#define AJC
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -112,7 +113,12 @@ int main(int argc, char* argv[])
     // ========================================================================
 
     // Parametres generaux
-    char *dir_figures= "/var/www/html/figures/"; /**< Path folder save fig*/
+    #ifndef AJC
+        char *dir_figures= "/var/www/html/figures/"; /**< Path folder save fig*/
+    #else
+        char *dir_figures= "./figures/"; /**< Path folder save fig*/
+    #endif
+    
     // char *dir_figures= "./figures/"; /**< Path folder save fig*/
     int figsize[2] = {800, 700};     /**< Dimension figure */
     int padX[2] = {90,0};            /**< pad zone de dessin gauche et droite*/
