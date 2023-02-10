@@ -449,9 +449,34 @@ int *Transform_fdataY_to_plot(Figure *fig, size_t len_pts, \
 int *Transform_fdataX_to_plot(Figure *fig, size_t len_pts,\
                                     const int pts[]);
 
+
+/* --------------------------------------------------------------------------- */
+/**
+ * @brief 
+ * 
+ * @param nb_rows 
+ * @param vect_dateticks 
+ * @param tableau_date_recolte_fav 
+ */
+void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows]);
+
 /* --------------------------------------------------------------------------- */
 // Définition des fonctions
 /* --------------------------------------------------------------------------- */
+
+
+void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows])
+{
+    for (int i = 0; i < nb_rows; i++)
+    {
+        Datetick tick_i;
+        Init_Datetick(&tick_i,\
+                &tableau_date_recolte_fav[i], &tableau_date_recolte_fav[0]);
+
+        vect_dateticks[i] =tick_i;
+    }      
+}
+
 
 /* --------------------------------------------------------------------------- */
 int Maxval_array(const int x_array[], size_t n)

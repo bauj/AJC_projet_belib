@@ -1,5 +1,6 @@
 /* ----------------------------------------------------------------------------
 *  Bibliotheque de constantes.
+*  Utilisee notamment pour les couleurs et polices.
 *  
 *  Author : Juba Hamma. 2023.
 * ---------------------------------------------------------------------------- 
@@ -8,20 +9,25 @@
 #ifndef consts_H
 #define consts_H
 
-int white[3]        = {255, 255, 255};   //white
-int black[3]        = {  0,   0,   0};   //black
-int gris_grid[3]    = { 71,  71,  71};   // gris grid
+int white[3]        = {255, 255, 255};
+int black[3]        = {  0,   0,   0};
+int gris_grid[3]    = { 71,  71,  71};
 
-int vert_fonce[3]   = { 51, 160,  44};   //vert_fonce
-int orange_fonce[3] = {255, 127,   0};   //orange_fonce
-int bleu_fonce[3]   = { 31, 120, 180};   //bleu_fonce
-int rouge_fonce[3]  = {227,  26,  28};   //rouge_fonce
-int vert_clair[3]   = {178, 223, 138};   //vert_clair
-int orange_clair[3] = {253, 191, 111};   //orange_clair
-int bleu_clair[3]   = {166, 206, 227};   //bleu_clair
-int rouge_clair[3]  = {251, 154, 153};   //rouge_clair
-int violet_clair[3] = {202, 178, 214};   //violet_clair
-int violet_fonce[3] = {152,  78, 163};   //violet_fonce
+int vert_fonce[3]   = { 51, 160,  44};
+int orange_fonce[3] = {255, 127,   0};
+int bleu_fonce[3]   = { 31, 120, 180};
+int rouge_fonce[3]  = {227,  26,  28};
+int vert_clair[3]   = {178, 223, 138};
+int orange_clair[3] = {253, 191, 111};
+int bleu_clair[3]   = {166, 206, 227};
+int rouge_clair[3]  = {251, 154, 153};
+int violet_clair[3] = {202, 178, 214};
+int violet_fonce[3] = {152,  78, 163};
+
+/**
+ * @brief Liste des couleurs utilisees pour les lines plots
+ * 
+ */
 int color_lines[10][3] = {\
                     { 51, 160,  44},
                     {255, 127,   0},
@@ -34,6 +40,10 @@ int color_lines[10][3] = {\
                     {251, 154, 153},
                     {202, 178, 214}};
 
+/**
+ * @brief Liste des couleurs utilisees pour les bar plots
+ * 
+ */
 int color_ctg[6][3] = {\
             {102,194,165},\
             {252,141, 98},\
@@ -42,6 +52,10 @@ int color_ctg[6][3] = {\
             {141,160,203},\
             {255,217, 47}};
 
+/**
+ * @brief Labels utilisés pour les légendes des bar plots
+ * 
+ */
 char* labels_ctg[4] = { "Disponible",\
                        "Occupé",
                        "En maintenance",

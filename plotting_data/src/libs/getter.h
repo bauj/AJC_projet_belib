@@ -19,51 +19,60 @@ typedef enum {disponible, occupe, en_maintenance, inconnu} statuts;
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Liberation de la memoire allouée pour un tableau de strings
+ * de dimension 1
  * 
- * @param tableau_str 
- * @param len_tab 
+ * @param tableau_str Tableau de strings
+ * @param len_tab Nombre de lignes du tableau 1D
  */
 void free_tab_char1(char **tableau_str, int len_tab);
 
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Fonction ouvrant la bdd et vérifiant si tout se passe bien à 
+ * l'ouverture (notamment l'existence du fichier)
  * 
- * @param bdd_filename 
- * @param db_belib 
+ * @param bdd_filename Chemin vers la base de données 
+ * @param db_belib Pointeur de pointeur type sqlite3 vers la bdd
  */
 void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib);
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Fonction permettant de récupérer le nombre des stations (uniques) 
+ * dans la table "Stations_fav"
  * 
- * @param db_belib 
- * @return int 
+ * @param db_belib Pointeur type sqlite3 vers la bdd
+ * @return int Nombre de stations favorites
  */
 int Get_nb_stations_fav(sqlite3 *db_belib);
 
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Recupere le nombre de lignes de données par station. Cette fonction 
+ * compte le nombre de date_recolte distinctes. 
  * 
- * @param db_belib 
- * @return int 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @note La bdd est construite de maniere a ce que l'on ait le meme nombre de 
+ * date de récolte pour chaque station, et donc le meme nombre de lignes de 
+ * données.
+ * @return int Nombre de lignes de données par station
  */
 int Get_nb_rows_par_station(sqlite3 *db_belib);
 
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Construction du tableau des adresses des stations favorites
  * 
- * @param db_belib 
- * @param tableau_adresses_fav 
- * @param nb_stations_fav 
- * @warning MALLOC 
+ * @param db_belib Pointeur type sqlite3 vers la bdd
+ * @param tableau_adresses_fav Tableau où les adresses sont injectées
+ * @param nb_stations_fav Nombre de stations favorites
+ * @warning Cette fonction effectue un malloc pour allouer la taille des chaines
+ * de caractères correspondant aux adresses. Ne pas oublier de désallouer le 
+ * contenu de tableau_adresses_fav à l'aide d'un free_tab_char1(tab). 
  */
 void Get_adresses_fav(sqlite3 *db_belib, \
             char **tableau_adresses_fav, int nb_stations_fav);
@@ -71,12 +80,14 @@ void Get_adresses_fav(sqlite3 *db_belib, \
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Fonction permettant de récupérer le tableau des dates de récolte.
  * 
- * @param db_belib 
- * @param tableau_date_recolte_fav 
- * @param nb_rows_par_station
- * @warning MALLOC 
+ * @param db_belib Pointeur type sqlite3 vers la bdd
+ * @param tableau_date_recolte_fav Tableau de type Date contenant 
+ * les dates de recolte pour chaque station
+ * @note Les dates de récolte sont les mêmes pour chaque station favorite par 
+ * construction
+ * @param nb_rows_par_station Nombre de lignes de données par station
  */
 void Get_date_recolte_fav(sqlite3 *db_belib, \
             Date *tableau_date_recolte_fav, int nb_rows_par_station);
@@ -84,14 +95,17 @@ void Get_date_recolte_fav(sqlite3 *db_belib, \
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Fonction permettant de remplir le tableau récapitulatif des données 
+ * regroupant les adresses, les statuts pour chaque date de récolte.
  * 
- * @param db_belib 
- * @param tableau_adresses_fav 
- * @param nb_stations_fav 
- * @param nb_rows_par_station 
- * @param nb_statuts 
- * @param tableau_statuts_fav 
+ * @param db_belib Pointeur de type sqlite3 vers la bdd
+ * @param tableau_adresses_fav Tableau contenant les adresses de chaque station 
+ * favorite 
+ * @param nb_stations_fav Nombre de stations favorites
+ * @param nb_rows_par_station Nombre de lignes de données par station
+ * @param nb_statuts Nombre de statuts de borne possible
+ * @param tableau_statuts_fav Tableau des statuts des bornes de l'ensemble des 
+ * stations favorites
  */
 void Get_statuts_station_fav(sqlite3 *db_belib,char **tableau_adresses_fav,\
      int nb_stations_fav,int nb_rows_par_station, int nb_statuts,\
@@ -100,12 +114,14 @@ void Get_statuts_station_fav(sqlite3 *db_belib,char **tableau_adresses_fav,\
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Fonction renvoyant la requete sql permettant de récupérer les nombres 
+ * de bornes au statut disponible, occupe, en_maintenance ou inconnu pour une 
+ * station donnée, en se basant sur l'unicité de son adresse.
  * 
- * @param station 
- * @param tableau_adresses_fav 
- * @return char* 
- * @warning MALLOC
+ * @param station Index de la station favorite dans le tableau des adresses des 
+ * stations favorites
+ * @param tableau_adresses_fav Tableau des adresses des stations favorites 
+ * @return char* Requete SQLite
  */
 char *Construct_req_station_statuts(int station, char **tableau_adresses_fav);
 
@@ -113,13 +129,23 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav);
 
 
 /* --------------------------------------------------------------------------- */
+/**
+ * @brief Fonction renvoyant la requete sql permettant de récupérer la moyenne 
+ * horaire des bornes disponibles pour une station donnée, en se basant sur 
+ * l'unicité de son adresse.
+ * 
+ * @param station Index de la station favorite dans le tableau des adresses des 
+ * stations favorites
+ * @param tableau_adresses_fav Tableau des adresses des stations favorites 
+ * @return char* Requete SQLite
+ */
 char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav);
 
 
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Fonction de debug permettant d'afficher le contenu de la bdd
  * 
  * @param nb_station 
  * @param nb_date 
@@ -128,35 +154,31 @@ char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav);
  * @param tableau_date_recolte_fav 
  * @param tableau_adresses_fav 
  */
-void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
-            int tab[nb_station][nb_date][nb_statuts],\
-            Date *tableau_date_recolte_fav, char** tableau_adresses_fav);
+void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts, int tab[nb_station][nb_date][nb_statuts],Date *tableau_date_recolte_fav, char** tableau_adresses_fav);
             
 
 /* --------------------------------------------------------------------------- */
-void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
-            int vect_statut[nb_rows], \
-            int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],\
-            int station, int statut);
+/**
+ * @brief Construction d'un vecteur 1D contenant le nombre de bornes ayant un 
+ * statut spécifié, pour une station donnée
+ * 
+ * @param nb_stations Nombre de stations favorites
+ * @param nb_rows Nombre de lignes de données pour chaque station
+ * @param nb_statuts Nombre de statuts récupérés
+ * @param vect_statut Vecteur qui contiendra le nombre de bornes ayant un statut 
+ * particulier pour une station donnée
+ * @param tableau_statuts_fav Tableau contenant l'ensemble des données récupérées
+ *  de la base de données
+ * @param station Station prise en compte dans la construction du vecteur 
+ * vect_statut
+ * @param statut Les bornes ayant ce statut seront comptabilisées
+ */
+void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,int vect_statut[nb_rows],int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],int station, int statut);
 
-/* --------------------------------------------------------------------------- */
-void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows]);
 
 /* --------------------------------------------------------------------------- */
 // Definition des fonctions
 /* --------------------------------------------------------------------------- */
-
-void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows])
-{
-    for (int i = 0; i < nb_rows; i++)
-    {
-        Datetick tick_i;
-        Init_Datetick(&tick_i,\
-                &tableau_date_recolte_fav[i], &tableau_date_recolte_fav[0]);
-
-        vect_dateticks[i] =tick_i;
-    }      
-}
 
 
 /* --------------------------------------------------------------------------- */
@@ -180,8 +202,7 @@ void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
             int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],
             int station, int statut)
 {
-    for (int i = 0; i < nb_rows; i++)
-    {
+    for (int i = 0; i < nb_rows; i++) {
         vect_statut[i] = tableau_statuts_fav[station][i][statut];
     }
 }
@@ -276,7 +297,6 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
     strcpy(req, query_statuts_stations_fav);
     strcat(req, "\'");
     strcat(req, tableau_adresses_fav[station]);
-    // strcat(req, " Paris"); // on l'ajoute vu qu'on le supprime dans Get_adresse
     strcat(req, "\';");
 
     return req;
