@@ -134,3 +134,9 @@ des stations.
 
 ## Perspectives
 + Moyenne par jour de bornes disponibles, à certaines heures :heavy_check_mark:
++ Porter sur carte réelle, yocto
+
+## To do
++ Tests nombre de stations (recuperer seulement les 8 premieres)
++ Doc
++ Exec pour stations live

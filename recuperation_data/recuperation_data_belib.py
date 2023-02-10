@@ -224,7 +224,10 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
                                 "&offset=0&timezone=UTC"
 
     resp = http.request("GET", url_req)
+
     raw_data_stations_pref = ujson.loads(resp.data)["records"] 
+
+    print(resp.data)
 
     list_stations = transform_dict_station(raw_data_stations_pref)
     nb_stations = len(list_stations)
@@ -241,15 +244,66 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
     
     conn.commit()
 
-    # mapbox api
-    # search_query = f"SELECT MIN(lon),MIN(lat),MAX(lon),MAX(lat) FROM {table}"
-    # cur.execute(search_query)
-    # test = list(cur.fetchall()[0])
-    # print(test)
-
     conn.close()
 
+    make_mapbox(list_stations, http, pos_lat, pos_lon, dist)
+
     return 
+
+# -----------------------------------------------------------------------------
+def make_mapbox(list_stations, http, pos_lat, pos_lon, dist):
+    
+    colors=['33a02c', 'ff7f00', '1f78b4',\
+            'e31a1c', '984ea3', 'b2df8a',\
+            'fdbf6f', 'a6cee3', 'fb9a99',\
+            'cab2d6']
+    
+    str_lat = f"{pos_lat:.3f}".replace(".","_")
+    str_lon = f"{pos_lon:.3f}".replace(".","_")
+    str_dist = dist.replace(".","-")
+    output_dir = "./"
+    filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+dist+".png"
+
+    nb_stations = len(list_stations)
+
+    ## Construction url api mapbox
+
+    ## Construction des pins sur la carte
+    ## 1er pin : position entree
+    pins = f"pin-s+111({pos_lon:.4f},{pos_lat:.4f})"
+    # overlay = f"pin-s+000({lon_center},{lat_center}),pin-s+f74e4e({lon_max},{lat_center})/"
+
+    for idx,st in enumerate(list_stations):
+        lat_station = list_stations[idx]["lon"]
+        lon_station = list_stations[idx]["lat"]
+        pins += f",pin-s+{colors[idx]}({lon_station:.4f},{lat_station:.4f})"
+
+    with open("../.mapbox_token") as ftoken:
+        read_mapbox_token = ftoken.read().split('\n')[0]
+    token = "?access_token="+read_mapbox_token
+
+    bbox_sw = [pos-0.009*0.5 for pos in [pos_lon, pos_lat]] 
+    bbox_ne = [pos+0.009*0.5 for pos in [pos_lon, pos_lat]] 
+
+
+    username = "mapbox"
+    style_id = "dark-v11"
+    mode = "static"
+    overlay = pins
+    bbox = f"[{bbox_sw[0]:.4f},{bbox_sw[1]:.4f},{bbox_ne[0]:.4f},{bbox_ne[1]:.4f}]"
+    # bbox = "auto"
+    width ="400"
+    height ="400"
+    x2 = "@2x"
+
+    url_req = "https://api.mapbox.com/styles/v1/"
+    url_req += f"{username}/{style_id}/{mode}/{overlay}/{bbox}/{width}x{height}{x2}{token}"
+
+    ## Execution requete et enregistrement en format png
+    with open(output_dir+filename_output, 'wb') as foutput:
+        foutput.write(http.request('GET', url_req).data)
+
+    return
 
 # -----------------------------------------------------------------------------
 def update_general(path_db):
