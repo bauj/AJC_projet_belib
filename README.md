@@ -120,7 +120,7 @@ des stations.
 
 + Un peu d'HTML et de CSS pour mettre en valeur les résultats, décrire le projet, etc ...
 
-## Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)     :soon:
+## Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)  :heavy_check_mark:
 
 + Recuperation des data : :heavy_check_mark:
     + environ 4 secs  par appel.
@@ -130,5 +130,7 @@ des stations.
     + **Python** : sqlite3, urllib3 (ssl et CA Certificates), ujson, sqlite3.
     + **C** : libgd, sqlite3.
 
++ Automatisation via script Sh dans crontab : done.
+
 ## Perspectives
-+ Moyenne par jour de bornes disponibles, à certaines heures
++ Moyenne par jour de bornes disponibles, à certaines heures :heavy_check_mark:
