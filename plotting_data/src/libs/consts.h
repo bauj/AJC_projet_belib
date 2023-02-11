@@ -60,4 +60,20 @@ char* labels_ctg[4] = { "Disponible",\
                        "Occupé",
                        "En maintenance",
                        "Inconnu"};
+
+#if defined(AJC) || defined(QEMU)
+char *fonts_fig[3] = {\
+    "/usr/share/fonts/truetype/lato/Lato-Regular.ttf",\
+    "/usr/share/fonts/truetype/lato/Lato-Medium.ttf",\
+    "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf",\
+    };
+#else
+char *fonts_fig[3] = {\
+    "/usr/share/fonts/lato/Lato-Regular.ttf",\
+    "/usr/share/fonts/lato/Lato-Medium.ttf",\
+    "/usr/share/fonts/lato/Lato-LightItalic.ttf",\
+    };
+#endif
+
+
 #endif

@@ -60,54 +60,29 @@ int Get_nb_stations_fav(sqlite3 *db_belib);
  * données.
  * @return int Nombre de lignes de données par station
  */
-int Get_nb_rows_par_station(sqlite3 *db_belib);
-
+int Get_nb_rows_par_station(sqlite3 *db_belib, char *table);
 
 /* --------------------------------------------------------------------------- */
-/**
- * @brief Construction du tableau des adresses des stations favorites
- * 
- * @param db_belib Pointeur type sqlite3 vers la bdd
- * @param tableau_adresses_fav Tableau où les adresses sont injectées
- * @param nb_stations_fav Nombre de stations favorites
- * @warning Cette fonction effectue un malloc pour allouer la taille des chaines
- * de caractères correspondant aux adresses. Ne pas oublier de désallouer le 
- * contenu de tableau_adresses_fav à l'aide d'un free_tab_char1(tab). 
- */
-void Get_adresses_fav(sqlite3 *db_belib, \
+
+
+
+void Get_adresses(sqlite3 *db_belib, char *table, \
             char **tableau_adresses_fav, int nb_stations_fav);
 
 
 /* --------------------------------------------------------------------------- */
-/**
- * @brief Fonction permettant de récupérer le tableau des dates de récolte.
- * 
- * @param db_belib Pointeur type sqlite3 vers la bdd
- * @param tableau_date_recolte_fav Tableau de type Date contenant 
- * les dates de recolte pour chaque station
- * @note Les dates de récolte sont les mêmes pour chaque station favorite par 
- * construction
- * @param nb_rows_par_station Nombre de lignes de données par station
- */
-void Get_date_recolte_fav(sqlite3 *db_belib, \
+
+
+
+void Get_date_recolte(sqlite3 *db_belib, char *table,\
             Date *tableau_date_recolte_fav, int nb_rows_par_station);
 
 
 /* --------------------------------------------------------------------------- */
-/**
- * @brief Fonction permettant de remplir le tableau récapitulatif des données 
- * regroupant les adresses, les statuts pour chaque date de récolte.
- * 
- * @param db_belib Pointeur de type sqlite3 vers la bdd
- * @param tableau_adresses_fav Tableau contenant les adresses de chaque station 
- * favorite 
- * @param nb_stations_fav Nombre de stations favorites
- * @param nb_rows_par_station Nombre de lignes de données par station
- * @param nb_statuts Nombre de statuts de borne possible
- * @param tableau_statuts_fav Tableau des statuts des bornes de l'ensemble des 
- * stations favorites
- */
-void Get_statuts_station_fav(sqlite3 *db_belib,char **tableau_adresses_fav,\
+
+
+
+void Get_statuts_station(sqlite3 *db_belib, char *table, char **tableau_adresses_fav,\
      int nb_stations_fav,int nb_rows_par_station, int nb_statuts,\
      int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts]);
 
@@ -123,8 +98,7 @@ void Get_statuts_station_fav(sqlite3 *db_belib,char **tableau_adresses_fav,\
  * @param tableau_adresses_fav Tableau des adresses des stations favorites 
  * @return char* Requete SQLite
  */
-char *Construct_req_station_statuts(int station, char **tableau_adresses_fav);
-
+char *Construct_req_station_statuts(char* table, int station, char **tableau_adresses_fav);
 
 
 
@@ -216,9 +190,9 @@ int Get_nb_avg_hours(sqlite3 *db_belib)
 
     int nb_avg_hours = 0;
 
-    const char *query_nb_avg_hours = \
+    char *query_nb_avg_hours = \
             "SELECT COUNT(DISTINCT(strftime(\'%H\', date_recolte))) as Hour FROM Stations_fav;";
-    
+
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib, query_nb_avg_hours,-1, &stmt, NULL))
     {
@@ -253,9 +227,8 @@ void Get_avg_hours(sqlite3 *db_belib, int nb_rows_hours,\
     // Declaration statement
     sqlite3_stmt *stmt;
 
-    const char *query_avg_hours = \
-        "SELECT (strftime(\'%H\', date_recolte)) as Hour FROM Stations_fav \
-            GROUP BY (strftime(\'%H\', date_recolte));";
+    char *query_avg_hours = \
+        "SELECT (strftime(\'%H\', date_recolte)) as Hour FROM Stations_fav GROUP BY (strftime(\'%H\', date_recolte));";
 
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib, query_avg_hours, -1, &stmt, NULL))
@@ -282,22 +255,24 @@ void Get_avg_hours(sqlite3 *db_belib, int nb_rows_hours,\
 }
 
 /* --------------------------------------------------------------------------- */
-char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
+char *Construct_req_station_statuts(char* table, int station, char **tableau_adresses_fav)
 {
-    const char *query_statuts_stations_fav = \
-            "SELECT disponible, occupe, en_maintenance, inconnu FROM \
-                Stations_fav WHERE adresse_station = ";
+    char query_statuts_stations[250] = \
+            "SELECT disponible, occupe, en_maintenance, inconnu FROM ";
 
-    int len_query_base = strlen(query_statuts_stations_fav);
-    int len_max_adresse = 70;
+    strcat(query_statuts_stations, table);
+    strcat(query_statuts_stations, " WHERE adresse_station = ");  
+
+    int len_query_base = strlen(query_statuts_stations);
+    int len_max_adresse = 200;
     int len_query_station = len_query_base + len_max_adresse;
 
     char *req = malloc(len_query_station*sizeof(char));
 
-    strcpy(req, query_statuts_stations_fav);
-    strcat(req, "\'");
+    strcpy(req, query_statuts_stations);
+    strcat(req, "\"");
     strcat(req, tableau_adresses_fav[station]);
-    strcat(req, "\';");
+    strcat(req, "\";");
 
     return req;
 }
@@ -306,8 +281,9 @@ char *Construct_req_station_statuts(int station, char **tableau_adresses_fav)
 /* --------------------------------------------------------------------------- */
 char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav)
 {
-    const char *query_statuts_stations_avg_dispo = \
-            "SELECT AVG(disponible) as Avg_dispo FROM Stations_fav WHERE adresse_station = ";
+    char *query_statuts_stations_avg_dispo = \
+            "SELECT AVG(disponible) as Avg_dispo FROM Stations_fav WHERE adresse_station = "; 
+
 
     int len_query_base = strlen(query_statuts_stations_avg_dispo);
     int len_max_adresse = 200; // comprend le reste de la req plus bas
@@ -326,7 +302,7 @@ char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav)
 
 
 /* --------------------------------------------------------------------------- */
-void Get_avg_dispo_station(sqlite3 *db_belib, \
+void Get_avg_dispo_station(sqlite3 *db_belib,\
                         char **tableau_adresses_fav,\
                         int nb_stations_fav, int nb_rows_hours, \
                         float tableau_avg_dispo_station[nb_stations_fav][nb_rows_hours])
@@ -368,7 +344,7 @@ void Get_avg_dispo_station(sqlite3 *db_belib, \
 }
 
 /* --------------------------------------------------------------------------- */
-void Get_statuts_station_fav(sqlite3 *db_belib,\
+void Get_statuts_station(sqlite3 *db_belib, char *table,\
     char **tableau_adresses_fav, int nb_stations_fav, \
     int nb_rows_par_station, int nb_statuts, \
     int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts])
@@ -380,7 +356,7 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
         sqlite3_stmt *stmt_station;
 
         // Construction requete
-        char *req_sql = Construct_req_station_statuts(station, tableau_adresses_fav);
+        char *req_sql = Construct_req_station_statuts(table, station, tableau_adresses_fav);
 
         // Test de la requete
         if (sqlite3_prepare_v2(db_belib, req_sql, -1, &stmt_station, NULL))
@@ -413,17 +389,20 @@ void Get_statuts_station_fav(sqlite3 *db_belib,\
 }
 
 /* --------------------------------------------------------------------------- */
-void Get_date_recolte_fav(sqlite3 *db_belib, \
+void Get_date_recolte(sqlite3 *db_belib, char *table,\
                 Date *tableau_date_recolte_fav, int nb_rows_par_station)
 {
     // Declaration statement
     sqlite3_stmt *stmt;
 
-    const char *query_adresse_stations_fav = \
-                "SELECT DISTINCT(date_recolte) FROM Stations_fav;";
-
+    char query_date_recolte_fav[250] = \
+            "SELECT  DISTINCT(date_recolte) FROM ";
+    
+    strcat(query_date_recolte_fav, table);
+    strcat(query_date_recolte_fav, ";");
+    
     // Test de la requete
-    if (sqlite3_prepare_v2(db_belib, query_adresse_stations_fav, -1, &stmt, NULL))
+    if (sqlite3_prepare_v2(db_belib, query_date_recolte_fav, -1, &stmt, NULL))
     {
         printf("Erreur SQL :\n");
         printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
@@ -450,7 +429,7 @@ void Get_date_recolte_fav(sqlite3 *db_belib, \
 
 
 /* --------------------------------------------------------------------------- */
-void Get_adresses_fav(sqlite3 *db_belib, \
+void Get_adresses(sqlite3 *db_belib, char* table,\
                 char **tableau_adresses_fav, int nb_stations_fav)
 {
 
@@ -458,8 +437,11 @@ void Get_adresses_fav(sqlite3 *db_belib, \
     // Declaration statement
     sqlite3_stmt *stmt;
 
-    const char *query_adresse_stations_fav = \
-                "SELECT DISTINCT(adresse_station) FROM Stations_fav;";
+    char query_adresse_stations_fav[250] = \
+            "SELECT  DISTINCT(adresse_station) FROM ";
+    
+    strcat(query_adresse_stations_fav, table);
+    strcat(query_adresse_stations_fav, ";");
 
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib, query_adresse_stations_fav, -1, &stmt, NULL))
@@ -491,7 +473,7 @@ void Get_adresses_fav(sqlite3 *db_belib, \
 }
 
 /* --------------------------------------------------------------------------- */
-int Get_nb_rows_par_station(sqlite3 *db_belib)
+int Get_nb_rows_par_station(sqlite3 *db_belib, char* table)
 {
 
     // Declaration statement
@@ -499,8 +481,12 @@ int Get_nb_rows_par_station(sqlite3 *db_belib)
 
     int nb_rows_par_station = 0;
 
-    const char *query_nb_row_par_station = \
-            "SELECT COUNT(DISTINCT date_recolte) FROM Stations_fav;";
+    char query_nb_row_par_station[250] = \
+            "SELECT COUNT(DISTINCT date_recolte) FROM ";
+    
+    strcat(query_nb_row_par_station, table);
+    strcat(query_nb_row_par_station, ";");
+    
 
 
     // Test de la requete
@@ -527,7 +513,7 @@ int Get_nb_rows_par_station(sqlite3 *db_belib)
 }
 
 /* --------------------------------------------------------------------------- */
-int Get_nb_stations_fav(sqlite3 *db_belib)
+int Get_nb_stations(sqlite3 *db_belib, char* table)
 {
 
     // Declaration statement
@@ -535,9 +521,12 @@ int Get_nb_stations_fav(sqlite3 *db_belib)
 
     int nb_stations_favs = 0;
 
-    const char *query_nb_stations = \
-            "SELECT COUNT(DISTINCT adresse_station) FROM Stations_fav;";
+    char query_nb_stations[250] = \
+            "SELECT COUNT(DISTINCT adresse_station) FROM ";
     
+    strcat(query_nb_stations, table);
+    strcat(query_nb_stations, ";");
+
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib, query_nb_stations,-1, &stmt, NULL))
     {

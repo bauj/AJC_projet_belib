@@ -30,6 +30,7 @@ import urllib3
 import ujson
 import sqlite3
 import argparse
+import sys
 from datetime import date, timedelta, datetime
 
 # -----------------------------------------------------------------------------
@@ -87,8 +88,8 @@ def iterator_data_stations(n, list_stations_pref):
             list_stations_pref[i]["lon"], \
             list_stations_pref[i]["disponible"], \
             list_stations_pref[i]["occupe"],\
-            list_stations_pref[i]['en_maintenance'],\
             list_stations_pref[i]['inconnu'],\
+            list_stations_pref[i]['en_maintenance'],\
             list_stations_pref[i]['supprime'],\
             list_stations_pref[i]['reserve'],\
             list_stations_pref[i]['en_cours_mes'],\
@@ -179,7 +180,12 @@ def transform_dict_station(list_records):
     list_dict_station = []
 
     # 1ere station : initialisation 1ere adresse
-    rec0 = list_records[0]["record"]["fields"]
+    try :
+        rec0 = list_records[0]["record"]["fields"]
+    except IndexError: # Pas de stations trouvees
+        print("> Pas de stations trouvées.")
+        sys.exit()
+
     adresse_record0 = rec0["adresse_station"] 
     lon0,lat0 = get_lon_lat_from_coordxy(rec0["coordonneesxy"])
     dict_station = def_station(date_recolte, adresse_record0, lon0, lat0, 0, 0, 0, 0)
@@ -187,14 +193,19 @@ def transform_dict_station(list_records):
     dict_station[statut_record0] = rec0["nb_bornes"]
 
     # Saut du 1er record
-    for dico_record in list_records[1:]:
+    for idx,dico_record in enumerate(list_records[1:]):
         rec = dico_record["record"]["fields"]
-
         if (dict_station["adresse_station"] == rec["adresse_station"]) :
             statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
+
+            if (idx+1 == len(list_records)-1):
+                list_dict_station.append(dict_station)    
         else :
             list_dict_station.append(dict_station)
+            if (len(list_dict_station) == 8):
+                print("> 8 stations trouvees. On n'aaffichera pas plus de stations.") 
+                break
 
             adresse_record = rec["adresse_station"] 
             lon,lat = get_lon_lat_from_coordxy(rec["coordonneesxy"])
@@ -214,23 +225,29 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
     date_du_jour = date.today().strftime("%Y-%m-%d")
     date_veille = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     
+    unit_dist = "km"
+    str_dist = f"{dist:.2f}{unit_dist}"
     url_req = f"https://parisdata.opendatasoft.com/api/v2/catalog/datasets/"+\
         "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"+\
             "records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated"+\
                 f"%20%3E%20date%27{date_veille}%27%20AND%20last_updated%20%3C%3D%20date"+\
                     f"%27{date_du_jour}%27%20AND%20distance%28coordonneesxy%2C%20GEOM"+\
-                        f"%27POINT%28{pos_lon}%20{pos_lat}%29%27%2C%20{dist}%29&group_by"+\
+                        f"%27POINT%28{pos_lon}%20{pos_lat}%29%27%2C%20{dist}{unit_dist}%29&group_by"+\
                             "=adresse_station%2C%20coordonneesxy%2Cstatut_pdc&limit=100"+\
                                 "&offset=0&timezone=UTC"
 
     resp = http.request("GET", url_req)
 
     raw_data_stations_pref = ujson.loads(resp.data)["records"] 
-
-    print(resp.data)
+    # for i in range(nb_stations):
+    # print(ujson.dumps(raw_data_stations_pref,indent=3))
 
     list_stations = transform_dict_station(raw_data_stations_pref)
+
     nb_stations = len(list_stations)
+
+    # for i in range(nb_stations):
+    #     print(ujson.dumps(list_stations[i],indent=3))
 
     wanted_keys = list(list_stations[0].keys())
     
@@ -246,12 +263,12 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
 
     conn.close()
 
-    make_mapbox(list_stations, http, pos_lat, pos_lon, dist)
+    make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist)
 
     return 
 
 # -----------------------------------------------------------------------------
-def make_mapbox(list_stations, http, pos_lat, pos_lon, dist):
+def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     
     colors=['33a02c', 'ff7f00', '1f78b4',\
             'e31a1c', '984ea3', 'b2df8a',\
@@ -260,9 +277,12 @@ def make_mapbox(list_stations, http, pos_lat, pos_lon, dist):
     
     str_lat = f"{pos_lat:.3f}".replace(".","_")
     str_lon = f"{pos_lon:.3f}".replace(".","_")
-    str_dist = dist.replace(".","-")
+    unit_dist = "km"
+    str_dist = f"{dist:.2f}{unit_dist}"
+    str_dist_ = str_dist.replace(".","-")
     output_dir = "./"
-    filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+dist+".png"
+    filename_output = f"mapbox_{table}.png"
+    # filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+str_dist_+".png"
 
     nb_stations = len(list_stations)
 
@@ -280,10 +300,10 @@ def make_mapbox(list_stations, http, pos_lat, pos_lon, dist):
 
     with open("../.mapbox_token") as ftoken:
         read_mapbox_token = ftoken.read().split('\n')[0]
-    token = "?access_token="+read_mapbox_token
+    token = "access_token="+read_mapbox_token
 
-    bbox_sw = [pos-0.009*0.5 for pos in [pos_lon, pos_lat]] 
-    bbox_ne = [pos+0.009*0.5 for pos in [pos_lon, pos_lat]] 
+    bbox_sw = [pos-0.009*dist for pos in [pos_lon, pos_lat]] 
+    bbox_ne = [pos+0.009*dist for pos in [pos_lon, pos_lat]] 
 
 
     username = "mapbox"
@@ -294,10 +314,11 @@ def make_mapbox(list_stations, http, pos_lat, pos_lon, dist):
     # bbox = "auto"
     width ="400"
     height ="400"
+    padding = "padding=20,20,20"
     x2 = "@2x"
 
     url_req = "https://api.mapbox.com/styles/v1/"
-    url_req += f"{username}/{style_id}/{mode}/{overlay}/{bbox}/{width}x{height}{x2}{token}"
+    url_req += f"{username}/{style_id}/{mode}/{overlay}/{bbox}/{width}x{height}{x2}?{padding}&{token}"
 
     ## Execution requete et enregistrement en format png
     with open(output_dir+filename_output, 'wb') as foutput:
@@ -422,8 +443,8 @@ if __name__ == "__main__":
                 "dans la table 'Stations_live'.")
     parser.add_argument('-a', '--adresse', type=str, nargs=1, default="",
         help ="Adresse a entrer dans le cas de l'option --live.")
-    parser.add_argument('-d', '--distance', type=str, nargs=1, default="",
-        help ="Rayon de recherche a entrer sous la forme '0.5km' dans le cas "+\
+    parser.add_argument('-d', '--distance', type=float, nargs=1, default=0.5,
+        help ="Rayon de recherche a entrer en km dans le cas "+\
             "de l'option --live.")
 
     args = parser.parse_args()
@@ -444,7 +465,7 @@ if __name__ == "__main__":
 
     if (not bornes and not general and fav and not live) :
         pos_lat, pos_lon = 48.84, 2.28
-        dist="0.5km"
+        dist=0.5
         table = "Stations_fav"
         update_bornes_around_pos(path_db,table, pos_lat, pos_lon, dist)
 

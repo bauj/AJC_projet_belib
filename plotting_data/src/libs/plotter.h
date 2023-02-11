@@ -16,7 +16,7 @@
 #include <math.h>
 
 #define PI 3.141592
-
+#define LENOVO
 /* --------------------------------------------------------------------------- */
 typedef enum {label_f, annotation_f, title_f, ticklabel_f, subtitle_f, leg_f} fontsFig;
 
@@ -803,7 +803,7 @@ void PlotBarplot(Figure *fig, BarData *bardata, char wlabels)
         if (y1_rect != y2_rect) {
             // Ajout des labels
             if (wlabels == 'y') {
-                int posX_label = posX_center + itv_posX/3 - 6;
+                int posX_label = posX_center + itv_posX/3 - 4;
                 int posY_label = y2_rect - (y2_rect-y1_rect)/2 \
                                 + fig->fonts[label_f].size / 2;
 
@@ -935,12 +935,12 @@ void Init_figure(Figure *fig, int figsize[2],\
     }
 
     // Fonts
-    fig->fonts[label_f].path = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
-    fig->fonts[title_f].path = "/usr/share/fonts/truetype/lato/Lato-Medium.ttf";
-    fig->fonts[annotation_f].path = "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf";
-    fig->fonts[ticklabel_f].path = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
-    fig->fonts[subtitle_f].path = "/usr/share/fonts/truetype/lato/Lato-Medium.ttf";
-    fig->fonts[leg_f].path = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
+    fig->fonts[label_f].path = fonts_fig[0];
+    fig->fonts[title_f].path = fonts_fig[1];
+    fig->fonts[annotation_f].path = fonts_fig[2];
+    fig->fonts[ticklabel_f].path = fonts_fig[0];
+    fig->fonts[subtitle_f].path = fonts_fig[1];
+    fig->fonts[leg_f].path = fonts_fig[0];
 
     fig->fonts[label_f].size = 15;
     fig->fonts[title_f].size = 18;
@@ -1745,7 +1745,12 @@ void Make_xticks_xgrid_time(Figure *fig, Date date_init)
                         fig->padY[0],\
                         &style_linegrid);        
 
-        time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
+        #if defined(LENOVO) || defined(QEMU)
+            time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
+        #else
+            time_t t_tick = date_init.ctime + i*itv_sec;
+        #endif
+
         struct tm *tm_tick;
         gmtime(&t_tick);
         tm_tick = gmtime(&t_tick);

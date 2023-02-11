@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------
 *  Programme permettant d'ouvrir la bdd SQLite contenant les donnees belib et
-*  de plot les infos interessantes.
+*  de plot les infos interessantes concernant la table Stations_fav.
 *  
 *  Author : Juba Hamma. 2023.
 * ---------------------------------------------------------------------------- 
@@ -13,6 +13,9 @@
 #include "libs/getter.h"
 #include "libs/plotter.h"
 
+// #define AJC
+// #define QEMU
+#define LENOVO
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -31,23 +34,26 @@ int main(int argc, char* argv[])
                         fichier en entrée. \n");
         exit(EXIT_FAILURE);
     }
-
+    
     // Instanciation db sqlite
     sqlite3 *db_belib;
 
     // Connexion a la db sqlite
     Sqlite_open_check(bdd_filename, &db_belib);
     
+    // Choix de la table de travail
+    char* table = "Stations_fav";
+
     // Recuperation du nombre de stations en favoris
-    int nb_stations_fav = Get_nb_stations_fav(db_belib);
+    int nb_stations_fav = Get_nb_stations(db_belib, table);
 
     // Recuperation du nombre de lignes par station
-    int nb_rows_par_station = Get_nb_rows_par_station(db_belib);
+    int nb_rows_par_station = Get_nb_rows_par_station(db_belib, table);
     // printf(" > Nb rows : %d \n", nb_rows_par_station);
 
     // Recuperation des adresses des stations en favoris
     char *tableau_adresses_fav[nb_stations_fav];
-    Get_adresses_fav(db_belib, tableau_adresses_fav, nb_stations_fav);
+    Get_adresses(db_belib, table, tableau_adresses_fav, nb_stations_fav);
 
     // On retire "Paris" des adresses pour les labels fig
     char *adresse_label[nb_stations_fav];
@@ -61,7 +67,7 @@ int main(int argc, char* argv[])
 
     // Recuperation des date de recolte de chaque station (same for all)
     Date tableau_date_recolte_fav[nb_rows_par_station];
-    Get_date_recolte_fav(db_belib, tableau_date_recolte_fav, nb_rows_par_station);
+    Get_date_recolte(db_belib, table, tableau_date_recolte_fav, nb_rows_par_station);
 
     // Datetick datetick;
     // Init_Datetick(&datetick, &tableau_date_recolte_fav[1], &tableau_date_recolte_fav[0]);
@@ -73,7 +79,7 @@ int main(int argc, char* argv[])
     int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts];
     
     // Remplissage du tableau avec la bdd belib_data
-    Get_statuts_station_fav(db_belib, \
+    Get_statuts_station(db_belib, table,\
                                 tableau_adresses_fav, nb_stations_fav,\
                                  nb_rows_par_station, nb_statuts,
                                  tableau_statuts_fav);
@@ -84,14 +90,14 @@ int main(int argc, char* argv[])
     
     // Mean avg per hour
     int nb_rows_hours = Get_nb_avg_hours(db_belib);
-    printf("Nb d'heures pour calc moyenne : %d\n", nb_rows_hours);
+    // printf("Nb d'heures pour calc moyenne : %d\n", nb_rows_hours);
 
     // Recuperation vecteur des heures
     int tableau_avg_hours[nb_rows_hours];
     Get_avg_hours(db_belib, nb_rows_hours, tableau_avg_hours);
 
-    for (int i=0; i < nb_rows_hours; i++)
-        printf("avg hour %d : %d\n",i,tableau_avg_hours[i]);
+    // for (int i=0; i < nb_rows_hours; i++)
+    //     printf("avg hour %d : %d\n",i,tableau_avg_hours[i]);
 
     // Recuperation moyenne horaire dispo stations
     float tableau_avg_dispo_station[nb_stations_fav][nb_rows_hours];
@@ -112,8 +118,14 @@ int main(int argc, char* argv[])
     // ========================================================================
 
     // Parametres generaux
-    char *dir_figures= "./figures/"; /**< Path folder save fig*/
-    int figsize[2] = {900, 700};     /**< Dimension figure */
+    #if defined QEMU
+        char *dir_figures= "/var/www/html/figures/"; /**< Path folder save fig*/
+    #else
+        char *dir_figures= "./figures/"; /**< Path folder save fig*/
+    #endif
+    
+    // char *dir_figures= "./figures/"; /**< Path folder save fig*/
+    int figsize[2] = {800, 700};     /**< Dimension figure */
     int padX[2] = {90,0};            /**< pad zone de dessin gauche et droite*/
     int padY[2] = {120,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
@@ -141,7 +153,7 @@ int main(int argc, char* argv[])
     char style_trait;
     LineData lines[nb_stations_fav]; /**< vecteur de linedata pour chaque station*/
     LineStyle linestyles[nb_stations_fav];  /**< vecteur de linestyle pour chaque station*/
-
+    
     for (int st = 0; st < nb_stations_fav; st ++)
     {
         Get_statut_station(nb_stations_fav, nb_rows_par_station, nb_statuts,\
@@ -196,7 +208,7 @@ int main(int argc, char* argv[])
 
     /* Make Y ticks and grid line*/
     char wTicks = 'n';
-    char *path_f_med = "fonts/Lato-Medium.ttf";
+    char *path_f_med = fonts_fig[1];
     Change_font(&fig1, ticklabel_f, path_f_med);
     Change_fontsize(&fig1, ticklabel_f, 14);    
     Make_yticks_ygrid(&fig1, wTicks);
@@ -220,9 +232,11 @@ int main(int argc, char* argv[])
     for (int st = 0; st < nb_stations_fav; st++)
         PlotLine(&fig1, &(lines[st]));
 
+
      /* Sauvegarde du fichier png */
     const char *filename_fig1= "fig1_disponible.png";
     Save_to_png(&fig1, dir_figures, filename_fig1);
+
 
     /* printf("Résolution de l'img : %d x %d dpi\n", gdImageResolutionX(fig1.img),\
                              gdImageResolutionY(fig1.img) );                           
@@ -230,7 +244,6 @@ int main(int argc, char* argv[])
 
     /* Destroy the image in memory. */
     gdImageDestroy(fig1.img);
-
 
     // ========================================================================
     // Creation de la figure 2 : barplot des statuts des bornes par station
@@ -264,8 +277,9 @@ int main(int argc, char* argv[])
         // Update des data de l'objet figure (gestion des max, posX des barplot)
         Add_barplot_to_fig(&fig2, &(barplots[st_barplot]));
     }
-    for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++)
-        printf("%s \n", adresse_label[st_barplot]);
+
+    // for (int st_barplot = 0; st_barplot < nb_stations_fav; st_barplot++)
+    //     printf("%s \n", adresse_label[st_barplot]);
 
     // // Ajout du ylabel
     // decalx_Y = 10, decaly_Y = 0;    
@@ -314,11 +328,17 @@ int main(int argc, char* argv[])
     // Print_debug_date(&last_date_recolte, 'y');
 
     char subtitle2[70];
+    #ifdef qemu
+        int hour_hack = last_date_recolte.tm.tm_hour+1;
+    #else
+        int hour_hack = last_date_recolte.tm.tm_hour;
+    #endif
+
     sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
                      last_date_recolte.tm.tm_mday,\
                      last_date_recolte.tm.tm_mon+1,\
                      (last_date_recolte.tm.tm_year+1900)%2000,\
-                     last_date_recolte.tm.tm_hour,\
+                     hour_hack,\
                      last_date_recolte.tm.tm_min);
 
     decalx_subtitle = 0, decaly_subtitle = 0;
@@ -342,32 +362,23 @@ int main(int argc, char* argv[])
     padY[0] = 120;
     padY[1] = 160;
    
-    char wAxes = 'y';
+    wAxes = 'n';
     Init_figure(&fig3, figsize, padX, padY, margin, wAxes);
 
     /* Make ylabel  ----------  A mettre apres update fig */
-    int decalx_Y = 20, decaly_Y = 0;    
-    char *ylabel = "Moyenne horaire des bornes disponibles";
+    decalx_Y = 20, decaly_Y = 0;    
+    ylabel = "Moyenne horaire des bornes disponibles";
     Change_fontsize(&fig3, label_f, 14);    
     Make_ylabel(&fig3, ylabel, decalx_Y, decaly_Y);
 
     /* Make title */
-    char *title = "\u00c9volution de la moyenne horaire des bornes Belib disponibles";
-    int decalx_title = -30, decaly_title = 15;
-    int *bbox_title;     /**< bbox : so, se, ne, no */
+    title = "\u00c9volution de la moyenne horaire des bornes Belib disponibles";
+    decalx_title = -30, decaly_title = 15;
     bbox_title = Make_title(&fig3, title, decalx_title, decaly_title);
 
     /* Make subtitle */
-    Date date_debut;
-    Date date_fin;
-    Init_Date(&date_debut, tableau_date_recolte_fav[0].datestr);
-    Init_Date(&date_fin, tableau_date_recolte_fav[nb_rows_par_station-1].datestr);
         // Construction du sous titre "du .... au ... "
-    char subtitle[25] = "";  
-    Const_str_dudate1_audate2(&date_debut, &date_fin, subtitle);
-    int decalx_subtitle = 0, decaly_subtitle = 0;
     Make_subtitle(&fig3, subtitle, bbox_title, decalx_subtitle, decaly_subtitle);
-
 
     // Data
     // Vecteur X = tableau_avg_hours
@@ -376,6 +387,8 @@ int main(int argc, char* argv[])
     LineStyle flinestyles[nb_stations_fav];  /**< vecteur de linestyle pour chaque station*/
     fLineData flines[nb_stations_fav];
 
+    w_lines = 3;
+    ms = 8;
     for (int st = 0; st < nb_stations_fav; st ++)
     {
         style_trait = '-';
@@ -390,16 +403,13 @@ int main(int argc, char* argv[])
         Add_fline_to_fig(&fig3, &(flines[st]));
     }
 
-    Print_debug_fig(&fig3);
+    // Print_debug_fig(&fig3);
 
     /* Make Xticks and grid line*/
     Make_xticks_xgrid_time_avgH(&fig3, nb_rows_hours,tableau_avg_hours);
 
     /* Make Y ticks and grid line*/
-    char wTicks = 'n';
-    char *path_f_med = "fonts/Lato-Medium.ttf";
-    Change_font(&fig3, ticklabel_f, path_f_med);
-    Change_fontsize(&fig3, ticklabel_f, 14);    
+    wTicks = 'n'; 
     Make_fyticks_ygrid(&fig3, wTicks);
 
     /* Plot lines */
@@ -407,8 +417,15 @@ int main(int argc, char* argv[])
         PlotFLine(&fig3, &(flines[st]));
 
     /* Make legend */
-    int decalx_leg = 0, decaly_leg = 0, ecart = 8;
+    decalx_leg = 0, decaly_leg = 0, ecart = 8;
     Make_legend(&fig3, decalx_leg, decaly_leg, ecart);
+
+    /* Make github link */
+    decalx_github = 0, decaly_github = 0;
+    Make_annotation(&fig3, github, decalx_github, decaly_github);
+
+    /* Make copyright */
+    Make_annotation(&fig3, sign, decalx_sign, decaly_sign);
 
      /* Sauvegarde du fichier png */
     const char *filename_fig3= "fig3_avg_hour_dispo.png";
@@ -416,6 +433,7 @@ int main(int argc, char* argv[])
 
     // Destroying img 
     gdImageDestroy(fig3.img);
+
 
     // Clean alloc
     free_tab_char1(tableau_adresses_fav, nb_stations_fav);

@@ -13,7 +13,9 @@
 #include "libs/getter.h"
 #include "libs/plotter.h"
 
-#define AJC
+// #define AJC
+// #define QEMU
+#define LENOVO
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -113,7 +115,7 @@ int main(int argc, char* argv[])
     // ========================================================================
 
     // Parametres generaux
-    #ifndef AJC
+    #if defined QEMU
         char *dir_figures= "/var/www/html/figures/"; /**< Path folder save fig*/
     #else
         char *dir_figures= "./figures/"; /**< Path folder save fig*/
@@ -203,7 +205,7 @@ int main(int argc, char* argv[])
 
     /* Make Y ticks and grid line*/
     char wTicks = 'n';
-    char *path_f_med = "/usr/share/fonts/truetype/lato/Lato-Medium.ttf";
+    char *path_f_med = fonts_fig[1];
     Change_font(&fig1, ticklabel_f, path_f_med);
     Change_fontsize(&fig1, ticklabel_f, 14);    
     Make_yticks_ygrid(&fig1, wTicks);
@@ -323,11 +325,17 @@ int main(int argc, char* argv[])
     // Print_debug_date(&last_date_recolte, 'y');
 
     char subtitle2[70];
+    #ifdef qemu
+        int hour_hack = last_date_recolte.tm.tm_hour+1;
+    #else
+        int hour_hack = last_date_recolte.tm.tm_hour;
+    #endif
+
     sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
                      last_date_recolte.tm.tm_mday,\
                      last_date_recolte.tm.tm_mon+1,\
                      (last_date_recolte.tm.tm_year+1900)%2000,\
-                     last_date_recolte.tm.tm_hour+1,\
+                     hour_hack,\
                      last_date_recolte.tm.tm_min);
 
     decalx_subtitle = 0, decaly_subtitle = 0;

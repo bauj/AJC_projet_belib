@@ -37,7 +37,7 @@ typedef struct Date_s {
  */
 typedef struct Datetick_s {
     int  ecart_init;   /**< Contient l'écart en secondes a la date initiale */
-    char labeldate[9]; /**< string de type : DD/mm/YY + '\0' */
+    char labeldate[30]; /**< string de type : DD/mm/YY + '\0' */
     char labelh[6];    /**< string de type : HH:MM + '\0' */ 
 }   Datetick;
 
@@ -81,7 +81,7 @@ void Init_Datetick(Datetick *datetick, Date *dateobj_i, Date *dateobj_init)
 {
     datetick->ecart_init = (int)difftime(dateobj_i->ctime, dateobj_init->ctime);
 
-    sprintf(datetick->labeldate, "%02d/%02d/%02d", \
+    sprintf(datetick->labeldate, "%02i/%02i/%02i", \
                              dateobj_i->tm.tm_mday,\
                              dateobj_i->tm.tm_mon+1,\
                             (dateobj_i->tm.tm_year+1900)%2000);
