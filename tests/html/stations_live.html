@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+
+<html lang="fr">
+
+<head>
+    <meta content="charset=UTF-8">
+    <meta name="viewport" content="width=device-width, 
+                            initial-scale=1, shrink-to-fit=no">    
+        <title> Belib - Stations live httpd </title>
+        <link rel="stylesheet" href="css/styles.css"/>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">         -->
+</head>
+
+<body>
+    <div id="menu-id">
+        <a href="index.html">Stations Favoris</a>        
+        <a href="stations_live.html">Stations Live</a>
+    </div>
+
+    <form action="../cgi-bin/get_images_live" method="get" class="form-adresse-live">
+        <div class="form-adresse-live">
+            <label for="adresse-live"> Entrez une adresse : </label>
+            <input type="text" name="adresse-live" id="adresse-live" maxlength=180 required>
+        </div>
+        <div class="form-adresse-live">
+            <label for="distance-search"> Entrez un rayon de recherche en km : </label>
+            <input type="number" step="0.01" name="distance-search" id="distance-live" required>
+        </div>
+        <div class="form-adresse-live">
+            <input type="submit" value="Rechercher" />
+            <input type="reset" value="Reset" />
+        </div>
+                
+    </form>
+</body>

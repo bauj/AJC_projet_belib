@@ -1,0 +1,72 @@
+#!/bin/sh
+echo "Content-type: text/html"
+echo ""
+echo "Hello World !"
+echo "$QUERY_STRING"
+
+# Recuperation de l'adresse a partir de l'url
+adresse_str=`echo $QUERY_STRING | cut -d'&' -f 1 | cut -d'=' -f 2 | tr "+" " "`
+# Remplacement %27 par '
+adresse_str=`echo "${adresse_str/\%27/\'}"`
+# Remplacement %C3%A9 par é
+adresse_str=`echo "${adresse_str/\%C3\%A9/é}"`
+# %C3%A8 par è
+adresse_str=`echo "${adresse_str/\%C3\%A8/è}"`
+# %C3%AF par ï
+adresse_str=`echo "${adresse_str/\%C3\%AF/ï}"`
+# %C3%B9 par ù
+adresse_str=`echo "${adresse_str/\%C3\%B9/ù}"`
+# %C3%AB par ë
+adresse_str=`echo "${adresse_str/\%C3\%AB/ë}"`
+
+# Recuperation de la distance a partir de l'url
+dist_str=`echo $QUERY_STRING | cut -d'&' -f 2 | cut -d'=' -f 2`
+
+# Affichage des 2 parametres d'entree du script de creation des images
+
+
+adresse_str="16 rue de l'arrivée 75015"
+dist_str="0.5" 
+
+
+echo "</br>"
+echo $adresse_str
+echo "</br>"
+echo $dist_str
+echo "</br>"
+
+PATH_RECUP="/home/jhamma/Documents/test_projetAJC"
+
+cd $PATH_RECUP/recuperation_data 2>&1
+
+python3 recuperation_data_belib.py --live -a "$adresse_str" -d $dist_str
+cp mapbox_Stations_live.png /var/www/html/figures/.
+
+cd ../plotting_data/
+./plot_belib_live.exe ../db_sqlite/belib_data.db
+cp figures/fig2_barplot_live.png /var/www/html/figures/.
+
+echo "DONE !!!"
+echo "<br>"
+
+cat <<EOT
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="charset=UTF-8">
+		<meta name="viewport" content="width=device-width, 
+								initial-scale=1, shrink-to-fit=no">    
+		<title> Belib - Stations live httpd </title>
+		<link rel="stylesheet" href="/css/styles.css"/>
+	<head>
+	
+	<body>
+        <img src="/figures/mapbox_Stations_live.png" alt="Map">
+        <br>
+		<img src="/figures/fig2_barplot_live.png" alt="Figure2">
+		<br>
+		<a href="/stations_live.html">Retour</a>
+	</body>
+
+</html>
+EOT

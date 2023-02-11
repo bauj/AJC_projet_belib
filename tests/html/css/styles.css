@@ -1,0 +1,18 @@
+body {
+    font-family: monospace, sans-serif;
+    background-color: rgb(37, 44, 56);
+    color : white;
+}
+
+#page-title {
+    font-style: normal;
+    font-weight: normal;
+    text-align: center;
+    background-color:darksalmon;
+    border: 4px solid white;
+    border-radius:25px;
+    margin-left: 30%;
+    margin-right: 30%;
+    padding: 0.5%;
+}
+
