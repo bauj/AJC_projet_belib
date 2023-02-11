@@ -149,6 +149,8 @@ void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts, int tab[nb_s
  */
 void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,int vect_statut[nb_rows],int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],int station, int statut);
 
+int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
+            int station, char **tableau_adresses_fav);
 
 /* --------------------------------------------------------------------------- */
 // Definition des fonctions
@@ -326,11 +328,16 @@ void Get_avg_dispo_station(sqlite3 *db_belib,\
             exit(EXIT_FAILURE);
         }
 
+        // Initialisation du tableau : utile lorsque de nouvelles stations pop
+        for (int h = 0; h < nb_rows_hours; h++) {
+            tableau_avg_dispo_station[station][h] = 0.;
+        }
+
         // Application du statement : on recupere les statuts
         for (int h = 0; h < nb_rows_hours; h++) {
             int step = sqlite3_step(stmt_station);
-            if (step == SQLITE_ROW) 
-            {
+            if (step == SQLITE_ROW) {
+                // printf("SQL Avg dispo Station %d à %02d:00 : %.1f \n", station,+1 h, (float)sqlite3_column_double(stmt_station, 0));
                 tableau_avg_dispo_station[station][h] = \
                         (float)sqlite3_column_double(stmt_station, 0);
             }
@@ -352,6 +359,11 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
     
     for (int station = 0; station < nb_stations_fav; station++)
     {
+
+        int nb_date_station = \
+                        Get_nb_rows_par_station_unique(db_belib, table, \
+                            station, tableau_adresses_fav);
+
         // Declaration statement
         sqlite3_stmt *stmt_station;
 
@@ -368,17 +380,49 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
             exit(EXIT_FAILURE);
         }
 
-        // Application du statement : on recupere les statuts
-        for (int t = 0; t < nb_rows_par_station; t++) {
-            int step = sqlite3_step(stmt_station);
-            if (step == SQLITE_ROW) 
-            {
+        
+        if (nb_date_station == nb_rows_par_station) {
+            // Initialisation
+            for (int t = 0; t < nb_rows_par_station; t++) {
                 for (int statut = disponible; statut <= inconnu; statut++) {
-                    tableau_statuts_fav[station][t][statut] = \
-                    sqlite3_column_int(stmt_station, statut);
+                        tableau_statuts_fav[station][t][statut] = 0;
                 }
             }
-            // ELIF STOP
+
+            // Application du statement : on recupere les statuts
+            for (int t = 0; t < nb_rows_par_station; t++) {
+                int step = sqlite3_step(stmt_station);
+                if (step == SQLITE_ROW) 
+                {
+                    for (int statut = disponible; statut <= inconnu; statut++) {
+                        tableau_statuts_fav[station][t][statut] = \
+                        sqlite3_column_int(stmt_station, statut);
+                    }
+                }
+            }
+        } else {
+            // Gestion des nouvelles stations qui pop
+            printf("nb recolte       : %d \n", nb_date_station);
+            printf("nb total recolte : %d \n", nb_rows_par_station);
+            // Initialisation a 0 avant le debut de recolte
+            for (int t = 0; t < nb_rows_par_station-nb_date_station; t++) {
+                for (int statut = disponible; statut <= inconnu; statut++) {
+                        tableau_statuts_fav[station][t][statut] = 0;
+                }
+            }
+
+            // On remplit avec ce qui est disponible dans la db
+            for (int t = 0; t < nb_date_station; t++) {
+                int step = sqlite3_step(stmt_station);
+                if (step == SQLITE_ROW) 
+                {
+                    for (int statut = disponible; statut <= inconnu; statut++) {
+                        tableau_statuts_fav[station][nb_rows_par_station-nb_date_station+t][statut] = \
+                        sqlite3_column_int(stmt_station, statut);
+                    }
+                }
+            }
+
         }
 
         // Reset du stmt
@@ -471,6 +515,59 @@ void Get_adresses(sqlite3 *db_belib, char* table,\
     sqlite3_finalize(stmt);
 
 }
+
+
+/* --------------------------------------------------------------------------- */
+int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
+            int station, char **tableau_adresses_fav)
+{
+
+    // Declaration statement
+    sqlite3_stmt *stmt;
+
+    int nb_rows_par_station = 0;
+
+    char query_nb_row_par_station_unique[250] = \
+            "SELECT COUNT(DISTINCT date_recolte) FROM ";
+    
+    strcat(query_nb_row_par_station_unique, table);
+    strcat(query_nb_row_par_station_unique, " WHERE adresse_station = ");  
+
+    int len_query_base = strlen(query_nb_row_par_station_unique);
+    int len_max_adresse = 200;
+    int len_query_station = len_query_base + len_max_adresse;
+
+    char *req = malloc(len_query_station*sizeof(char));
+
+    strcpy(req, query_nb_row_par_station_unique);
+    strcat(req, "\'");
+    strcat(req, tableau_adresses_fav[station]);
+    strcat(req, "\';");
+
+    // Test de la requete
+    if (sqlite3_prepare_v2(db_belib,req,-1, &stmt, NULL))
+    {
+        printf("Erreur SQL unique:\n");
+        printf("%s : %s\n", sqlite3_errstr(sqlite3_extended_errcode(db_belib)),\
+                         sqlite3_errmsg(db_belib));
+        sqlite3_close(db_belib);
+        exit(EXIT_FAILURE);
+    }
+    // Application du statement et fermeture de la db
+    int step = sqlite3_step(stmt);
+
+    if (step == SQLITE_ROW) {
+        nb_rows_par_station = sqlite3_column_int(stmt, 0);
+    }
+
+    // Reset du stmt
+    sqlite3_finalize(stmt);
+
+    free(req);
+
+    return nb_rows_par_station;
+}
+
 
 /* --------------------------------------------------------------------------- */
 int Get_nb_rows_par_station(sqlite3 *db_belib, char* table)

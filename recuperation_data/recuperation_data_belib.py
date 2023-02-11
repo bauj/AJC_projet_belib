@@ -290,13 +290,13 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
 
     ## Construction des pins sur la carte
     ## 1er pin : position entree
-    pins = f"pin-s+111({pos_lon:.4f},{pos_lat:.4f})"
+    pins = f"pin-l-home+111({pos_lon:.4f},{pos_lat:.4f})"
     # overlay = f"pin-s+000({lon_center},{lat_center}),pin-s+f74e4e({lon_max},{lat_center})/"
 
     for idx,st in enumerate(list_stations):
         lat_station = list_stations[idx]["lon"]
         lon_station = list_stations[idx]["lat"]
-        pins += f",pin-s+{colors[idx]}({lon_station:.4f},{lat_station:.4f})"
+        pins += f",pin-l-charging-station+{colors[idx]}({lon_station:.4f},{lat_station:.4f})"
 
     with open("../.mapbox_token") as ftoken:
         read_mapbox_token = ftoken.read().split('\n')[0]

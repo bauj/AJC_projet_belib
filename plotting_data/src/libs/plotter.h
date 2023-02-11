@@ -1864,13 +1864,19 @@ void Make_fyticks_ygrid(Figure *fig, char wTicks)
                             &style_tick);
         }
 
+        // Fabrication des tick labels
+        sprintf(tickVal, "%d", i*itv);
+
         int posX_ticklab = fig->orig[0]-(long_tick+2) \
                             - strlen(tickVal) * fig->fonts[ticklabel_f].size;
         int posY_ticklab = fig->orig[1] - i*itv_pixels \
                             + fig->fonts[ticklabel_f].size / 2;
 
-        // Fabrication des tick labels
-        sprintf(tickVal, "%d", i*itv);
+        // printf("Tick %d : %s\n", i, tickVal);
+        // // printf("Tick posX : %d \n", posX_ticklab);
+        // // printf("Tick posY : %d \n", posY_ticklab);
+        // printf("%s \n",fig->fonts[ticklabel_f].path);
+        // printf("%d \n",fig->fonts[ticklabel_f].size);
 
         gdImageStringFT(fig->img, NULL,\
                             GetCouleur(fig->img,\

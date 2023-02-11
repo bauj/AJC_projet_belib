@@ -13,9 +13,9 @@
 #include "libs/getter.h"
 #include "libs/plotter.h"
 
-// #define AJC
+#define AJC
 // #define QEMU
-#define LENOVO
+// #define LENOVO
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -109,6 +109,9 @@ int main(int argc, char* argv[])
     // for (int station=0; station < nb_stations_fav; station++)
     //     for (int h=0; h < nb_rows_hours; h++)
     //         printf("Avg dispo Station %d à %02d:00 : %.1f \n",station, h, tableau_avg_dispo_station[station][h]);
+
+    for (int h=0; h < nb_rows_hours; h++)
+        printf("Avg dispo Station %d à %02d:00 : %.1f \n",6, h, tableau_avg_dispo_station[5][h]);
 
     // Fermeture db
     sqlite3_close(db_belib);
@@ -209,9 +212,10 @@ int main(int argc, char* argv[])
     /* Make Y ticks and grid line*/
     char wTicks = 'n';
     char *path_f_med = fonts_fig[1];
-    Change_font(&fig1, ticklabel_f, path_f_med);
-    Change_fontsize(&fig1, ticklabel_f, 14);    
-    Make_yticks_ygrid(&fig1, wTicks);
+    printf("%s\n", path_f_med);
+    // Change_font(&fig1, ticklabel_f, path_f_med);
+    // Change_fontsize(&fig1, ticklabel_f, 14);    
+    // Make_yticks_ygrid(&fig1, wTicks);
 
     /* Make legend */
     int decalx_leg = 0, decaly_leg = 0, ecart = 8;
@@ -328,7 +332,7 @@ int main(int argc, char* argv[])
     // Print_debug_date(&last_date_recolte, 'y');
 
     char subtitle2[70];
-    #ifdef qemu
+    #ifdef QEMU
         int hour_hack = last_date_recolte.tm.tm_hour+1;
     #else
         int hour_hack = last_date_recolte.tm.tm_hour;
@@ -409,7 +413,7 @@ int main(int argc, char* argv[])
     Make_xticks_xgrid_time_avgH(&fig3, nb_rows_hours,tableau_avg_hours);
 
     /* Make Y ticks and grid line*/
-    wTicks = 'n'; 
+    wTicks = 'y'; 
     Make_fyticks_ygrid(&fig3, wTicks);
 
     /* Plot lines */

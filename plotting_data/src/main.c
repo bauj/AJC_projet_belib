@@ -13,9 +13,9 @@
 #include "libs/getter.h"
 #include "libs/plotter.h"
 
-// #define AJC
+#define AJC
 // #define QEMU
-#define LENOVO
+// #define LENOVO
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -325,7 +325,7 @@ int main(int argc, char* argv[])
     // Print_debug_date(&last_date_recolte, 'y');
 
     char subtitle2[70];
-    #ifdef qemu
+    #ifdef QEMU
         int hour_hack = last_date_recolte.tm.tm_hour+1;
     #else
         int hour_hack = last_date_recolte.tm.tm_hour;
