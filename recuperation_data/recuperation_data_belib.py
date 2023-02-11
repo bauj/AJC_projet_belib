@@ -183,8 +183,8 @@ def transform_dict_station(list_records):
     try :
         rec0 = list_records[0]["record"]["fields"]
     except IndexError: # Pas de stations trouvees
-        print("> Pas de stations trouvées.")
-        sys.exit()
+        print("> Pas de station trouvée.")
+        sys.exit(1)
 
     adresse_record0 = rec0["adresse_station"] 
     lon0,lat0 = get_lon_lat_from_coordxy(rec0["coordonneesxy"])
@@ -289,14 +289,16 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     ## Construction url api mapbox
 
     ## Construction des pins sur la carte
-    ## 1er pin : position entree
-    pins = f"pin-l-home+111({pos_lon:.4f},{pos_lat:.4f})"
+
     # overlay = f"pin-s+000({lon_center},{lat_center}),pin-s+f74e4e({lon_max},{lat_center})/"
 
+    pins = ""
     for idx,st in enumerate(list_stations):
         lat_station = list_stations[idx]["lon"]
         lon_station = list_stations[idx]["lat"]
-        pins += f",pin-l-charging-station+{colors[idx]}({lon_station:.4f},{lat_station:.4f})"
+        pins += f"pin-l-charging-station+{colors[idx]}({lon_station:.4f},{lat_station:.4f}),"
+    ## 1er pin : position entree
+    pins += f"pin-l-home+111({pos_lon:.4f},{pos_lat:.4f})"
 
     with open("../.mapbox_token") as ftoken:
         read_mapbox_token = ftoken.read().split('\n')[0]
@@ -312,10 +314,11 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     overlay = pins
     bbox = f"[{bbox_sw[0]:.4f},{bbox_sw[1]:.4f},{bbox_ne[0]:.4f},{bbox_ne[1]:.4f}]"
     # bbox = "auto"
-    width ="400"
-    height ="400"
-    padding = "padding=20,20,20"
+    width ="350"
+    height ="250"
+    padding = "padding=10,10,10"
     x2 = "@2x"
+    # x2 = ""
 
     url_req = "https://api.mapbox.com/styles/v1/"
     url_req += f"{username}/{style_id}/{mode}/{overlay}/{bbox}/{width}x{height}{x2}?{padding}&{token}"
@@ -376,19 +379,31 @@ def update_general(path_db):
 def adresse_to_lon_lat(adr):
 
     http = urllib3.PoolManager()
-
+        
     adr_ = adr.replace(" ", "+")
     centre_paris_lat = 48.52
     centre_paris_lon = 2.19
+
     url_req = "https://api-adresse.data.gouv.fr/search/?q=" +\
             f"{adr_}&lat={centre_paris_lat}&lon={centre_paris_lon}"
 
     resp = http.request("GET", url_req)
-    raw_data = ujson.loads(resp.data)
-    lon, lat = raw_data["features"][0]["geometry"]["coordinates"]
+    while (resp.status != 200) :
+        resp = http.request("GET", url_req)
 
-    # test = ujson.dumps(raw_data, indent=4)
-    # print(test)
+    raw_data = ujson.loads(resp.data)
+    try :
+        lon, lat = raw_data["features"][0]["geometry"]["coordinates"]
+    except IndexError:
+        print("> Adresse non trouvee.")
+        with open("adresse_introuvable.png", "rb") as fadresseintrouvable:
+            data = fadresseintrouvable.read()
+        with open("mapbox_Stations_live.png", "wb") as foutput:
+            foutput.write(data)
+        sys.exit(1)
+
+    test = ujson.dumps(raw_data, indent=4)
+    print(test)
 
     return lon, lat
 

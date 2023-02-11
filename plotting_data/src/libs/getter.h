@@ -183,7 +183,6 @@ void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,\
     }
 }
 
-
 /* --------------------------------------------------------------------------- */
 int Get_nb_avg_hours(sqlite3 *db_belib)
 {

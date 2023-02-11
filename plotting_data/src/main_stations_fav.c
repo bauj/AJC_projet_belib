@@ -110,8 +110,8 @@ int main(int argc, char* argv[])
     //     for (int h=0; h < nb_rows_hours; h++)
     //         printf("Avg dispo Station %d à %02d:00 : %.1f \n",station, h, tableau_avg_dispo_station[station][h]);
 
-    for (int h=0; h < nb_rows_hours; h++)
-        printf("Avg dispo Station %d à %02d:00 : %.1f \n",6, h, tableau_avg_dispo_station[5][h]);
+    // for (int h=0; h < nb_rows_hours; h++)
+    //     printf("Avg dispo Station %d à %02d:00 : %.1f \n",6, h, tableau_avg_dispo_station[5][h]);
 
     // Fermeture db
     sqlite3_close(db_belib);
