@@ -13,8 +13,8 @@
 #include "libs/getter.h"
 #include "libs/plotter.h"
 
-#define AJC
-// #define QEMU
+// #define AJC
+#define QEMU
 // #define LENOVO
 
 /* =========================================================================== */

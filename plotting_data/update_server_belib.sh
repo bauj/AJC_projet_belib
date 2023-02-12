@@ -13,7 +13,7 @@ export PATH_BELIB_BIN='/usr/bin/plot_belib'
 # Recuperation des donnees stations favoris open data paris :
 echo "> Date update : ${ddj}"
 echo "> Recuperation des data et stockage dans db ..."
-${PATH_BELIB_BIN}/recup_data_belib.py --favoris  
+${PATH_BELIB_BIN}/recuperation_data_belib.py --favoris  
 
 # Fabrication des images
 echo "> Creation des figures a la racine du serveur httpd ..."

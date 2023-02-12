@@ -10,8 +10,8 @@
 #define consts_H
 
 
-#define AJC
-// #define QEMU
+// #define AJC
+#define QEMU
 // #define LENOVO
 
 int white[3]        = {255, 255, 255};

@@ -33,6 +33,12 @@ import argparse
 import sys
 from datetime import date, timedelta, datetime
 
+global figure_dir, db_dir
+# figure_dir = "./"  #AJC / LENOVO
+figure_dir = "/var/www/html/figures/"  #AJC / LENOVO
+
+# db_dir = "../db_sqlite/"
+db_dir = "/var/db_belib/"
 # -----------------------------------------------------------------------------
 # Parametres globaux
 # -----------------------------------------------------------------------------
@@ -101,7 +107,7 @@ def create_connection(path_db):
     conn = None
     try:
         conn = sqlite3.connect(path_db)
-    except Error as e:
+    except NameError as e:
         print(e)
 
     return conn
@@ -184,6 +190,10 @@ def transform_dict_station(list_records):
         rec0 = list_records[0]["record"]["fields"]
     except IndexError: # Pas de stations trouvees
         print("> Pas de station trouvée.")
+        with open(figure_dir+"adresse_introuvable.png", "rb") as fadresseintrouvable:
+            data = fadresseintrouvable.read()
+        with open(figure_dir+"mapbox_Stations_live.png", "wb") as foutput:
+            foutput.write(data)
         sys.exit(1)
 
     adresse_record0 = rec0["adresse_station"] 
@@ -280,7 +290,6 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     unit_dist = "km"
     str_dist = f"{dist:.2f}{unit_dist}"
     str_dist_ = str_dist.replace(".","-")
-    output_dir = "./"
     filename_output = f"mapbox_{table}.png"
     # filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+str_dist_+".png"
 
@@ -324,7 +333,7 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     url_req += f"{username}/{style_id}/{mode}/{overlay}/{bbox}/{width}x{height}{x2}?{padding}&{token}"
 
     ## Execution requete et enregistrement en format png
-    with open(output_dir+filename_output, 'wb') as foutput:
+    with open(figure_dir+filename_output, 'wb') as foutput:
         foutput.write(http.request('GET', url_req).data)
 
     return
@@ -396,14 +405,14 @@ def adresse_to_lon_lat(adr):
         lon, lat = raw_data["features"][0]["geometry"]["coordinates"]
     except IndexError:
         print("> Adresse non trouvee.")
-        with open("adresse_introuvable.png", "rb") as fadresseintrouvable:
+        with open(figure_dir+"adresse_introuvable.png", "rb") as fadresseintrouvable:
             data = fadresseintrouvable.read()
-        with open("mapbox_Stations_live.png", "wb") as foutput:
+        with open(figure_dir+"mapbox_Stations_live.png", "wb") as foutput:
             foutput.write(data)
         sys.exit(1)
 
-    test = ujson.dumps(raw_data, indent=4)
-    print(test)
+    # test = ujson.dumps(raw_data, indent=4)
+    # print(test)
 
     return lon, lat
 
@@ -468,9 +477,8 @@ if __name__ == "__main__":
     fav = args.favoris
     live = args.live
 
-    dir_db = "../db_sqlite/"
     filename_db = "belib_data.db"
-    path_db = dir_db + filename_db
+    path_db = db_dir + filename_db
 
     if (bornes and not general and not fav and not live) :
         update_all_bornes(path_db)
