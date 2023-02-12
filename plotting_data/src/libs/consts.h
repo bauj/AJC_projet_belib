@@ -9,11 +9,6 @@
 #ifndef consts_H
 #define consts_H
 
-
-// #define AJC
-#define QEMU
-// #define LENOVO
-
 int white[3]        = {255, 255, 255};
 int black[3]        = {  0,   0,   0};
 int gris_grid[3]    = { 71,  71,  71};

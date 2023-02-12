@@ -6,16 +6,17 @@
 * ---------------------------------------------------------------------------- 
 */
 
+
+// #define AJC
+#define QEMU
+// #define LENOVO
+
 #include <stdlib.h>
 #include <sqlite3.h>
 #include "libs/consts.h"
 #include "libs/traitement.h"
 #include "libs/getter.h"
 #include "libs/plotter.h"
-
-// #define AJC
-#define QEMU
-// #define LENOVO
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -64,7 +65,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < nb_stations_fav; i++) {
         char label_tmp[100];
         int len_adresse = strlen(tableau_adresses_fav[i]);
-        slice_str(tableau_adresses_fav[i], label_tmp, 0, len_adresse-6);
+        slice_str(tableau_adresses_fav[i], label_tmp, 0, len_adresse-13);
         // Stockage des labels
         adresse_label[i] = strdup(label_tmp);
     }
@@ -165,7 +166,7 @@ int main(int argc, char* argv[])
     Make_yticks_ygrid(&fig2, wTicks);
 
     // Ajout des xticks
-    float angle_labels = 20.;
+    float angle_labels = 25.;
     Change_fontsize(&fig2, ticklabel_f, 13);
     Make_xticks_barplot(&fig2, angle_labels);
 

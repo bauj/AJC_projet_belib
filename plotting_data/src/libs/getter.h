@@ -46,7 +46,7 @@ void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib);
  * @param db_belib Pointeur type sqlite3 vers la bdd
  * @return int Nombre de stations favorites
  */
-int Get_nb_stations_fav(sqlite3 *db_belib);
+// int Get_nb_stations_fav(sqlite3 *db_belib);
 
 
 /* --------------------------------------------------------------------------- */
@@ -539,9 +539,9 @@ int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
     char *req = malloc(len_query_station*sizeof(char));
 
     strcpy(req, query_nb_row_par_station_unique);
-    strcat(req, "\'");
+    strcat(req, "\"");
     strcat(req, tableau_adresses_fav[station]);
-    strcat(req, "\';");
+    strcat(req, "\";");
 
     // Test de la requete
     if (sqlite3_prepare_v2(db_belib,req,-1, &stmt, NULL))

@@ -34,11 +34,17 @@ import sys
 from datetime import date, timedelta, datetime
 
 global figure_dir, db_dir
-# figure_dir = "./"  #AJC / LENOVO
-figure_dir = "/var/www/html/figures/"  #AJC / LENOVO
 
-# db_dir = "../db_sqlite/"
-db_dir = "/var/db_belib/"
+# AJC / LENOVO
+figure_dir = "./"
+db_dir = "../db_sqlite/"
+mapbox_token_path = "../.mapbox_token"
+
+# # QEMU
+# figure_dir = "/var/www/html/figures/"
+# db_dir = "/var/db_belib/"
+# mapbox_token_path = "/etc/plot_belib/.mapbox_token"
+
 # -----------------------------------------------------------------------------
 # Parametres globaux
 # -----------------------------------------------------------------------------
@@ -189,10 +195,12 @@ def transform_dict_station(list_records):
     try :
         rec0 = list_records[0]["record"]["fields"]
     except IndexError: # Pas de stations trouvees
-        print("> Pas de station trouvée.")
-        with open(figure_dir+"adresse_introuvable.png", "rb") as fadresseintrouvable:
-            data = fadresseintrouvable.read()
+        # print("> Pas de station trouvée.")
+        with open(figure_dir+"station_non_trouve.png", "rb") as fstationintrouvable:
+            data = fstationintrouvable.read()
         with open(figure_dir+"mapbox_Stations_live.png", "wb") as foutput:
+            foutput.write(data)
+        with open(figure_dir+"fig2_barplot_live.png", "wb") as foutput:
             foutput.write(data)
         sys.exit(1)
 
@@ -205,16 +213,15 @@ def transform_dict_station(list_records):
     # Saut du 1er record
     for idx,dico_record in enumerate(list_records[1:]):
         rec = dico_record["record"]["fields"]
+
         if (dict_station["adresse_station"] == rec["adresse_station"]) :
             statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
-
-            if (idx+1 == len(list_records)-1):
-                list_dict_station.append(dict_station)    
+           
         else :
             list_dict_station.append(dict_station)
             if (len(list_dict_station) == 8):
-                print("> 8 stations trouvees. On n'aaffichera pas plus de stations.") 
+                # print("> 8 stations trouvees. On n'affichera pas plus de stations.") 
                 break
 
             adresse_record = rec["adresse_station"] 
@@ -223,6 +230,13 @@ def transform_dict_station(list_records):
 
             statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
+
+        # Ajout de la derniere station si on finit de parcourir la liste
+        # un while serait surement + judicieux pour cette tache
+        if (idx+1 == len(list_records)-1):
+            list_dict_station.append(dict_station)
+        
+
 
     return list_dict_station  
 
@@ -249,13 +263,16 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
     resp = http.request("GET", url_req)
 
     raw_data_stations_pref = ujson.loads(resp.data)["records"] 
-    # for i in range(nb_stations):
+
     # print(ujson.dumps(raw_data_stations_pref,indent=3))
 
     list_stations = transform_dict_station(raw_data_stations_pref)
 
     nb_stations = len(list_stations)
 
+    # print(2*"\n")
+    # print("APRES TRANSFO")
+    # print(2*"\n")
     # for i in range(nb_stations):
     #     print(ujson.dumps(list_stations[i],indent=3))
 
@@ -309,7 +326,7 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     ## 1er pin : position entree
     pins += f"pin-l-home+111({pos_lon:.4f},{pos_lat:.4f})"
 
-    with open("../.mapbox_token") as ftoken:
+    with open(mapbox_token_path) as ftoken:
         read_mapbox_token = ftoken.read().split('\n')[0]
     token = "access_token="+read_mapbox_token
 
@@ -323,8 +340,8 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     overlay = pins
     bbox = f"[{bbox_sw[0]:.4f},{bbox_sw[1]:.4f},{bbox_ne[0]:.4f},{bbox_ne[1]:.4f}]"
     # bbox = "auto"
-    width ="350"
-    height ="250"
+    width ="300"
+    height ="200"
     padding = "padding=10,10,10"
     x2 = "@2x"
     # x2 = ""
@@ -404,10 +421,12 @@ def adresse_to_lon_lat(adr):
     try :
         lon, lat = raw_data["features"][0]["geometry"]["coordinates"]
     except IndexError:
-        print("> Adresse non trouvee.")
+        # print("> Adresse non trouvee.")
         with open(figure_dir+"adresse_introuvable.png", "rb") as fadresseintrouvable:
             data = fadresseintrouvable.read()
         with open(figure_dir+"mapbox_Stations_live.png", "wb") as foutput:
+            foutput.write(data)
+        with open(figure_dir+"fig2_barplot_live.png", "wb") as foutput:
             foutput.write(data)
         sys.exit(1)
 
@@ -487,7 +506,7 @@ if __name__ == "__main__":
         update_general(path_db)
 
     if (not bornes and not general and fav and not live) :
-        pos_lat, pos_lon = 48.84, 2.28
+        pos_lat, pos_lon = 48.8401, 2.2780
         dist=0.5
         table = "Stations_fav"
         update_bornes_around_pos(path_db,table, pos_lat, pos_lon, dist)

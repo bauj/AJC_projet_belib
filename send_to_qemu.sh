@@ -3,11 +3,13 @@
 PATH_PROJET='/home/ajc/Projet_AJC/AJC_projet_belib'
 PATH_OVERLAY_BR='/usr/local/src/buildroot-2022.11-qemu-aarch64-rpi3/board/qemu/aarch64-virt/add_stuff/overlay'
 
-cp ${PATH_PROJET}/recuperation_data/recuperation_data_belib.py ${PATH_OVERLAY_BR}/usr/bin/plot_belib/. && echo "Recup sent"
+cp ${PATH_PROJET}/recuperation_data/recup_data_belib_qemu.py ${PATH_OVERLAY_BR}/usr/bin/plot_belib/. && echo "Recup sent"
 
-cp ${PATH_PROJET}/recuperation_data/adresse_introuvable.png ${PATH_OVERLAY_BR}/var/www/html/figures/. && echo "Img introuvable sent"
+cp ${PATH_PROJET}/recuperation_data/adresse_introuvable.png ${PATH_OVERLAY_BR}/var/www/html/figures/. && echo "Img Adresse introuvable sent"
 
-cp ${PATH_PROJET}/.mapbox_token ${PATH_OVERLAY_BR}/usr/bin/plot_belib/. && echo "mapbox token sent"
+cp ${PATH_PROJET}/recuperation_data/station_non_trouve.png ${PATH_OVERLAY_BR}/var/www/html/figures/. && echo "Img Station introuvable sent"
+
+cp ${PATH_PROJET}/.mapbox_token ${PATH_OVERLAY_BR}/etc/plot_belib/. && echo "mapbox token sent"
 
 cp ${PATH_PROJET}/plotting_data/plot_belib_aarch64.exe ${PATH_OVERLAY_BR}/usr/bin/plot_belib/. && echo "Plot exe sent"
 

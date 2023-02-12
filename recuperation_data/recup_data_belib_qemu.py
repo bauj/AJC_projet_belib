@@ -30,7 +30,20 @@ import urllib3
 import ujson
 import sqlite3
 import argparse
+import sys
 from datetime import date, timedelta, datetime
+
+global figure_dir, db_dir
+
+## AJC / LENOVO
+# figure_dir = "./"
+# db_dir = "../db_sqlite/"
+# mapbox_token_path = "../.mapbox_token"
+
+# QEMU
+figure_dir = "/var/www/html/figures/"
+db_dir = "/var/db_belib/"
+mapbox_token_path = "/etc/plot_belib/.mapbox_token"
 
 # -----------------------------------------------------------------------------
 # Parametres globaux
@@ -87,8 +100,8 @@ def iterator_data_stations(n, list_stations_pref):
             list_stations_pref[i]["lon"], \
             list_stations_pref[i]["disponible"], \
             list_stations_pref[i]["occupe"],\
-            list_stations_pref[i]['en_maintenance'],\
             list_stations_pref[i]['inconnu'],\
+            list_stations_pref[i]['en_maintenance'],\
             list_stations_pref[i]['supprime'],\
             list_stations_pref[i]['reserve'],\
             list_stations_pref[i]['en_cours_mes'],\
@@ -100,7 +113,7 @@ def create_connection(path_db):
     conn = None
     try:
         conn = sqlite3.connect(path_db)
-    except Error as e:
+    except NameError as e:
         print(e)
 
     return conn
@@ -179,7 +192,18 @@ def transform_dict_station(list_records):
     list_dict_station = []
 
     # 1ere station : initialisation 1ere adresse
-    rec0 = list_records[0]["record"]["fields"]
+    try :
+        rec0 = list_records[0]["record"]["fields"]
+    except IndexError: # Pas de stations trouvees
+        # print("> Pas de station trouvée.")
+        with open(figure_dir+"station_non_trouve.png", "rb") as fstationintrouvable:
+            data = fstationintrouvable.read()
+        with open(figure_dir+"mapbox_Stations_live.png", "wb") as foutput:
+            foutput.write(data)
+        with open(figure_dir+"fig2_barplot_live.png", "wb") as foutput:
+            foutput.write(data)
+        sys.exit(1)
+
     adresse_record0 = rec0["adresse_station"] 
     lon0,lat0 = get_lon_lat_from_coordxy(rec0["coordonneesxy"])
     dict_station = def_station(date_recolte, adresse_record0, lon0, lat0, 0, 0, 0, 0)
@@ -187,14 +211,18 @@ def transform_dict_station(list_records):
     dict_station[statut_record0] = rec0["nb_bornes"]
 
     # Saut du 1er record
-    for dico_record in list_records[1:]:
+    for idx,dico_record in enumerate(list_records[1:]):
         rec = dico_record["record"]["fields"]
 
         if (dict_station["adresse_station"] == rec["adresse_station"]) :
             statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
+           
         else :
             list_dict_station.append(dict_station)
+            if (len(list_dict_station) == 8):
+                # print("> 8 stations trouvees. On n'affichera pas plus de stations.") 
+                break
 
             adresse_record = rec["adresse_station"] 
             lon,lat = get_lon_lat_from_coordxy(rec["coordonneesxy"])
@@ -202,6 +230,13 @@ def transform_dict_station(list_records):
 
             statut_record = dict_labels_statuts[rec['statut_pdc']]
             dict_station[statut_record] = rec["nb_bornes"]
+
+        # Ajout de la derniere station si on finit de parcourir la liste
+        # un while serait surement + judicieux pour cette tache
+        if (idx+1 == len(list_records)-1):
+            list_dict_station.append(dict_station)
+        
+
 
     return list_dict_station  
 
@@ -214,20 +249,32 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
     date_du_jour = date.today().strftime("%Y-%m-%d")
     date_veille = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     
+    unit_dist = "km"
+    str_dist = f"{dist:.2f}{unit_dist}"
     url_req = f"https://parisdata.opendatasoft.com/api/v2/catalog/datasets/"+\
         "belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/"+\
             "records?select=count%28id_pdc%29%20as%20nb_bornes&where=last_updated"+\
                 f"%20%3E%20date%27{date_veille}%27%20AND%20last_updated%20%3C%3D%20date"+\
                     f"%27{date_du_jour}%27%20AND%20distance%28coordonneesxy%2C%20GEOM"+\
-                        f"%27POINT%28{pos_lon}%20{pos_lat}%29%27%2C%20{dist}%29&group_by"+\
+                        f"%27POINT%28{pos_lon}%20{pos_lat}%29%27%2C%20{dist}{unit_dist}%29&group_by"+\
                             "=adresse_station%2C%20coordonneesxy%2Cstatut_pdc&limit=100"+\
                                 "&offset=0&timezone=UTC"
 
     resp = http.request("GET", url_req)
+
     raw_data_stations_pref = ujson.loads(resp.data)["records"] 
 
+    # print(ujson.dumps(raw_data_stations_pref,indent=3))
+
     list_stations = transform_dict_station(raw_data_stations_pref)
+
     nb_stations = len(list_stations)
+
+    # print(2*"\n")
+    # print("APRES TRANSFO")
+    # print(2*"\n")
+    # for i in range(nb_stations):
+    #     print(ujson.dumps(list_stations[i],indent=3))
 
     wanted_keys = list(list_stations[0].keys())
     
@@ -241,15 +288,72 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
     
     conn.commit()
 
-    # mapbox api
-    # search_query = f"SELECT MIN(lon),MIN(lat),MAX(lon),MAX(lat) FROM {table}"
-    # cur.execute(search_query)
-    # test = list(cur.fetchall()[0])
-    # print(test)
-
     conn.close()
 
+    make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist)
+
     return 
+
+# -----------------------------------------------------------------------------
+def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
+    
+    colors=['33a02c', 'ff7f00', '1f78b4',\
+            'e31a1c', '984ea3', 'b2df8a',\
+            'fdbf6f', 'a6cee3', 'fb9a99',\
+            'cab2d6']
+    
+    str_lat = f"{pos_lat:.3f}".replace(".","_")
+    str_lon = f"{pos_lon:.3f}".replace(".","_")
+    unit_dist = "km"
+    str_dist = f"{dist:.2f}{unit_dist}"
+    str_dist_ = str_dist.replace(".","-")
+    filename_output = f"mapbox_{table}.png"
+    # filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+str_dist_+".png"
+
+    nb_stations = len(list_stations)
+
+    ## Construction url api mapbox
+
+    ## Construction des pins sur la carte
+
+    # overlay = f"pin-s+000({lon_center},{lat_center}),pin-s+f74e4e({lon_max},{lat_center})/"
+
+    pins = ""
+    for idx,st in enumerate(list_stations):
+        lat_station = list_stations[idx]["lon"]
+        lon_station = list_stations[idx]["lat"]
+        pins += f"pin-l-charging-station+{colors[idx]}({lon_station:.4f},{lat_station:.4f}),"
+    ## 1er pin : position entree
+    pins += f"pin-l-home+111({pos_lon:.4f},{pos_lat:.4f})"
+
+    with open(mapbox_token_path) as ftoken:
+        read_mapbox_token = ftoken.read().split('\n')[0]
+    token = "access_token="+read_mapbox_token
+
+    bbox_sw = [pos-0.009*dist for pos in [pos_lon, pos_lat]] 
+    bbox_ne = [pos+0.009*dist for pos in [pos_lon, pos_lat]] 
+
+
+    username = "mapbox"
+    style_id = "dark-v11"
+    mode = "static"
+    overlay = pins
+    bbox = f"[{bbox_sw[0]:.4f},{bbox_sw[1]:.4f},{bbox_ne[0]:.4f},{bbox_ne[1]:.4f}]"
+    # bbox = "auto"
+    width ="300"
+    height ="200"
+    padding = "padding=10,10,10"
+    x2 = "@2x"
+    # x2 = ""
+
+    url_req = "https://api.mapbox.com/styles/v1/"
+    url_req += f"{username}/{style_id}/{mode}/{overlay}/{bbox}/{width}x{height}{x2}?{padding}&{token}"
+
+    ## Execution requete et enregistrement en format png
+    with open(figure_dir+filename_output, 'wb') as foutput:
+        foutput.write(http.request('GET', url_req).data)
+
+    return
 
 # -----------------------------------------------------------------------------
 def update_general(path_db):
@@ -301,16 +405,30 @@ def update_general(path_db):
 def adresse_to_lon_lat(adr):
 
     http = urllib3.PoolManager()
-
+        
     adr_ = adr.replace(" ", "+")
     centre_paris_lat = 48.52
     centre_paris_lon = 2.19
+
     url_req = "https://api-adresse.data.gouv.fr/search/?q=" +\
             f"{adr_}&lat={centre_paris_lat}&lon={centre_paris_lon}"
 
     resp = http.request("GET", url_req)
+    while (resp.status != 200) :
+        resp = http.request("GET", url_req)
+
     raw_data = ujson.loads(resp.data)
-    lon, lat = raw_data["features"][0]["geometry"]["coordinates"]
+    try :
+        lon, lat = raw_data["features"][0]["geometry"]["coordinates"]
+    except IndexError:
+        # print("> Adresse non trouvee.")
+        with open(figure_dir+"adresse_introuvable.png", "rb") as fadresseintrouvable:
+            data = fadresseintrouvable.read()
+        with open(figure_dir+"mapbox_Stations_live.png", "wb") as foutput:
+            foutput.write(data)
+        with open(figure_dir+"fig2_barplot_live.png", "wb") as foutput:
+            foutput.write(data)
+        sys.exit(1)
 
     # test = ujson.dumps(raw_data, indent=4)
     # print(test)
@@ -368,8 +486,8 @@ if __name__ == "__main__":
                 "dans la table 'Stations_live'.")
     parser.add_argument('-a', '--adresse', type=str, nargs=1, default="",
         help ="Adresse a entrer dans le cas de l'option --live.")
-    parser.add_argument('-d', '--distance', type=str, nargs=1, default="",
-        help ="Rayon de recherche a entrer sous la forme '0.5km' dans le cas "+\
+    parser.add_argument('-d', '--distance', type=float, nargs=1, default=0.5,
+        help ="Rayon de recherche a entrer en km dans le cas "+\
             "de l'option --live.")
 
     args = parser.parse_args()
@@ -378,9 +496,8 @@ if __name__ == "__main__":
     fav = args.favoris
     live = args.live
 
-    dir_db = "/var/db_belib/"
     filename_db = "belib_data.db"
-    path_db = dir_db + filename_db
+    path_db = db_dir + filename_db
 
     if (bornes and not general and not fav and not live) :
         update_all_bornes(path_db)
@@ -389,8 +506,8 @@ if __name__ == "__main__":
         update_general(path_db)
 
     if (not bornes and not general and fav and not live) :
-        pos_lat, pos_lon = 48.84, 2.28
-        dist="0.5km"
+        pos_lat, pos_lon = 48.8401, 2.2780
+        dist=0.5
         table = "Stations_fav"
         update_bornes_around_pos(path_db,table, pos_lat, pos_lon, dist)
 

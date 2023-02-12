@@ -16,7 +16,7 @@
 #include <math.h>
 
 #define PI 3.141592
-#define LENOVO
+
 /* --------------------------------------------------------------------------- */
 typedef enum {label_f, annotation_f, title_f, ticklabel_f, subtitle_f, leg_f} fontsFig;
 
@@ -1578,7 +1578,7 @@ void Make_xticks_barplot(Figure *fig, float angle_labels)
         // Fake call : recuperation du brect sur le label horizontal
         // On ecrit en 0,0
         gdImageStringFT(fig->img, brect,\
-                            gdTransparent,\
+                            GetCouleur(fig->img, fig->color_bg),\
                             fig->fonts[ticklabel_f].path,\
                             fig->fonts[ticklabel_f].size, 0.,\
                             0, 0,\
@@ -1745,11 +1745,11 @@ void Make_xticks_xgrid_time(Figure *fig, Date date_init)
                         fig->padY[0],\
                         &style_linegrid);        
 
-        #if defined(LENOVO) || defined(QEMU)
-            time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
-        #else
-            time_t t_tick = date_init.ctime + i*itv_sec;
-        #endif
+        // #if defined(LENOVO) || defined(QEMU)
+        //     time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
+        // #else
+        time_t t_tick = date_init.ctime + i*itv_sec;
+        // #endif
 
         struct tm *tm_tick;
         gmtime(&t_tick);

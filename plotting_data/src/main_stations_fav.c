@@ -6,16 +6,17 @@
 * ---------------------------------------------------------------------------- 
 */
 
+
+// #define AJC
+#define QEMU
+// #define LENOVO
+
 #include <stdlib.h>
 #include <sqlite3.h>
 #include "libs/consts.h"
 #include "libs/traitement.h"
 #include "libs/getter.h"
 #include "libs/plotter.h"
-
-// #define AJC
-#define QEMU
-// #define LENOVO
 
 /* =========================================================================== */
 int main(int argc, char* argv[]) 
@@ -133,7 +134,7 @@ int main(int argc, char* argv[])
     int padY[2] = {120,160};          /**< pad zone de dessin haut et bas*/
     int margin[2] = {10,10};         /**< margin gauche droite zone de dessin*/
 
-    int w_lines = 5;                 /**< epaisseur des traits*/
+    int w_lines = 4;                 /**< epaisseur des traits*/
     int ms = 6;                      /**< marker size */
 
     // ========================================================================
@@ -212,10 +213,9 @@ int main(int argc, char* argv[])
     /* Make Y ticks and grid line*/
     char wTicks = 'n';
     char *path_f_med = fonts_fig[1];
-    printf("%s\n", path_f_med);
-    // Change_font(&fig1, ticklabel_f, path_f_med);
-    // Change_fontsize(&fig1, ticklabel_f, 14);    
-    // Make_yticks_ygrid(&fig1, wTicks);
+    Change_font(&fig1, ticklabel_f, path_f_med);
+    Change_fontsize(&fig1, ticklabel_f, 14);    
+    Make_yticks_ygrid(&fig1, wTicks);
 
     /* Make legend */
     int decalx_leg = 0, decaly_leg = 0, ecart = 8;
@@ -335,7 +335,7 @@ int main(int argc, char* argv[])
     #ifdef QEMU
         int hour_hack = last_date_recolte.tm.tm_hour+1;
     #else
-        int hour_hack = last_date_recolte.tm.tm_hour;
+    int hour_hack = last_date_recolte.tm.tm_hour;
     #endif
 
     sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
@@ -346,7 +346,6 @@ int main(int argc, char* argv[])
                      last_date_recolte.tm.tm_min);
 
     decalx_subtitle = 0, decaly_subtitle = 0;
-
     Make_subtitle(&fig2, subtitle2, bbox_title, decalx_subtitle, decaly_subtitle);
 
      /* Sauvegarde du fichier png */
