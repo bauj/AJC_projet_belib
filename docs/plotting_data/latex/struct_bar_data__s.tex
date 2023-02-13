@@ -1,0 +1,81 @@
+\hypertarget{struct_bar_data__s}{}\doxysection{Bar\+Data\+\_\+s Struct Reference}
+\label{struct_bar_data__s}\index{BarData\_s@{BarData\_s}}
+
+
+Structure stockant des donnees par categorie et les associent a des couleurs dans le but de tracer un Bar\+Plot les représentant. Dans le cadre de Belib \+: un Bar\+Data par station.  
+
+
+
+
+{\ttfamily \#include $<$plotter.\+h$>$}
+
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{struct_bar_data__s_af89857baa9d721c0dea023a74d132b96}{nb\+\_\+ctg}}
+\item 
+char $\ast$$\ast$ \mbox{\hyperlink{struct_bar_data__s_aa97a33e093d9de0b885f3b5eeee7c3d7}{ctg\+\_\+names}}
+\item 
+size\+\_\+t \mbox{\hyperlink{struct_bar_data__s_a7f74c6e994ff3eac5eab0c28541cc7b5}{nb\+\_\+tot}}
+\item 
+int $\ast$ \mbox{\hyperlink{struct_bar_data__s_a460004759e72b5e1c82925709b5cad66}{nb\+\_\+in\+\_\+ctg}}
+\item 
+int($\ast$ \mbox{\hyperlink{struct_bar_data__s_a46d1eceab8caefb44dfb8e2657b122ba}{colors}} )\mbox{[}3\mbox{]}
+\item 
+char $\ast$ \mbox{\hyperlink{struct_bar_data__s_acf60de4c64d60c1b9449c056bc6bfcf7}{label}}
+\item 
+int \mbox{\hyperlink{struct_bar_data__s_ae40354a1051342eb5a9db005715dcfa9}{idx}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Structure stockant des donnees par categorie et les associent a des couleurs dans le but de tracer un Bar\+Plot les représentant. Dans le cadre de Belib \+: un Bar\+Data par station. 
+
+\doxysubsection{Field Documentation}
+\mbox{\Hypertarget{struct_bar_data__s_a46d1eceab8caefb44dfb8e2657b122ba}\label{struct_bar_data__s_a46d1eceab8caefb44dfb8e2657b122ba}} 
+\index{BarData\_s@{BarData\_s}!colors@{colors}}
+\index{colors@{colors}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{colors}{colors}}
+{\footnotesize\ttfamily int($\ast$ colors)\mbox{[}3\mbox{]}}
+
+Vecteur contenant une couleur pour chaque ctg \mbox{\Hypertarget{struct_bar_data__s_aa97a33e093d9de0b885f3b5eeee7c3d7}\label{struct_bar_data__s_aa97a33e093d9de0b885f3b5eeee7c3d7}} 
+\index{BarData\_s@{BarData\_s}!ctg\_names@{ctg\_names}}
+\index{ctg\_names@{ctg\_names}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{ctg\_names}{ctg\_names}}
+{\footnotesize\ttfamily char$\ast$$\ast$ ctg\+\_\+names}
+
+Labels des categories \mbox{\Hypertarget{struct_bar_data__s_ae40354a1051342eb5a9db005715dcfa9}\label{struct_bar_data__s_ae40354a1051342eb5a9db005715dcfa9}} 
+\index{BarData\_s@{BarData\_s}!idx@{idx}}
+\index{idx@{idx}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{idx}{idx}}
+{\footnotesize\ttfamily int idx}
+
+Index donné lorsqu\textquotesingle{}ajouté à la figure (pour posX) \mbox{\Hypertarget{struct_bar_data__s_acf60de4c64d60c1b9449c056bc6bfcf7}\label{struct_bar_data__s_acf60de4c64d60c1b9449c056bc6bfcf7}} 
+\index{BarData\_s@{BarData\_s}!label@{label}}
+\index{label@{label}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{label}{label}}
+{\footnotesize\ttfamily char$\ast$ label}
+
+Label associé au Bar\+Data \mbox{\Hypertarget{struct_bar_data__s_af89857baa9d721c0dea023a74d132b96}\label{struct_bar_data__s_af89857baa9d721c0dea023a74d132b96}} 
+\index{BarData\_s@{BarData\_s}!nb\_ctg@{nb\_ctg}}
+\index{nb\_ctg@{nb\_ctg}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{nb\_ctg}{nb\_ctg}}
+{\footnotesize\ttfamily size\+\_\+t nb\+\_\+ctg}
+
+Nombre de categories \mbox{\Hypertarget{struct_bar_data__s_a460004759e72b5e1c82925709b5cad66}\label{struct_bar_data__s_a460004759e72b5e1c82925709b5cad66}} 
+\index{BarData\_s@{BarData\_s}!nb\_in\_ctg@{nb\_in\_ctg}}
+\index{nb\_in\_ctg@{nb\_in\_ctg}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{nb\_in\_ctg}{nb\_in\_ctg}}
+{\footnotesize\ttfamily int$\ast$ nb\+\_\+in\+\_\+ctg}
+
+Vecteur contenant le nombre d\textquotesingle{}elements par ctg \mbox{\Hypertarget{struct_bar_data__s_a7f74c6e994ff3eac5eab0c28541cc7b5}\label{struct_bar_data__s_a7f74c6e994ff3eac5eab0c28541cc7b5}} 
+\index{BarData\_s@{BarData\_s}!nb\_tot@{nb\_tot}}
+\index{nb\_tot@{nb\_tot}!BarData\_s@{BarData\_s}}
+\doxysubsubsection{\texorpdfstring{nb\_tot}{nb\_tot}}
+{\footnotesize\ttfamily size\+\_\+t nb\+\_\+tot}
+
+Nombre total d\textquotesingle{}éléments dans l\textquotesingle{}ensemble des ctg 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/ajc/\+Projet\+\_\+\+AJC/\+AJC\+\_\+projet\+\_\+belib/plotting\+\_\+data/src/libs/\mbox{\hyperlink{plotter_8h}{plotter.\+h}}\end{DoxyCompactItemize}

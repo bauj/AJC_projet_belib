@@ -1,0 +1,178 @@
+\hypertarget{struct_figure__s}{}\doxysection{Figure\+\_\+s Struct Reference}
+\label{struct_figure__s}\index{Figure\_s@{Figure\_s}}
+
+
+Structure stockant un ensemble de structures (Struct bardata, linedata ou flinedata) et de données relatives à la création d\textquotesingle{}une figure.  
+
+
+
+
+{\ttfamily \#include $<$plotter.\+h$>$}
+
+
+
+Collaboration diagram for Figure\+\_\+s\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{struct_figure__s__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+gd\+Image $\ast$ \mbox{\hyperlink{struct_figure__s_a9e2deb0dd44c6797dc130c4cd9348277}{img}}
+\item 
+size\+\_\+t \mbox{\hyperlink{struct_figure__s_aa2201c3277d430a2b23355a08c546c4f}{nb\+\_\+linedata}}
+\item 
+size\+\_\+t \mbox{\hyperlink{struct_figure__s_af720098aef064c0a561d7cd5cc7fdd7c}{nb\+\_\+flinedata}}
+\item 
+size\+\_\+t \mbox{\hyperlink{struct_figure__s_a016213bd01b33df715c2707aab1b0223}{nb\+\_\+bardata}}
+\item 
+\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$$\ast$ \mbox{\hyperlink{struct_figure__s_a9c2a26cb56c37a0847be64d7d264f85e}{flinedata}}
+\item 
+\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$$\ast$ \mbox{\hyperlink{struct_figure__s_a2753906e1fcc9713994204535355f572}{linedata}}
+\item 
+\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$$\ast$ \mbox{\hyperlink{struct_figure__s_aee32a7b4fa01d94e8f23b59210e68b55}{bardata}}
+\item 
+\mbox{\hyperlink{plotter_8h_af91877e8227716efcbdf89b9cec50063}{Font}} \mbox{\hyperlink{struct_figure__s_a4eb07ae8fdabbed7f449cdf2e3988b8d}{fonts}} \mbox{[}6\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_ae72f41e1a2bd63ea97d62ff77273cb0a}{max\+\_\+X}}
+\item 
+int \mbox{\hyperlink{struct_figure__s_a8c1ec7486715bf0eff1c29b35fab1689}{max\+\_\+Y}}
+\item 
+float \mbox{\hyperlink{struct_figure__s_ab7d9b838b2479e3b3aa5dec0546531c5}{fmax\+\_\+Y}}
+\item 
+int \mbox{\hyperlink{struct_figure__s_a09a3817d8709ae781fb62f0cbe9d2823}{padX}} \mbox{[}2\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_a3eac00d457d576003ddf81bc42cc9f07}{padY}} \mbox{[}2\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_afdac39677da152a91536a838ca287d36}{orig}} \mbox{[}2\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_a7c650d0e235afc038b6a39b8b3271397}{margin}} \mbox{[}2\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_af549bfddd00fa0a261fa36f44a8cb195}{color\+\_\+bg}} \mbox{[}3\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_af6d02ff41ca00281af81e0d3217bdaa4}{color\+\_\+cvs\+\_\+bg}} \mbox{[}3\mbox{]}
+\item 
+int \mbox{\hyperlink{struct_figure__s_aee55647dcc5dd16d35d8b97d0cc871fa}{color\+\_\+axes}} \mbox{[}3\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Structure stockant un ensemble de structures (Struct bardata, linedata ou flinedata) et de données relatives à la création d\textquotesingle{}une figure. 
+
+\doxysubsection{Field Documentation}
+\mbox{\Hypertarget{struct_figure__s_aee32a7b4fa01d94e8f23b59210e68b55}\label{struct_figure__s_aee32a7b4fa01d94e8f23b59210e68b55}} 
+\index{Figure\_s@{Figure\_s}!bardata@{bardata}}
+\index{bardata@{bardata}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{bardata}{bardata}}
+{\footnotesize\ttfamily \mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}}$\ast$$\ast$ bardata}
+
+Vecteur de Bar\+Data \mbox{\Hypertarget{struct_figure__s_aee55647dcc5dd16d35d8b97d0cc871fa}\label{struct_figure__s_aee55647dcc5dd16d35d8b97d0cc871fa}} 
+\index{Figure\_s@{Figure\_s}!color\_axes@{color\_axes}}
+\index{color\_axes@{color\_axes}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{color\_axes}{color\_axes}}
+{\footnotesize\ttfamily int color\+\_\+axes\mbox{[}3\mbox{]}}
+
+Couleur des axes \mbox{\Hypertarget{struct_figure__s_af549bfddd00fa0a261fa36f44a8cb195}\label{struct_figure__s_af549bfddd00fa0a261fa36f44a8cb195}} 
+\index{Figure\_s@{Figure\_s}!color\_bg@{color\_bg}}
+\index{color\_bg@{color\_bg}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{color\_bg}{color\_bg}}
+{\footnotesize\ttfamily int color\+\_\+bg\mbox{[}3\mbox{]}}
+
+Couleur du fond de la figure \mbox{\Hypertarget{struct_figure__s_af6d02ff41ca00281af81e0d3217bdaa4}\label{struct_figure__s_af6d02ff41ca00281af81e0d3217bdaa4}} 
+\index{Figure\_s@{Figure\_s}!color\_cvs\_bg@{color\_cvs\_bg}}
+\index{color\_cvs\_bg@{color\_cvs\_bg}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{color\_cvs\_bg}{color\_cvs\_bg}}
+{\footnotesize\ttfamily int color\+\_\+cvs\+\_\+bg\mbox{[}3\mbox{]}}
+
+Couleur du fond du canvas \mbox{\Hypertarget{struct_figure__s_a9c2a26cb56c37a0847be64d7d264f85e}\label{struct_figure__s_a9c2a26cb56c37a0847be64d7d264f85e}} 
+\index{Figure\_s@{Figure\_s}!flinedata@{flinedata}}
+\index{flinedata@{flinedata}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{flinedata}{flinedata}}
+{\footnotesize\ttfamily \mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}}$\ast$$\ast$ flinedata}
+
+Vecteur de f\+Line\+Data \mbox{\Hypertarget{struct_figure__s_ab7d9b838b2479e3b3aa5dec0546531c5}\label{struct_figure__s_ab7d9b838b2479e3b3aa5dec0546531c5}} 
+\index{Figure\_s@{Figure\_s}!fmax\_Y@{fmax\_Y}}
+\index{fmax\_Y@{fmax\_Y}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{fmax\_Y}{fmax\_Y}}
+{\footnotesize\ttfamily float fmax\+\_\+Y}
+
+max de l\textquotesingle{}ensemble des max\+\_\+Y (float) de linedata\mbox{[}\mbox{]} \mbox{\Hypertarget{struct_figure__s_a4eb07ae8fdabbed7f449cdf2e3988b8d}\label{struct_figure__s_a4eb07ae8fdabbed7f449cdf2e3988b8d}} 
+\index{Figure\_s@{Figure\_s}!fonts@{fonts}}
+\index{fonts@{fonts}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{fonts}{fonts}}
+{\footnotesize\ttfamily \mbox{\hyperlink{plotter_8h_af91877e8227716efcbdf89b9cec50063}{Font}} fonts\mbox{[}6\mbox{]}}
+
+Fonts used in the fig \mbox{\Hypertarget{struct_figure__s_a9e2deb0dd44c6797dc130c4cd9348277}\label{struct_figure__s_a9e2deb0dd44c6797dc130c4cd9348277}} 
+\index{Figure\_s@{Figure\_s}!img@{img}}
+\index{img@{img}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{img}{img}}
+{\footnotesize\ttfamily gd\+Image$\ast$ img}
+
+Pointeur sur objet gd\+Image \mbox{\Hypertarget{struct_figure__s_a2753906e1fcc9713994204535355f572}\label{struct_figure__s_a2753906e1fcc9713994204535355f572}} 
+\index{Figure\_s@{Figure\_s}!linedata@{linedata}}
+\index{linedata@{linedata}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{linedata}{linedata}}
+{\footnotesize\ttfamily \mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}}$\ast$$\ast$ linedata}
+
+Vecteur de Line\+Data \mbox{\Hypertarget{struct_figure__s_a7c650d0e235afc038b6a39b8b3271397}\label{struct_figure__s_a7c650d0e235afc038b6a39b8b3271397}} 
+\index{Figure\_s@{Figure\_s}!margin@{margin}}
+\index{margin@{margin}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{margin}{margin}}
+{\footnotesize\ttfamily int margin\mbox{[}2\mbox{]}}
+
+Marge droite et haut (evite de toucher les bords) \mbox{\Hypertarget{struct_figure__s_ae72f41e1a2bd63ea97d62ff77273cb0a}\label{struct_figure__s_ae72f41e1a2bd63ea97d62ff77273cb0a}} 
+\index{Figure\_s@{Figure\_s}!max\_X@{max\_X}}
+\index{max\_X@{max\_X}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{max\_X}{max\_X}}
+{\footnotesize\ttfamily int max\+\_\+X}
+
+max de l\textquotesingle{}ensemble des max\+\_\+X de linedata\mbox{[}\mbox{]} \mbox{\Hypertarget{struct_figure__s_a8c1ec7486715bf0eff1c29b35fab1689}\label{struct_figure__s_a8c1ec7486715bf0eff1c29b35fab1689}} 
+\index{Figure\_s@{Figure\_s}!max\_Y@{max\_Y}}
+\index{max\_Y@{max\_Y}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{max\_Y}{max\_Y}}
+{\footnotesize\ttfamily int max\+\_\+Y}
+
+max de l\textquotesingle{}ensemble des max\+\_\+Y de linedata\mbox{[}\mbox{]} \mbox{\Hypertarget{struct_figure__s_a016213bd01b33df715c2707aab1b0223}\label{struct_figure__s_a016213bd01b33df715c2707aab1b0223}} 
+\index{Figure\_s@{Figure\_s}!nb\_bardata@{nb\_bardata}}
+\index{nb\_bardata@{nb\_bardata}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{nb\_bardata}{nb\_bardata}}
+{\footnotesize\ttfamily size\+\_\+t nb\+\_\+bardata}
+
+Nombre de linedata dans la figure \mbox{\Hypertarget{struct_figure__s_af720098aef064c0a561d7cd5cc7fdd7c}\label{struct_figure__s_af720098aef064c0a561d7cd5cc7fdd7c}} 
+\index{Figure\_s@{Figure\_s}!nb\_flinedata@{nb\_flinedata}}
+\index{nb\_flinedata@{nb\_flinedata}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{nb\_flinedata}{nb\_flinedata}}
+{\footnotesize\ttfamily size\+\_\+t nb\+\_\+flinedata}
+
+Nombre de linedata dans la figure \mbox{\Hypertarget{struct_figure__s_aa2201c3277d430a2b23355a08c546c4f}\label{struct_figure__s_aa2201c3277d430a2b23355a08c546c4f}} 
+\index{Figure\_s@{Figure\_s}!nb\_linedata@{nb\_linedata}}
+\index{nb\_linedata@{nb\_linedata}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{nb\_linedata}{nb\_linedata}}
+{\footnotesize\ttfamily size\+\_\+t nb\+\_\+linedata}
+
+Nombre de linedata dans la figure \mbox{\Hypertarget{struct_figure__s_afdac39677da152a91536a838ca287d36}\label{struct_figure__s_afdac39677da152a91536a838ca287d36}} 
+\index{Figure\_s@{Figure\_s}!orig@{orig}}
+\index{orig@{orig}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{orig}{orig}}
+{\footnotesize\ttfamily int orig\mbox{[}2\mbox{]}}
+
+Coordonnees de l\textquotesingle{}origine des plots \mbox{\Hypertarget{struct_figure__s_a09a3817d8709ae781fb62f0cbe9d2823}\label{struct_figure__s_a09a3817d8709ae781fb62f0cbe9d2823}} 
+\index{Figure\_s@{Figure\_s}!padX@{padX}}
+\index{padX@{padX}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{padX}{padX}}
+{\footnotesize\ttfamily int padX\mbox{[}2\mbox{]}}
+
+Padding gauche/droite pour definir canvas (cvs) et orig \mbox{\Hypertarget{struct_figure__s_a3eac00d457d576003ddf81bc42cc9f07}\label{struct_figure__s_a3eac00d457d576003ddf81bc42cc9f07}} 
+\index{Figure\_s@{Figure\_s}!padY@{padY}}
+\index{padY@{padY}!Figure\_s@{Figure\_s}}
+\doxysubsubsection{\texorpdfstring{padY}{padY}}
+{\footnotesize\ttfamily int padY\mbox{[}2\mbox{]}}
+
+Padding haut/bas pour definir canvas (cvs) et orig 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/ajc/\+Projet\+\_\+\+AJC/\+AJC\+\_\+projet\+\_\+belib/plotting\+\_\+data/src/libs/\mbox{\hyperlink{plotter_8h}{plotter.\+h}}\end{DoxyCompactItemize}

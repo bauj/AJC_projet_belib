@@ -1,0 +1,1408 @@
+\hypertarget{plotter_8h}{}\doxysection{/home/ajc/\+Projet\+\_\+\+AJC/\+AJC\+\_\+projet\+\_\+belib/plotting\+\_\+data/src/libs/plotter.h File Reference}
+\label{plotter_8h}\index{/home/ajc/Projet\_AJC/AJC\_projet\_belib/plotting\_data/src/libs/plotter.h@{/home/ajc/Projet\_AJC/AJC\_projet\_belib/plotting\_data/src/libs/plotter.h}}
+{\ttfamily \#include \char`\"{}consts.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}getter.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$gd.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+Include dependency graph for plotter.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{plotter_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{plotter_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_bar_data__s}{Bar\+Data\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure stockant des donnees par categorie et les associent a des couleurs dans le but de tracer un Bar\+Plot les représentant. Dans le cadre de Belib \+: un Bar\+Data par station. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_line_style__s}{Line\+Style\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure definissant un style de plot (ligne, point) \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_line_data__s}{Line\+Data\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure associant un vecteur de donnees labelisé (int) à un Line\+Style. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structf_line_data__s}{f\+Line\+Data\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure associant un vecteur de donnees labelisé (float) à un Line\+Style. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_font__s}{Font\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure stockant les infos d\textquotesingle{}une police \+: chemin, taille et couleur. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_figure__s}{Figure\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure stockant un ensemble de structures (Struct bardata, linedata ou flinedata) et de données relatives à la création d\textquotesingle{}une figure. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{plotter_8h_a598a3330b3c21701223ee0ca14316eca}{PI}}~3.\+141592
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{struct_bar_data__s}{Bar\+Data\+\_\+s}} \mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}}
+\begin{DoxyCompactList}\small\item\em Structure stockant des donnees par categorie et les associent a des couleurs dans le but de tracer un Bar\+Plot les représentant. Dans le cadre de Belib \+: un Bar\+Data par station. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_line_style__s}{Line\+Style\+\_\+s}} \mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}}
+\begin{DoxyCompactList}\small\item\em Structure definissant un style de plot (ligne, point) \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_line_data__s}{Line\+Data\+\_\+s}} \mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}}
+\begin{DoxyCompactList}\small\item\em Structure associant un vecteur de donnees labelisé (int) à un Line\+Style. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{structf_line_data__s}{f\+Line\+Data\+\_\+s}} \mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}}
+\begin{DoxyCompactList}\small\item\em Structure associant un vecteur de donnees labelisé (float) à un Line\+Style. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_font__s}{Font\+\_\+s}} \mbox{\hyperlink{plotter_8h_af91877e8227716efcbdf89b9cec50063}{Font}}
+\begin{DoxyCompactList}\small\item\em Structure stockant les infos d\textquotesingle{}une police \+: chemin, taille et couleur. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_figure__s}{Figure\+\_\+s}} \mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}}
+\begin{DoxyCompactList}\small\item\em Structure stockant un ensemble de structures (Struct bardata, linedata ou flinedata) et de données relatives à la création d\textquotesingle{}une figure. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7}{fonts\+Fig}} \{ \newline
+\mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a33ba9dffbbd17e967c7c2a7227e1bddc}{label\+\_\+f}}
+, \mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7aefdd16050f082e9e62a55f3f0062c335}{annotation\+\_\+f}}
+, \mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a317684baa750223e4f61c66eb5b2b851}{title\+\_\+f}}
+, \mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7ae56f9ca16e66e9d16a979ec28e6d64b3}{ticklabel\+\_\+f}}
+, \newline
+\mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7ae278c4d1f71e14972d1a02df54e81fdf}{subtitle\+\_\+f}}
+, \mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a83698ec1ddf2285e7c4b788aef964172}{leg\+\_\+f}}
+ \}
+\begin{DoxyCompactList}\small\item\em Enumeration permettant d\textquotesingle{}atteindre les differentes polices pour chaque élément de la figure \+: labels, titres, legende, annotation ... \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{plotter_8h_adbddcff821e50bc27ec4d0b3c04477ea}{Max\+\_\+int}} (int x, int y)
+\begin{DoxyCompactList}\small\item\em Renvoie le max entre 2 entiers. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{plotter_8h_ab8db4a23a7bbd52697367960accb47e8}{Min\+\_\+int}} (int x, int y)
+\begin{DoxyCompactList}\small\item\em Renvoie le min entre 2 entiers. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{plotter_8h_a0f4ac28150cd336ed674a257a60b4570}{Maxval\+\_\+array}} (const int x\+\_\+array\mbox{[}$\,$\mbox{]}, size\+\_\+t n)
+\item 
+int \mbox{\hyperlink{plotter_8h_ae1fc7f3c2f1b103692d4d24dd0dabfab}{Minval\+\_\+array}} (const int x\+\_\+array\mbox{[}$\,$\mbox{]}, size\+\_\+t n)
+\item 
+float \mbox{\hyperlink{plotter_8h_a4b21ed5c58f3410f5a0aa96e54974f34}{Max\+\_\+float}} (float x, float y)
+\begin{DoxyCompactList}\small\item\em Renvoie le max entre 2 float. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{plotter_8h_a7a3b60477b8b8e3fb36e42f57fd2e8d1}{f\+Maxval\+\_\+array}} (const float x\+\_\+array\mbox{[}$\,$\mbox{]}, size\+\_\+t n)
+\begin{DoxyCompactList}\small\item\em Renvoie le max d\textquotesingle{}un tableau de float. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{plotter_8h_a70adade95bd669f5fc005114accabc47}{Deg2rad}} (float angle)
+\begin{DoxyCompactList}\small\item\em Transforme les degrés en radians. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{plotter_8h_ab525d46e0188a74434f5fef42163a498}{Get\+Couleur}} (gd\+Image\+Ptr im\+\_\+fig, const int couleur\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Recupere la valeur de la couleur (int) associée à un vecteur d\textquotesingle{}entier rgb (0-\/255) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a0cb67e26856e09109f67e28490d69a2f}{Save\+\_\+to\+\_\+png}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, const char $\ast$dir\+\_\+figures, const char $\ast$filename\+\_\+fig)
+\begin{DoxyCompactList}\small\item\em Sauvegarde une figure au format png. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a05fe390a37092aa2a67f912cd113cb98}{Init\+\_\+figure}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int figsize\mbox{[}2\mbox{]}, int padX\mbox{[}2\mbox{]}, int padY\mbox{[}2\mbox{]}, int margin\mbox{[}2\mbox{]}, char w\+Axes)
+\begin{DoxyCompactList}\small\item\em Permet d\textquotesingle{}initialiser un objet de type Figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a014866d1e194e215a5f25310fc2739a2}{Make\+\_\+background}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, const int color\+\_\+bg\mbox{[}3\mbox{]}, const int color\+\_\+canvas\+\_\+bg\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Crée le fond et le canvas (zone de dessin) de la figure. Utilisé dans Init\+\_\+figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a4d7a613f145c5cfb62e99c48d6019521}{Make\+\_\+support\+\_\+axes}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, const int couleur\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Crée le support des axes de la figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a3f84b9841bc97b8dec8e84cad37f47e1}{Change\+\_\+fig\+\_\+bg}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int color\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Permet de modifier la couleur de fond d\textquotesingle{}une figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a8b04de578348fbc97dd23907c8d9b8fd}{Change\+\_\+fig\+\_\+cvs\+\_\+bg}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int color\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Permet de modifier la couleur de fond d\textquotesingle{}un canvas (zone de dessin) d\textquotesingle{}une figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a9d38e5fcfb8f82eb4a972b4512c86de3}{Change\+\_\+fig\+\_\+axes\+\_\+color}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int color\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Permet de modifier la couleur des axes. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aa44d1bcf8f3cfc4f00333c0a24888062}{Change\+\_\+font}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int text\+Type, char $\ast$path\+\_\+f)
+\begin{DoxyCompactList}\small\item\em Permet de modifier la police d\textquotesingle{}un des éléments de la figure (voir enum fonts\+Fig) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a4662de430e7c9fdbc87b2e505a43d93a}{Change\+\_\+fontsize}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int text\+Type, int size)
+\begin{DoxyCompactList}\small\item\em Permet de modifier la police d\textquotesingle{}un des éléments de la figure (voir enum fonts\+Fig) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a146006870206c9c8311faba40b3cbe97}{Change\+\_\+fontcolor}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int text\+Type, int color\mbox{[}3\mbox{]})
+\begin{DoxyCompactList}\small\item\em Permet de modifier la couleur de la police d\textquotesingle{}un des éléments de la figure (voir enum fonts\+Fig) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ae543ba5e58c2d43c099f567380201d43}{Init\+\_\+linestyle}} (\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$linestyle, char style, const int color\mbox{[}3\mbox{]}, int width, char marker, int ms)
+\begin{DoxyCompactList}\small\item\em Initialise un object de type Line\+Style. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aa005d565b1933dc23c64d0c16e917691}{Init\+\_\+bardata}} (\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$bardata, int nb\+\_\+ctg, char $\ast$\mbox{\hyperlink{consts_8h_a122c4cd7f58e529fc66579b8d015b288}{labels\+\_\+ctg}}\mbox{[}nb\+\_\+ctg\mbox{]}, int nb\+\_\+tot, int nb\+\_\+in\+\_\+ctg\mbox{[}nb\+\_\+ctg\mbox{]}, int colors\mbox{[}nb\+\_\+ctg\mbox{]}\mbox{[}3\mbox{]}, char $\ast$label)
+\begin{DoxyCompactList}\small\item\em Initialise un objet de type Bar\+Data, utilisé pour un Barplot multi-\/catégories. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ae2febf0a9b10c2f6aceb25ef51e81243}{Init\+\_\+linedata}} (\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$linedata, int len\+\_\+data, int ptx\mbox{[}$\,$\mbox{]}, int pty\mbox{[}$\,$\mbox{]}, char $\ast$label, \mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$linestyle)
+\begin{DoxyCompactList}\small\item\em Initialise un objet de type Line\+Data, utilisé pour un lineplot de données entières. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a9b4a85d7848370d7831b3bcfa27fcbd1}{Init\+\_\+flinedata}} (\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$flinedata, int len\+\_\+data, int ptx\mbox{[}$\,$\mbox{]}, float pty\mbox{[}$\,$\mbox{]}, char $\ast$label, \mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$linestyle)
+\begin{DoxyCompactList}\small\item\em Initialise un objet de type f\+Line\+Data, utilisé pour un lineplot de données de type float en Y. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a2fa1a671e72cbf0ad40095c0becd1095}{Plot\+Point}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, const int x1, const int y1, \mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$linestyle)
+\begin{DoxyCompactList}\small\item\em Affiche un point dans la zone de dessin d\textquotesingle{}une figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aec02d77ad77d2f1e9a69d5224e1546ac}{Plot\+Line}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$linedata)
+\begin{DoxyCompactList}\small\item\em Trace le contenu d\textquotesingle{}un Line\+Data dans la zone de dessin d\textquotesingle{}une figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a346f3d57d4db5d53718dbc5685a25017}{Plot\+FLine}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$flinedata)
+\begin{DoxyCompactList}\small\item\em Trace le contenu d\textquotesingle{}un f\+Line\+Data dans la zone de dessin d\textquotesingle{}une figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a519b329c595f3b1c26b167d2b223b39b}{Plot\+Barplot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$bardata, char wlabels)
+\begin{DoxyCompactList}\small\item\em Trace le contenu d\textquotesingle{}un Bar\+Data dans la zone de dessin d\textquotesingle{}une figure. \end{DoxyCompactList}\item 
+int $\ast$ \mbox{\hyperlink{plotter_8h_a71e56b46d46759c040a1654e848ddfd6}{Transform\+\_\+fdata\+X\+\_\+to\+\_\+plot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, size\+\_\+t len\+\_\+pts, const int pts\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon X (int) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin Cas d\textquotesingle{}un f\+Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). \end{DoxyCompactList}\item 
+int $\ast$ \mbox{\hyperlink{plotter_8h_a725c9b104c3465cd90f3db388baf495a}{Transform\+\_\+fdata\+Y\+\_\+to\+\_\+plot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, size\+\_\+t len\+\_\+pts, const float pts\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon Y (float) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin. Cas d\textquotesingle{}un f\+Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). \end{DoxyCompactList}\item 
+int $\ast$ \mbox{\hyperlink{plotter_8h_a30314d2c4245d3e075b22bee54911310}{Transform\+\_\+data\+\_\+to\+\_\+plot\+\_\+bar}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, size\+\_\+t nb\+\_\+ctg, const int pts\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée d\textquotesingle{}un Bar\+Data pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin. Cas d\textquotesingle{}un Bar\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a18f1b5e03260ca41a3806ba23a310915}{Transform\+\_\+data\+X\+\_\+to\+\_\+plot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, size\+\_\+t len\+\_\+pts, const int pts\mbox{[}$\,$\mbox{]}, int $\ast$pts\+\_\+dessin)
+\begin{DoxyCompactList}\small\item\em Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon X (int) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin Cas d\textquotesingle{}un Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ad7e5fe7a15588a89c08de4479d3b18fe}{Transform\+\_\+data\+Y\+\_\+to\+\_\+plot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, size\+\_\+t len\+\_\+pts, const int pts\mbox{[}$\,$\mbox{]}, int $\ast$pts\+\_\+dessin)
+\begin{DoxyCompactList}\small\item\em Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon Y (int) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin Cas d\textquotesingle{}un Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). \end{DoxyCompactList}\item 
+int $\ast$ \mbox{\hyperlink{plotter_8h_aeda7c9555e92b01b76937dc26c7e6387}{Transform\+\_\+data\+\_\+to\+\_\+plot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, size\+\_\+t len\+\_\+pts, const int pts\mbox{[}$\,$\mbox{]}, char direction)
+\begin{DoxyCompactList}\small\item\em Fonction interne appelant Transform\+\_\+data\+X\+\_\+to\+\_\+plot ou Transform\+\_\+data\+Y\+\_\+to\+\_\+plot en fonction de la direction spécifiée. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aa9ac56031f0a0d5aff2d6e8e6c3fe3ec}{Add\+\_\+line\+\_\+to\+\_\+fig}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$linedata)
+\begin{DoxyCompactList}\small\item\em Ajoute un objet de type Line\+Data à la Figure. Permet un update des maxima et de gérer les tracés sur la figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a54e829c116af5d7272b75ed9a9cf9a02}{Add\+\_\+fline\+\_\+to\+\_\+fig}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$flinedata)
+\begin{DoxyCompactList}\small\item\em Ajoute un objet de type f\+Line\+Data à la Figure. Permet un update des maxima et de gérer les tracés sur la figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ab58429cf44050dc99efd5b1de7af731b}{Add\+\_\+barplot\+\_\+to\+\_\+fig}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$bardata)
+\begin{DoxyCompactList}\small\item\em Ajoute un objet de type Bar\+Data à la Figure. Permet un update des maxima et de gérer les tracés sur la figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ae415524b2cc70abe0a23f1faf61166e7}{Make\+\_\+annotation}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char $\ast$text, int decalage\+\_\+X, int decalage\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Ajoute une annotation sur la figure. \end{DoxyCompactList}\item 
+int $\ast$ \mbox{\hyperlink{plotter_8h_ae88907fb3a3ee4db93233fda26f4c0f1}{Make\+\_\+title}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char $\ast$title, int decalage\+\_\+X, int decalage\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Ajoute un titre à la figure, sous l\textquotesingle{}axe des abcisses par défaut. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_af27dc274f8d00083ff26a2482e496767}{Make\+\_\+subtitle}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char $\ast$subtitle, int bbox\+\_\+title\mbox{[}8\mbox{]}, int decalage\+\_\+X, int decalage\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Ajoute un titre à la figure, sous l\textquotesingle{}axe des abcisses par défaut. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aaa1f8c829189c4ef620047697c3c9374}{Const\+\_\+str\+\_\+dudate1\+\_\+audate2}} (\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$date1, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$date2, char $\ast$str\+\_\+out)
+\begin{DoxyCompactList}\small\item\em Fonction permettant de construire une chaine de caractères \char`\"{}\+Du ... au ...\char`\"{} à partir de deux objets de type Date. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ab2992722ecf6169e4ee6ed0ef2264a81}{Make\+\_\+xlabel}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char $\ast$xlabel, int decalage\+\_\+X, int decalage\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Ajoute un label à l\textquotesingle{}axe des abcisses. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a588bf8c9a31dafa561875560b4f4c97e}{Make\+\_\+ylabel}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char $\ast$ylabel, int decalage\+\_\+X, int decalage\+\_\+Y)
+\begin{DoxyCompactList}\small\item\em Ajoute un label à l\textquotesingle{}axe des ordonnées. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a444ced0f3b857673d7648da57d96adc8}{Make\+\_\+legend\+\_\+barplot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int decal\+\_\+X, int decal\+\_\+Y, int ecart)
+\begin{DoxyCompactList}\small\item\em Crée la légende pour un barplot. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aefd36608ede2951b5cc231390a3897aa}{Make\+\_\+legend}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int decal\+\_\+X, int decal\+\_\+Y, int ecart)
+\begin{DoxyCompactList}\small\item\em Crée la légende pour un plot. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a9d10e00a963d02296fc179f27ceefdc2}{Make\+\_\+xticks\+\_\+barplot}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, float angle\+\_\+labels)
+\begin{DoxyCompactList}\small\item\em Crée les ticks et les labels associés pour un barplot. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ad4f15f431282ed66684b8bb16f0acc11}{Make\+\_\+xticks\+\_\+xgrid\+\_\+time\+\_\+avgH}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, int nb\+\_\+ticks, int tableau\+\_\+avg\+\_\+hours\mbox{[}nb\+\_\+ticks\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction spécifique au projet Belib. Crée les ticks et labels pour la courbe \char`\"{}moyenne horaire\char`\"{}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a113042895ccd3acb08e0d3a1cb29d92e}{Make\+\_\+xticks\+\_\+xgrid\+\_\+time}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} date\+\_\+init)
+\begin{DoxyCompactList}\small\item\em Crée les ticks pour l\textquotesingle{}axe des X dans le cas d\textquotesingle{}un axe X représentant des Date. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a67f6d97c11f33475a02303eb9a4396da}{Make\+\_\+fyticks\+\_\+ygrid}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char w\+Ticks)
+\begin{DoxyCompactList}\small\item\em Crée les ticks pour l\textquotesingle{}axe Y dans le cas d\textquotesingle{}un tracé de f\+Line\+Data (récup du max flottant) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_ad92a8f516635bc52ad57794d6aa1686b}{Make\+\_\+yticks\+\_\+ygrid}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig, char w\+Ticks)
+\begin{DoxyCompactList}\small\item\em Crée les ticks pour l\textquotesingle{}axe Y dans le cas d\textquotesingle{}un tracé de Line\+Data (récup du max entier) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_abcdb78055ea573bc3f6a68a897bff942}{Make\+\_\+dateticks\+\_\+vect}} (int nb\+\_\+rows, \mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} \mbox{\hyperlink{plotter_8h_a6f0f4201318fcbafeff0751a325f84d8}{vect\+\_\+dateticks}}\mbox{[}nb\+\_\+rows\mbox{]}, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} tableau\+\_\+date\+\_\+recolte\+\_\+fav\mbox{[}nb\+\_\+rows\mbox{]})
+\begin{DoxyCompactList}\small\item\em Crée un vecteur de Datetick à partir du tableau des Date. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aa193f47f2e1d2780f38cc188a77f34b2}{Print\+\_\+debug\+\_\+fig}} (\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$fig)
+\begin{DoxyCompactList}\small\item\em Fonction de debug affichant des informations sur un objet de type Figure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a014606c357b7ae008b94026f8063e16d}{Print\+\_\+debug\+\_\+ls}} (\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$linestyle)
+\begin{DoxyCompactList}\small\item\em Fonction de debug affichant des informations sur un objet de type Line\+Style. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a7afc4cbaed48b4cbf644d897dafe1678}{Print\+\_\+debug\+\_\+ld}} (\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$linedata, char w\+\_\+xy)
+\begin{DoxyCompactList}\small\item\em Fonction de debug affichant des informations sur un objet de type Line\+Data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aeccf5d6e43bd4a9d20ee079dc41ebcb2}{Print\+\_\+debug\+\_\+fld}} (\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$flinedata, char w\+\_\+xy)
+\begin{DoxyCompactList}\small\item\em Fonction de debug affichant des informations sur un objet de type f\+Line\+Data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_aedc5740cb1c0bdc10d546e7238331e89}{Print\+\_\+debug\+\_\+bd}} (\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$bardata, char w\+\_\+cat)
+\begin{DoxyCompactList}\small\item\em Fonction de debug affichant des informations sur un objet de type Bardata. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{plotter_8h_a1bbe66f1a3b7f23b21bcb621b813cfee}{Image\+Line\+Epaisseur}} (gd\+Image\+Ptr im\+\_\+fig, const int x1, const int y1, const int x2, const int y2, \mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$linestyle) void \mbox{\hyperlink{plotter_8h_abcdb78055ea573bc3f6a68a897bff942}{Make\+\_\+dateticks\+\_\+vect}}(int nb\+\_\+rows
+\begin{DoxyCompactList}\small\item\em Trace un segment de droite avec un Line\+Style donné d\textquotesingle{}un point 1 à un point 2. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} \mbox{\hyperlink{plotter_8h_a6f0f4201318fcbafeff0751a325f84d8}{vect\+\_\+dateticks}} \mbox{[}nb\+\_\+rows\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{plotter_8h_a598a3330b3c21701223ee0ca14316eca}\label{plotter_8h_a598a3330b3c21701223ee0ca14316eca}} 
+\index{plotter.h@{plotter.h}!PI@{PI}}
+\index{PI@{PI}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{PI}{PI}}
+{\footnotesize\ttfamily \#define PI~3.\+141592}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}\label{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}} 
+\index{plotter.h@{plotter.h}!BarData@{BarData}}
+\index{BarData@{BarData}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{BarData}{BarData}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_bar_data__s}{Bar\+Data\+\_\+s}} \mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}}}
+
+
+
+Structure stockant des donnees par categorie et les associent a des couleurs dans le but de tracer un Bar\+Plot les représentant. Dans le cadre de Belib \+: un Bar\+Data par station. 
+
+\mbox{\Hypertarget{plotter_8h_ac2045f881e839525135b0644a4314117}\label{plotter_8h_ac2045f881e839525135b0644a4314117}} 
+\index{plotter.h@{plotter.h}!Figure@{Figure}}
+\index{Figure@{Figure}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Figure}{Figure}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_figure__s}{Figure\+\_\+s}} \mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}}}
+
+
+
+Structure stockant un ensemble de structures (Struct bardata, linedata ou flinedata) et de données relatives à la création d\textquotesingle{}une figure. 
+
+\mbox{\Hypertarget{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}\label{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}} 
+\index{plotter.h@{plotter.h}!fLineData@{fLineData}}
+\index{fLineData@{fLineData}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{fLineData}{fLineData}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{structf_line_data__s}{f\+Line\+Data\+\_\+s}} \mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}}}
+
+
+
+Structure associant un vecteur de donnees labelisé (float) à un Line\+Style. 
+
+\mbox{\Hypertarget{plotter_8h_af91877e8227716efcbdf89b9cec50063}\label{plotter_8h_af91877e8227716efcbdf89b9cec50063}} 
+\index{plotter.h@{plotter.h}!Font@{Font}}
+\index{Font@{Font}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Font}{Font}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_font__s}{Font\+\_\+s}} \mbox{\hyperlink{plotter_8h_af91877e8227716efcbdf89b9cec50063}{Font}}}
+
+
+
+Structure stockant les infos d\textquotesingle{}une police \+: chemin, taille et couleur. 
+
+\mbox{\Hypertarget{plotter_8h_a4330fc0626d31d64819a1682ac298c34}\label{plotter_8h_a4330fc0626d31d64819a1682ac298c34}} 
+\index{plotter.h@{plotter.h}!LineData@{LineData}}
+\index{LineData@{LineData}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{LineData}{LineData}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_line_data__s}{Line\+Data\+\_\+s}} \mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}}}
+
+
+
+Structure associant un vecteur de donnees labelisé (int) à un Line\+Style. 
+
+\mbox{\Hypertarget{plotter_8h_a0449d4953ce761131b82e57dfef1f813}\label{plotter_8h_a0449d4953ce761131b82e57dfef1f813}} 
+\index{plotter.h@{plotter.h}!LineStyle@{LineStyle}}
+\index{LineStyle@{LineStyle}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{LineStyle}{LineStyle}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_line_style__s}{Line\+Style\+\_\+s}} \mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}}}
+
+
+
+Structure definissant un style de plot (ligne, point) 
+
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7}} 
+\index{plotter.h@{plotter.h}!fontsFig@{fontsFig}}
+\index{fontsFig@{fontsFig}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{fontsFig}{fontsFig}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7}{fonts\+Fig}}}
+
+
+
+Enumeration permettant d\textquotesingle{}atteindre les differentes polices pour chaque élément de la figure \+: labels, titres, legende, annotation ... 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{label\_f@{label\_f}!plotter.h@{plotter.h}}\index{plotter.h@{plotter.h}!label\_f@{label\_f}}}\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a33ba9dffbbd17e967c7c2a7227e1bddc}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a33ba9dffbbd17e967c7c2a7227e1bddc}} 
+label\+\_\+f&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{annotation\_f@{annotation\_f}!plotter.h@{plotter.h}}\index{plotter.h@{plotter.h}!annotation\_f@{annotation\_f}}}\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7aefdd16050f082e9e62a55f3f0062c335}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7aefdd16050f082e9e62a55f3f0062c335}} 
+annotation\+\_\+f&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{title\_f@{title\_f}!plotter.h@{plotter.h}}\index{plotter.h@{plotter.h}!title\_f@{title\_f}}}\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a317684baa750223e4f61c66eb5b2b851}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a317684baa750223e4f61c66eb5b2b851}} 
+title\+\_\+f&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ticklabel\_f@{ticklabel\_f}!plotter.h@{plotter.h}}\index{plotter.h@{plotter.h}!ticklabel\_f@{ticklabel\_f}}}\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7ae56f9ca16e66e9d16a979ec28e6d64b3}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7ae56f9ca16e66e9d16a979ec28e6d64b3}} 
+ticklabel\+\_\+f&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{subtitle\_f@{subtitle\_f}!plotter.h@{plotter.h}}\index{plotter.h@{plotter.h}!subtitle\_f@{subtitle\_f}}}\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7ae278c4d1f71e14972d1a02df54e81fdf}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7ae278c4d1f71e14972d1a02df54e81fdf}} 
+subtitle\+\_\+f&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{leg\_f@{leg\_f}!plotter.h@{plotter.h}}\index{plotter.h@{plotter.h}!leg\_f@{leg\_f}}}\mbox{\Hypertarget{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a83698ec1ddf2285e7c4b788aef964172}\label{plotter_8h_a5ddbc04bc9f85925494e1a8ee7a66dc7a83698ec1ddf2285e7c4b788aef964172}} 
+leg\+\_\+f&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{plotter_8h_ab58429cf44050dc99efd5b1de7af731b}\label{plotter_8h_ab58429cf44050dc99efd5b1de7af731b}} 
+\index{plotter.h@{plotter.h}!Add\_barplot\_to\_fig@{Add\_barplot\_to\_fig}}
+\index{Add\_barplot\_to\_fig@{Add\_barplot\_to\_fig}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Add\_barplot\_to\_fig()}{Add\_barplot\_to\_fig()}}
+{\footnotesize\ttfamily void Add\+\_\+barplot\+\_\+to\+\_\+fig (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$}]{bardata }\end{DoxyParamCaption})}
+
+
+
+Ajoute un objet de type Bar\+Data à la Figure. Permet un update des maxima et de gérer les tracés sur la figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em bardata} & Pointeur vers objet de type Bar\+Data à ajouter à la figure \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a54e829c116af5d7272b75ed9a9cf9a02}\label{plotter_8h_a54e829c116af5d7272b75ed9a9cf9a02}} 
+\index{plotter.h@{plotter.h}!Add\_fline\_to\_fig@{Add\_fline\_to\_fig}}
+\index{Add\_fline\_to\_fig@{Add\_fline\_to\_fig}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Add\_fline\_to\_fig()}{Add\_fline\_to\_fig()}}
+{\footnotesize\ttfamily void Add\+\_\+fline\+\_\+to\+\_\+fig (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$}]{flinedata }\end{DoxyParamCaption})}
+
+
+
+Ajoute un objet de type f\+Line\+Data à la Figure. Permet un update des maxima et de gérer les tracés sur la figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em flinedata} & Pointeur vers objet de type f\+Line\+Data à ajouter à la figure \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aa9ac56031f0a0d5aff2d6e8e6c3fe3ec}\label{plotter_8h_aa9ac56031f0a0d5aff2d6e8e6c3fe3ec}} 
+\index{plotter.h@{plotter.h}!Add\_line\_to\_fig@{Add\_line\_to\_fig}}
+\index{Add\_line\_to\_fig@{Add\_line\_to\_fig}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Add\_line\_to\_fig()}{Add\_line\_to\_fig()}}
+{\footnotesize\ttfamily void Add\+\_\+line\+\_\+to\+\_\+fig (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$}]{linedata }\end{DoxyParamCaption})}
+
+
+
+Ajoute un objet de type Line\+Data à la Figure. Permet un update des maxima et de gérer les tracés sur la figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em linedata} & Pointeur vers objet de type Line\+Data à ajouter à la figure \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a9d38e5fcfb8f82eb4a972b4512c86de3}\label{plotter_8h_a9d38e5fcfb8f82eb4a972b4512c86de3}} 
+\index{plotter.h@{plotter.h}!Change\_fig\_axes\_color@{Change\_fig\_axes\_color}}
+\index{Change\_fig\_axes\_color@{Change\_fig\_axes\_color}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Change\_fig\_axes\_color()}{Change\_fig\_axes\_color()}}
+{\footnotesize\ttfamily void Change\+\_\+fig\+\_\+axes\+\_\+color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{color\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Permet de modifier la couleur des axes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em color} & Couleur des axes de la figure \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a3f84b9841bc97b8dec8e84cad37f47e1}\label{plotter_8h_a3f84b9841bc97b8dec8e84cad37f47e1}} 
+\index{plotter.h@{plotter.h}!Change\_fig\_bg@{Change\_fig\_bg}}
+\index{Change\_fig\_bg@{Change\_fig\_bg}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Change\_fig\_bg()}{Change\_fig\_bg()}}
+{\footnotesize\ttfamily void Change\+\_\+fig\+\_\+bg (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{color\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Permet de modifier la couleur de fond d\textquotesingle{}une figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em color} & Couleur du fond de la figure \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a8b04de578348fbc97dd23907c8d9b8fd}\label{plotter_8h_a8b04de578348fbc97dd23907c8d9b8fd}} 
+\index{plotter.h@{plotter.h}!Change\_fig\_cvs\_bg@{Change\_fig\_cvs\_bg}}
+\index{Change\_fig\_cvs\_bg@{Change\_fig\_cvs\_bg}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Change\_fig\_cvs\_bg()}{Change\_fig\_cvs\_bg()}}
+{\footnotesize\ttfamily void Change\+\_\+fig\+\_\+cvs\+\_\+bg (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{color\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Permet de modifier la couleur de fond d\textquotesingle{}un canvas (zone de dessin) d\textquotesingle{}une figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em color} & Couleur du fond du canvas de la figure \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aa44d1bcf8f3cfc4f00333c0a24888062}\label{plotter_8h_aa44d1bcf8f3cfc4f00333c0a24888062}} 
+\index{plotter.h@{plotter.h}!Change\_font@{Change\_font}}
+\index{Change\_font@{Change\_font}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Change\_font()}{Change\_font()}}
+{\footnotesize\ttfamily void Change\+\_\+font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{text\+Type,  }\item[{char $\ast$}]{path\+\_\+f }\end{DoxyParamCaption})}
+
+
+
+Permet de modifier la police d\textquotesingle{}un des éléments de la figure (voir enum fonts\+Fig) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em text\+Type} & Type d\textquotesingle{}élément de figure à modifier \+: index de l\textquotesingle{}enum fonts\+Fig (labels, title, ...) \\
+\hline
+{\em path\+\_\+f} & Chemin vers la police souhaitée \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a146006870206c9c8311faba40b3cbe97}\label{plotter_8h_a146006870206c9c8311faba40b3cbe97}} 
+\index{plotter.h@{plotter.h}!Change\_fontcolor@{Change\_fontcolor}}
+\index{Change\_fontcolor@{Change\_fontcolor}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Change\_fontcolor()}{Change\_fontcolor()}}
+{\footnotesize\ttfamily void Change\+\_\+fontcolor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{text\+Type,  }\item[{int}]{color\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Permet de modifier la couleur de la police d\textquotesingle{}un des éléments de la figure (voir enum fonts\+Fig) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em text\+Type} & Type d\textquotesingle{}objet de figure à modifier \+: index de l\textquotesingle{}enum fonts\+Fig (labels, title, ...) \\
+\hline
+{\em color} & Couleur de la police \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a4662de430e7c9fdbc87b2e505a43d93a}\label{plotter_8h_a4662de430e7c9fdbc87b2e505a43d93a}} 
+\index{plotter.h@{plotter.h}!Change\_fontsize@{Change\_fontsize}}
+\index{Change\_fontsize@{Change\_fontsize}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Change\_fontsize()}{Change\_fontsize()}}
+{\footnotesize\ttfamily void Change\+\_\+fontsize (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{text\+Type,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Permet de modifier la police d\textquotesingle{}un des éléments de la figure (voir enum fonts\+Fig) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em text\+Type} & Type d\textquotesingle{}objet de figure à modifier \+: index de l\textquotesingle{}enum fonts\+Fig (labels, title, ...) \\
+\hline
+{\em size} & Taille de la police \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aaa1f8c829189c4ef620047697c3c9374}\label{plotter_8h_aaa1f8c829189c4ef620047697c3c9374}} 
+\index{plotter.h@{plotter.h}!Const\_str\_dudate1\_audate2@{Const\_str\_dudate1\_audate2}}
+\index{Const\_str\_dudate1\_audate2@{Const\_str\_dudate1\_audate2}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Const\_str\_dudate1\_audate2()}{Const\_str\_dudate1\_audate2()}}
+{\footnotesize\ttfamily void Const\+\_\+str\+\_\+dudate1\+\_\+audate2 (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{date1,  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{date2,  }\item[{char $\ast$}]{str\+\_\+out }\end{DoxyParamCaption})}
+
+
+
+Fonction permettant de construire une chaine de caractères \char`\"{}\+Du ... au ...\char`\"{} à partir de deux objets de type Date. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em date1} & Objet 1 de type Date \\
+\hline
+{\em date2} & Objet 2 de type Date \\
+\hline
+{\em str\+\_\+out} & Chaine de caractère du type \char`\"{}\+Du $<$\+Date1$>$ au $<$\+Date2$>$\char`\"{} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Fonction à déplacer dans \mbox{\hyperlink{traitement_8h}{traitement.\+h}} 
+\end{DoxyNote}
+\mbox{\Hypertarget{plotter_8h_a70adade95bd669f5fc005114accabc47}\label{plotter_8h_a70adade95bd669f5fc005114accabc47}} 
+\index{plotter.h@{plotter.h}!Deg2rad@{Deg2rad}}
+\index{Deg2rad@{Deg2rad}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Deg2rad()}{Deg2rad()}}
+{\footnotesize\ttfamily float Deg2rad (\begin{DoxyParamCaption}\item[{float}]{angle }\end{DoxyParamCaption})}
+
+
+
+Transforme les degrés en radians. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em angle} & Angle en degrés \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float Angle en radians 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_a7a3b60477b8b8e3fb36e42f57fd2e8d1}\label{plotter_8h_a7a3b60477b8b8e3fb36e42f57fd2e8d1}} 
+\index{plotter.h@{plotter.h}!fMaxval\_array@{fMaxval\_array}}
+\index{fMaxval\_array@{fMaxval\_array}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{fMaxval\_array()}{fMaxval\_array()}}
+{\footnotesize\ttfamily float f\+Maxval\+\_\+array (\begin{DoxyParamCaption}\item[{const float}]{x\+\_\+array\mbox{[}$\,$\mbox{]},  }\item[{size\+\_\+t}]{n }\end{DoxyParamCaption})}
+
+
+
+Renvoie le max d\textquotesingle{}un tableau de float. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+\_\+array} & Tableau de float \\
+\hline
+{\em n} & Taille du tableau de float \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float Valeur max dans le tableau 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_ab525d46e0188a74434f5fef42163a498}\label{plotter_8h_ab525d46e0188a74434f5fef42163a498}} 
+\index{plotter.h@{plotter.h}!GetCouleur@{GetCouleur}}
+\index{GetCouleur@{GetCouleur}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{GetCouleur()}{GetCouleur()}}
+{\footnotesize\ttfamily int Get\+Couleur (\begin{DoxyParamCaption}\item[{gd\+Image\+Ptr}]{im\+\_\+fig,  }\item[{const int}]{couleur\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Recupere la valeur de la couleur (int) associée à un vecteur d\textquotesingle{}entier rgb (0-\/255) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em im\+\_\+fig} & Pointeur vers un objet de type gd\+Image \\
+\hline
+{\em couleur} & Tableau de 3 entiers rgb (0-\/255) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Valeur entiere associée à la couleur dans im\+\_\+fig 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_a1bbe66f1a3b7f23b21bcb621b813cfee}\label{plotter_8h_a1bbe66f1a3b7f23b21bcb621b813cfee}} 
+\index{plotter.h@{plotter.h}!ImageLineEpaisseur@{ImageLineEpaisseur}}
+\index{ImageLineEpaisseur@{ImageLineEpaisseur}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{ImageLineEpaisseur()}{ImageLineEpaisseur()}}
+{\footnotesize\ttfamily void Image\+Line\+Epaisseur (\begin{DoxyParamCaption}\item[{gd\+Image\+Ptr}]{im\+\_\+fig,  }\item[{const int}]{x1,  }\item[{const int}]{y1,  }\item[{const int}]{x2,  }\item[{const int}]{y2,  }\item[{\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$}]{linestyle }\end{DoxyParamCaption})}
+
+
+
+Trace un segment de droite avec un Line\+Style donné d\textquotesingle{}un point 1 à un point 2. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em im\+\_\+fig} & Pointeur vers un objet de type gd\+Image \\
+\hline
+{\em x1} & Abcisse du point 1 \\
+\hline
+{\em y1} & Ordonnée du point 1 \\
+\hline
+{\em x2} & Abcisse du point 2 \\
+\hline
+{\em y2} & Ordonnée du point 2 \\
+\hline
+{\em linestyle} & Pointeur vers objet de type Line\+Style donnant le style du trait \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aa005d565b1933dc23c64d0c16e917691}\label{plotter_8h_aa005d565b1933dc23c64d0c16e917691}} 
+\index{plotter.h@{plotter.h}!Init\_bardata@{Init\_bardata}}
+\index{Init\_bardata@{Init\_bardata}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Init\_bardata()}{Init\_bardata()}}
+{\footnotesize\ttfamily void Init\+\_\+bardata (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$}]{bardata,  }\item[{int}]{nb\+\_\+ctg,  }\item[{char $\ast$}]{labels\+\_\+ctg\mbox{[}nb\+\_\+ctg\mbox{]},  }\item[{int}]{nb\+\_\+tot,  }\item[{int}]{nb\+\_\+in\+\_\+ctg\mbox{[}nb\+\_\+ctg\mbox{]},  }\item[{int}]{colors\mbox{[}nb\+\_\+ctg\mbox{]}\mbox{[}3\mbox{]},  }\item[{char $\ast$}]{label }\end{DoxyParamCaption})}
+
+
+
+Initialise un objet de type Bar\+Data, utilisé pour un Barplot multi-\/catégories. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bardata} & Pointeur vers un objet de type Bar\+Data \\
+\hline
+{\em nb\+\_\+ctg} & Nombre de catégories dans les données \\
+\hline
+{\em labels\+\_\+ctg} & Labels associés à chaque catégorie \\
+\hline
+{\em nb\+\_\+tot} & Nombre total d\textquotesingle{}éléments dans les data \\
+\hline
+{\em nb\+\_\+in\+\_\+ctg} & Nombre d\textquotesingle{}éléments par catégorie (tableau de taille nb\+\_\+ctg) \\
+\hline
+{\em colors} & Couleurs associées à chaque catégorie (tableau de taille nb\+\_\+ctg) \\
+\hline
+{\em label} & Label associé a l\textquotesingle{}object Bar\+Data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a05fe390a37092aa2a67f912cd113cb98}\label{plotter_8h_a05fe390a37092aa2a67f912cd113cb98}} 
+\index{plotter.h@{plotter.h}!Init\_figure@{Init\_figure}}
+\index{Init\_figure@{Init\_figure}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Init\_figure()}{Init\_figure()}}
+{\footnotesize\ttfamily void Init\+\_\+figure (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{figsize\mbox{[}2\mbox{]},  }\item[{int}]{padX\mbox{[}2\mbox{]},  }\item[{int}]{padY\mbox{[}2\mbox{]},  }\item[{int}]{margin\mbox{[}2\mbox{]},  }\item[{char}]{w\+Axes }\end{DoxyParamCaption})}
+
+
+
+Permet d\textquotesingle{}initialiser un objet de type Figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em figsize} & Vecteur de deux entiers contenant la taille de la figure en pixel selon X et Y (idx 0 et 1 resp.) \\
+\hline
+{\em padX} & Vecteur de deux entiers contenant la taille en pixel du padding a gauche et a droite de la figure (idx 0 et 1 resp.) \\
+\hline
+{\em padY} & Vecteur de deux entiers contenant la taille en pixel du padding en haut et en bas de la figure (idx 0 et 1 resp.) \\
+\hline
+{\em margin} & Vecteur de deux entiers contenant la taille en pixel de la marge aux extremites du canvas, i.\+e. de la zone de dessin \\
+\hline
+{\em w\+Axes} & Caractere \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{}. Spécifier si l\textquotesingle{}on veut afficher des axes autour de la figure ou pas. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a9b4a85d7848370d7831b3bcfa27fcbd1}\label{plotter_8h_a9b4a85d7848370d7831b3bcfa27fcbd1}} 
+\index{plotter.h@{plotter.h}!Init\_flinedata@{Init\_flinedata}}
+\index{Init\_flinedata@{Init\_flinedata}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Init\_flinedata()}{Init\_flinedata()}}
+{\footnotesize\ttfamily void Init\+\_\+flinedata (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$}]{flinedata,  }\item[{int}]{len\+\_\+data,  }\item[{int}]{ptx\mbox{[}$\,$\mbox{]},  }\item[{float}]{pty\mbox{[}$\,$\mbox{]},  }\item[{char $\ast$}]{label,  }\item[{\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$}]{linestyle }\end{DoxyParamCaption})}
+
+
+
+Initialise un objet de type f\+Line\+Data, utilisé pour un lineplot de données de type float en Y. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flinedata} & Pointeur vers un objet de type f\+Line\+Data \\
+\hline
+{\em len\+\_\+data} & Nombre d\textquotesingle{}éléments (X,Y) dans les données \\
+\hline
+{\em ptx} & Vecteur des X \\
+\hline
+{\em pty} & Vecteur des Y \\
+\hline
+{\em label} & Label associé au f\+Line\+Data, retrouvé dans la légende \\
+\hline
+{\em linestyle} & Objet de type Line\+Style associé au Line\+Data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_ae2febf0a9b10c2f6aceb25ef51e81243}\label{plotter_8h_ae2febf0a9b10c2f6aceb25ef51e81243}} 
+\index{plotter.h@{plotter.h}!Init\_linedata@{Init\_linedata}}
+\index{Init\_linedata@{Init\_linedata}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Init\_linedata()}{Init\_linedata()}}
+{\footnotesize\ttfamily void Init\+\_\+linedata (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$}]{linedata,  }\item[{int}]{len\+\_\+data,  }\item[{int}]{ptx\mbox{[}$\,$\mbox{]},  }\item[{int}]{pty\mbox{[}$\,$\mbox{]},  }\item[{char $\ast$}]{label,  }\item[{\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$}]{linestyle }\end{DoxyParamCaption})}
+
+
+
+Initialise un objet de type Line\+Data, utilisé pour un lineplot de données entières. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em linedata} & Pointeur vers un objet de type Line\+Data \\
+\hline
+{\em len\+\_\+data} & Nombre d\textquotesingle{}éléments (X,Y) dans les données \\
+\hline
+{\em ptx} & Vecteur des X \\
+\hline
+{\em pty} & Vecteur des Y \\
+\hline
+{\em label} & Label associé au Line\+Data, retrouvé dans la légende \\
+\hline
+{\em linestyle} & Objet de type Line\+Style associé au Line\+Data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_ae543ba5e58c2d43c099f567380201d43}\label{plotter_8h_ae543ba5e58c2d43c099f567380201d43}} 
+\index{plotter.h@{plotter.h}!Init\_linestyle@{Init\_linestyle}}
+\index{Init\_linestyle@{Init\_linestyle}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Init\_linestyle()}{Init\_linestyle()}}
+{\footnotesize\ttfamily void Init\+\_\+linestyle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$}]{linestyle,  }\item[{char}]{style,  }\item[{const int}]{color\mbox{[}3\mbox{]},  }\item[{int}]{width,  }\item[{char}]{marker,  }\item[{int}]{ms }\end{DoxyParamCaption})}
+
+
+
+Initialise un object de type Line\+Style. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em linestyle} & Pointeur vers objet de type Line\+Style \\
+\hline
+{\em style} & Type de trait \+: \textquotesingle{}-\/\textquotesingle{} pour trait plein, \textquotesingle{}\+:\textquotesingle{} pour pointillés, \textquotesingle{} \textquotesingle{} pour pas de trait \\
+\hline
+{\em color} & Couleur du style\+: vecteur de 3 entiers (0-\/255) \\
+\hline
+{\em width} & Epaisseur dans le cas d\textquotesingle{}un trait \\
+\hline
+{\em marker} & Type de marker \+: \textquotesingle{}o\textquotesingle{} pour des points circulaires \\
+\hline
+{\em ms} & Taille du marker \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Seul le type de marker \textquotesingle{}o\textquotesingle{} est disponible pour le moment 
+\end{DoxyNote}
+\mbox{\Hypertarget{plotter_8h_ae415524b2cc70abe0a23f1faf61166e7}\label{plotter_8h_ae415524b2cc70abe0a23f1faf61166e7}} 
+\index{plotter.h@{plotter.h}!Make\_annotation@{Make\_annotation}}
+\index{Make\_annotation@{Make\_annotation}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_annotation()}{Make\_annotation()}}
+{\footnotesize\ttfamily void Make\+\_\+annotation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char $\ast$}]{text,  }\item[{int}]{decalage\+\_\+X,  }\item[{int}]{decalage\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Ajoute une annotation sur la figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em text} & Texte de l\textquotesingle{}annotation \\
+\hline
+{\em decalage\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decalage\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a014866d1e194e215a5f25310fc2739a2}\label{plotter_8h_a014866d1e194e215a5f25310fc2739a2}} 
+\index{plotter.h@{plotter.h}!Make\_background@{Make\_background}}
+\index{Make\_background@{Make\_background}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_background()}{Make\_background()}}
+{\footnotesize\ttfamily void Make\+\_\+background (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{const int}]{color\+\_\+bg\mbox{[}3\mbox{]},  }\item[{const int}]{color\+\_\+canvas\+\_\+bg\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Crée le fond et le canvas (zone de dessin) de la figure. Utilisé dans Init\+\_\+figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em color\+\_\+bg} & Couleur du fond de la figure \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+{\em color\+\_\+canvas\+\_\+bg} & Couleur du fond du canvas (zone de dessin) \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_abcdb78055ea573bc3f6a68a897bff942}\label{plotter_8h_abcdb78055ea573bc3f6a68a897bff942}} 
+\index{plotter.h@{plotter.h}!Make\_dateticks\_vect@{Make\_dateticks\_vect}}
+\index{Make\_dateticks\_vect@{Make\_dateticks\_vect}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_dateticks\_vect()}{Make\_dateticks\_vect()}}
+{\footnotesize\ttfamily void Make\+\_\+dateticks\+\_\+vect (\begin{DoxyParamCaption}\item[{int}]{nb\+\_\+rows,  }\item[{\mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}}}]{vect\+\_\+dateticks\mbox{[}nb\+\_\+rows\mbox{]},  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}}}]{tableau\+\_\+date\+\_\+recolte\+\_\+fav\mbox{[}nb\+\_\+rows\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Crée un vecteur de Datetick à partir du tableau des Date. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nb\+\_\+rows} & Nombre de date dans le tableau des Date \\
+\hline
+{\em vect\+\_\+dateticks} & Vecteur des Date\+Tick rempli à partir de tableau\+\_\+date\+\_\+recolte\+\_\+fav \\
+\hline
+{\em tableau\+\_\+date\+\_\+recolte\+\_\+fav} & Vecteur de Date \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a67f6d97c11f33475a02303eb9a4396da}\label{plotter_8h_a67f6d97c11f33475a02303eb9a4396da}} 
+\index{plotter.h@{plotter.h}!Make\_fyticks\_ygrid@{Make\_fyticks\_ygrid}}
+\index{Make\_fyticks\_ygrid@{Make\_fyticks\_ygrid}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_fyticks\_ygrid()}{Make\_fyticks\_ygrid()}}
+{\footnotesize\ttfamily void Make\+\_\+fyticks\+\_\+ygrid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char}]{w\+Ticks }\end{DoxyParamCaption})}
+
+
+
+Crée les ticks pour l\textquotesingle{}axe Y dans le cas d\textquotesingle{}un tracé de f\+Line\+Data (récup du max flottant) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em w\+Ticks} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{}. Affiche ou non les ticks (seuls les labels affichés). \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aefd36608ede2951b5cc231390a3897aa}\label{plotter_8h_aefd36608ede2951b5cc231390a3897aa}} 
+\index{plotter.h@{plotter.h}!Make\_legend@{Make\_legend}}
+\index{Make\_legend@{Make\_legend}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_legend()}{Make\_legend()}}
+{\footnotesize\ttfamily void Make\+\_\+legend (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{decal\+\_\+X,  }\item[{int}]{decal\+\_\+Y,  }\item[{int}]{ecart }\end{DoxyParamCaption})}
+
+
+
+Crée la légende pour un plot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type figure \\
+\hline
+{\em decal\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decal\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+{\em ecart} & Ecart vertical entre les éléments de la légende \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Limité à 8 éléments pour le moment. 
+\end{DoxyNote}
+\mbox{\Hypertarget{plotter_8h_a444ced0f3b857673d7648da57d96adc8}\label{plotter_8h_a444ced0f3b857673d7648da57d96adc8}} 
+\index{plotter.h@{plotter.h}!Make\_legend\_barplot@{Make\_legend\_barplot}}
+\index{Make\_legend\_barplot@{Make\_legend\_barplot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_legend\_barplot()}{Make\_legend\_barplot()}}
+{\footnotesize\ttfamily void Make\+\_\+legend\+\_\+barplot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{decal\+\_\+X,  }\item[{int}]{decal\+\_\+Y,  }\item[{int}]{ecart }\end{DoxyParamCaption})}
+
+
+
+Crée la légende pour un barplot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type figure \\
+\hline
+{\em decal\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decal\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+{\em ecart} & Ecart vertical entre les éléments de la légende \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Limité à 4 catégories pour le moment. Servi dans le cas de Belib. 
+\end{DoxyNote}
+\mbox{\Hypertarget{plotter_8h_af27dc274f8d00083ff26a2482e496767}\label{plotter_8h_af27dc274f8d00083ff26a2482e496767}} 
+\index{plotter.h@{plotter.h}!Make\_subtitle@{Make\_subtitle}}
+\index{Make\_subtitle@{Make\_subtitle}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_subtitle()}{Make\_subtitle()}}
+{\footnotesize\ttfamily void Make\+\_\+subtitle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char $\ast$}]{subtitle,  }\item[{int}]{bbox\+\_\+title\mbox{[}8\mbox{]},  }\item[{int}]{decalage\+\_\+X,  }\item[{int}]{decalage\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Ajoute un titre à la figure, sous l\textquotesingle{}axe des abcisses par défaut. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em subtitle} & Texte du sous-\/titre \\
+\hline
+{\em bbox\+\_\+title} & Vecteur de 8 entiers correspondant a la bbox du titre. Paires de coordonnées x,y des points so,se,ne,no de la bbox du titre. \\
+\hline
+{\em decalage\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decalage\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a4d7a613f145c5cfb62e99c48d6019521}\label{plotter_8h_a4d7a613f145c5cfb62e99c48d6019521}} 
+\index{plotter.h@{plotter.h}!Make\_support\_axes@{Make\_support\_axes}}
+\index{Make\_support\_axes@{Make\_support\_axes}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_support\_axes()}{Make\_support\_axes()}}
+{\footnotesize\ttfamily void Make\+\_\+support\+\_\+axes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{const int}]{couleur\mbox{[}3\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Crée le support des axes de la figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em couleur} & Couleur des axes de la figure \+: vecteur de 3 entiers (0-\/255) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_ae88907fb3a3ee4db93233fda26f4c0f1}\label{plotter_8h_ae88907fb3a3ee4db93233fda26f4c0f1}} 
+\index{plotter.h@{plotter.h}!Make\_title@{Make\_title}}
+\index{Make\_title@{Make\_title}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_title()}{Make\_title()}}
+{\footnotesize\ttfamily int$\ast$ Make\+\_\+title (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char $\ast$}]{title,  }\item[{int}]{decalage\+\_\+X,  }\item[{int}]{decalage\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Ajoute un titre à la figure, sous l\textquotesingle{}axe des abcisses par défaut. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em title} & Texte du titre \\
+\hline
+{\em decalage\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decalage\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int$\ast$ Vecteur de 8 entiers correspondant aux paires de coordonnées x,y des points so,se,ne,no 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_ab2992722ecf6169e4ee6ed0ef2264a81}\label{plotter_8h_ab2992722ecf6169e4ee6ed0ef2264a81}} 
+\index{plotter.h@{plotter.h}!Make\_xlabel@{Make\_xlabel}}
+\index{Make\_xlabel@{Make\_xlabel}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_xlabel()}{Make\_xlabel()}}
+{\footnotesize\ttfamily void Make\+\_\+xlabel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char $\ast$}]{xlabel,  }\item[{int}]{decalage\+\_\+X,  }\item[{int}]{decalage\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Ajoute un label à l\textquotesingle{}axe des abcisses. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type figure \\
+\hline
+{\em xlabel} & Texte du label X \\
+\hline
+{\em decalage\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decalage\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a9d10e00a963d02296fc179f27ceefdc2}\label{plotter_8h_a9d10e00a963d02296fc179f27ceefdc2}} 
+\index{plotter.h@{plotter.h}!Make\_xticks\_barplot@{Make\_xticks\_barplot}}
+\index{Make\_xticks\_barplot@{Make\_xticks\_barplot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_xticks\_barplot()}{Make\_xticks\_barplot()}}
+{\footnotesize\ttfamily void Make\+\_\+xticks\+\_\+barplot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{float}]{angle\+\_\+labels }\end{DoxyParamCaption})}
+
+
+
+Crée les ticks et les labels associés pour un barplot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type figure \\
+\hline
+{\em angle\+\_\+labels} & Inclinaison des labels sous l\textquotesingle{}axe des X \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a113042895ccd3acb08e0d3a1cb29d92e}\label{plotter_8h_a113042895ccd3acb08e0d3a1cb29d92e}} 
+\index{plotter.h@{plotter.h}!Make\_xticks\_xgrid\_time@{Make\_xticks\_xgrid\_time}}
+\index{Make\_xticks\_xgrid\_time@{Make\_xticks\_xgrid\_time}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_xticks\_xgrid\_time()}{Make\_xticks\_xgrid\_time()}}
+{\footnotesize\ttfamily void Make\+\_\+xticks\+\_\+xgrid\+\_\+time (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}}}]{date\+\_\+init }\end{DoxyParamCaption})}
+
+
+
+Crée les ticks pour l\textquotesingle{}axe des X dans le cas d\textquotesingle{}un axe X représentant des Date. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type figure \\
+\hline
+{\em date\+\_\+init} & Objet de type Date correspondant à l\textquotesingle{}origine des temps \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_ad4f15f431282ed66684b8bb16f0acc11}\label{plotter_8h_ad4f15f431282ed66684b8bb16f0acc11}} 
+\index{plotter.h@{plotter.h}!Make\_xticks\_xgrid\_time\_avgH@{Make\_xticks\_xgrid\_time\_avgH}}
+\index{Make\_xticks\_xgrid\_time\_avgH@{Make\_xticks\_xgrid\_time\_avgH}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_xticks\_xgrid\_time\_avgH()}{Make\_xticks\_xgrid\_time\_avgH()}}
+{\footnotesize\ttfamily void Make\+\_\+xticks\+\_\+xgrid\+\_\+time\+\_\+avgH (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{int}]{nb\+\_\+ticks,  }\item[{int}]{tableau\+\_\+avg\+\_\+hours\mbox{[}nb\+\_\+ticks\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Fonction spécifique au projet Belib. Crée les ticks et labels pour la courbe \char`\"{}moyenne horaire\char`\"{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type figure \\
+\hline
+{\em nb\+\_\+ticks} & Taille de tableau\+\_\+avg\+\_\+hours \\
+\hline
+{\em tableau\+\_\+avg\+\_\+hours} & Tableau des horaires sélectionnés \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a588bf8c9a31dafa561875560b4f4c97e}\label{plotter_8h_a588bf8c9a31dafa561875560b4f4c97e}} 
+\index{plotter.h@{plotter.h}!Make\_ylabel@{Make\_ylabel}}
+\index{Make\_ylabel@{Make\_ylabel}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_ylabel()}{Make\_ylabel()}}
+{\footnotesize\ttfamily void Make\+\_\+ylabel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char $\ast$}]{ylabel,  }\item[{int}]{decalage\+\_\+X,  }\item[{int}]{decalage\+\_\+Y }\end{DoxyParamCaption})}
+
+
+
+Ajoute un label à l\textquotesingle{}axe des ordonnées. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type figure \\
+\hline
+{\em ylabel} & Texte du label Y \\
+\hline
+{\em decalage\+\_\+X} & Decalage selon X en pixel (vers la droite) \\
+\hline
+{\em decalage\+\_\+Y} & Decalage selon Y en pixel (vers le haut) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_ad92a8f516635bc52ad57794d6aa1686b}\label{plotter_8h_ad92a8f516635bc52ad57794d6aa1686b}} 
+\index{plotter.h@{plotter.h}!Make\_yticks\_ygrid@{Make\_yticks\_ygrid}}
+\index{Make\_yticks\_ygrid@{Make\_yticks\_ygrid}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Make\_yticks\_ygrid()}{Make\_yticks\_ygrid()}}
+{\footnotesize\ttfamily void Make\+\_\+yticks\+\_\+ygrid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{char}]{w\+Ticks }\end{DoxyParamCaption})}
+
+
+
+Crée les ticks pour l\textquotesingle{}axe Y dans le cas d\textquotesingle{}un tracé de Line\+Data (récup du max entier) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em w\+Ticks} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{}. Affiche ou non les ticks (seuls les labels affichés). \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a4b21ed5c58f3410f5a0aa96e54974f34}\label{plotter_8h_a4b21ed5c58f3410f5a0aa96e54974f34}} 
+\index{plotter.h@{plotter.h}!Max\_float@{Max\_float}}
+\index{Max\_float@{Max\_float}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Max\_float()}{Max\_float()}}
+{\footnotesize\ttfamily float Max\+\_\+float (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y }\end{DoxyParamCaption})}
+
+
+
+Renvoie le max entre 2 float. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Float 1 \\
+\hline
+{\em y} & Float 2 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float Max des deux float 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_adbddcff821e50bc27ec4d0b3c04477ea}\label{plotter_8h_adbddcff821e50bc27ec4d0b3c04477ea}} 
+\index{plotter.h@{plotter.h}!Max\_int@{Max\_int}}
+\index{Max\_int@{Max\_int}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Max\_int()}{Max\_int()}}
+{\footnotesize\ttfamily int Max\+\_\+int (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Renvoie le max entre 2 entiers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Entier 1 \\
+\hline
+{\em y} & Entier 2 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Max des deux entiers 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_a0f4ac28150cd336ed674a257a60b4570}\label{plotter_8h_a0f4ac28150cd336ed674a257a60b4570}} 
+\index{plotter.h@{plotter.h}!Maxval\_array@{Maxval\_array}}
+\index{Maxval\_array@{Maxval\_array}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Maxval\_array()}{Maxval\_array()}}
+{\footnotesize\ttfamily int Maxval\+\_\+array (\begin{DoxyParamCaption}\item[{const int}]{x\+\_\+array\mbox{[}$\,$\mbox{]},  }\item[{size\+\_\+t}]{n }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+\_\+array} & Tableau d\textquotesingle{}entiers \\
+\hline
+{\em n} & Taille du tableau d\textquotesingle{}entiers \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Valeur max dans le tableau 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_ab8db4a23a7bbd52697367960accb47e8}\label{plotter_8h_ab8db4a23a7bbd52697367960accb47e8}} 
+\index{plotter.h@{plotter.h}!Min\_int@{Min\_int}}
+\index{Min\_int@{Min\_int}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Min\_int()}{Min\_int()}}
+{\footnotesize\ttfamily int Min\+\_\+int (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Renvoie le min entre 2 entiers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Entier 1 \\
+\hline
+{\em y} & Entier 2 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Min des deux entiers 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_ae1fc7f3c2f1b103692d4d24dd0dabfab}\label{plotter_8h_ae1fc7f3c2f1b103692d4d24dd0dabfab}} 
+\index{plotter.h@{plotter.h}!Minval\_array@{Minval\_array}}
+\index{Minval\_array@{Minval\_array}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Minval\_array()}{Minval\_array()}}
+{\footnotesize\ttfamily int Minval\+\_\+array (\begin{DoxyParamCaption}\item[{const int}]{x\+\_\+array\mbox{[}$\,$\mbox{]},  }\item[{size\+\_\+t}]{n }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+\_\+array} & Tableau d\textquotesingle{}entiers \\
+\hline
+{\em n} & Taille du tableau d\textquotesingle{}entiers \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Valeur min dans le tableau 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_a519b329c595f3b1c26b167d2b223b39b}\label{plotter_8h_a519b329c595f3b1c26b167d2b223b39b}} 
+\index{plotter.h@{plotter.h}!PlotBarplot@{PlotBarplot}}
+\index{PlotBarplot@{PlotBarplot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{PlotBarplot()}{PlotBarplot()}}
+{\footnotesize\ttfamily void Plot\+Barplot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$}]{bardata,  }\item[{char}]{wlabels }\end{DoxyParamCaption})}
+
+
+
+Trace le contenu d\textquotesingle{}un Bar\+Data dans la zone de dessin d\textquotesingle{}une figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em bardata} & Objet de type Bar\+Data \\
+\hline
+{\em wlabels} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{} pour afficher ou non le nombre d\textquotesingle{}éléments dans chaque catégorie a coté du plot \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a346f3d57d4db5d53718dbc5685a25017}\label{plotter_8h_a346f3d57d4db5d53718dbc5685a25017}} 
+\index{plotter.h@{plotter.h}!PlotFLine@{PlotFLine}}
+\index{PlotFLine@{PlotFLine}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{PlotFLine()}{PlotFLine()}}
+{\footnotesize\ttfamily void Plot\+FLine (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$}]{flinedata }\end{DoxyParamCaption})}
+
+
+
+Trace le contenu d\textquotesingle{}un f\+Line\+Data dans la zone de dessin d\textquotesingle{}une figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em flinedata} & Objet de type f\+Line\+Data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aec02d77ad77d2f1e9a69d5224e1546ac}\label{plotter_8h_aec02d77ad77d2f1e9a69d5224e1546ac}} 
+\index{plotter.h@{plotter.h}!PlotLine@{PlotLine}}
+\index{PlotLine@{PlotLine}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{PlotLine()}{PlotLine()}}
+{\footnotesize\ttfamily void Plot\+Line (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$}]{linedata }\end{DoxyParamCaption})}
+
+
+
+Trace le contenu d\textquotesingle{}un Line\+Data dans la zone de dessin d\textquotesingle{}une figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em linedata} & Objet de type Line\+Data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a2fa1a671e72cbf0ad40095c0becd1095}\label{plotter_8h_a2fa1a671e72cbf0ad40095c0becd1095}} 
+\index{plotter.h@{plotter.h}!PlotPoint@{PlotPoint}}
+\index{PlotPoint@{PlotPoint}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{PlotPoint()}{PlotPoint()}}
+{\footnotesize\ttfamily void Plot\+Point (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{const int}]{x1,  }\item[{const int}]{y1,  }\item[{\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$}]{linestyle }\end{DoxyParamCaption})}
+
+
+
+Affiche un point dans la zone de dessin d\textquotesingle{}une figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em x1} & Abcisse du point \\
+\hline
+{\em y1} & Ordonnée du point \\
+\hline
+{\em linestyle} & Objet de type Line\+Style (type de point) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aedc5740cb1c0bdc10d546e7238331e89}\label{plotter_8h_aedc5740cb1c0bdc10d546e7238331e89}} 
+\index{plotter.h@{plotter.h}!Print\_debug\_bd@{Print\_debug\_bd}}
+\index{Print\_debug\_bd@{Print\_debug\_bd}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_bd()}{Print\_debug\_bd()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+bd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_aa6674ede051ca4865bd0c8a575a42735}{Bar\+Data}} $\ast$}]{bardata,  }\item[{char}]{w\+\_\+cat }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug affichant des informations sur un objet de type Bardata. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bardata} & Pointeur vers objet de type Bar\+Data \\
+\hline
+{\em w\+\_\+cat} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{}. Affiche les données contenues dans le Bar\+Data. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aa193f47f2e1d2780f38cc188a77f34b2}\label{plotter_8h_aa193f47f2e1d2780f38cc188a77f34b2}} 
+\index{plotter.h@{plotter.h}!Print\_debug\_fig@{Print\_debug\_fig}}
+\index{Print\_debug\_fig@{Print\_debug\_fig}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_fig()}{Print\_debug\_fig()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+fig (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug affichant des informations sur un objet de type Figure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aeccf5d6e43bd4a9d20ee079dc41ebcb2}\label{plotter_8h_aeccf5d6e43bd4a9d20ee079dc41ebcb2}} 
+\index{plotter.h@{plotter.h}!Print\_debug\_fld@{Print\_debug\_fld}}
+\index{Print\_debug\_fld@{Print\_debug\_fld}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_fld()}{Print\_debug\_fld()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+fld (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_a72f7c84cfc90bf78726138991b19ebdc}{f\+Line\+Data}} $\ast$}]{flinedata,  }\item[{char}]{w\+\_\+xy }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug affichant des informations sur un objet de type f\+Line\+Data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flinedata} & Pointeur vers objet de type f\+Line\+Data \\
+\hline
+{\em w\+\_\+xy} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{}. Affiche les données des vecteurs X et Y. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a7afc4cbaed48b4cbf644d897dafe1678}\label{plotter_8h_a7afc4cbaed48b4cbf644d897dafe1678}} 
+\index{plotter.h@{plotter.h}!Print\_debug\_ld@{Print\_debug\_ld}}
+\index{Print\_debug\_ld@{Print\_debug\_ld}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_ld()}{Print\_debug\_ld()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+ld (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_a4330fc0626d31d64819a1682ac298c34}{Line\+Data}} $\ast$}]{linedata,  }\item[{char}]{w\+\_\+xy }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug affichant des informations sur un objet de type Line\+Data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em linedata} & Pointeur vers objet de type Line\+Data \\
+\hline
+{\em w\+\_\+xy} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{}. Affiche les données des vecteurs X et Y. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a014606c357b7ae008b94026f8063e16d}\label{plotter_8h_a014606c357b7ae008b94026f8063e16d}} 
+\index{plotter.h@{plotter.h}!Print\_debug\_ls@{Print\_debug\_ls}}
+\index{Print\_debug\_ls@{Print\_debug\_ls}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_ls()}{Print\_debug\_ls()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+ls (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_a0449d4953ce761131b82e57dfef1f813}{Line\+Style}} $\ast$}]{linestyle }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug affichant des informations sur un objet de type Line\+Style. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em linestyle} & Pointeur vers objet de type Line\+Style \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a0cb67e26856e09109f67e28490d69a2f}\label{plotter_8h_a0cb67e26856e09109f67e28490d69a2f}} 
+\index{plotter.h@{plotter.h}!Save\_to\_png@{Save\_to\_png}}
+\index{Save\_to\_png@{Save\_to\_png}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Save\_to\_png()}{Save\_to\_png()}}
+{\footnotesize\ttfamily void Save\+\_\+to\+\_\+png (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{const char $\ast$}]{dir\+\_\+figures,  }\item[{const char $\ast$}]{filename\+\_\+fig }\end{DoxyParamCaption})}
+
+
+
+Sauvegarde une figure au format png. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em dir\+\_\+figures} & Dossier de sauvegarde des figures (output) \\
+\hline
+{\em filename\+\_\+fig} & Nom du fichier image à sauvegarder \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_aeda7c9555e92b01b76937dc26c7e6387}\label{plotter_8h_aeda7c9555e92b01b76937dc26c7e6387}} 
+\index{plotter.h@{plotter.h}!Transform\_data\_to\_plot@{Transform\_data\_to\_plot}}
+\index{Transform\_data\_to\_plot@{Transform\_data\_to\_plot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Transform\_data\_to\_plot()}{Transform\_data\_to\_plot()}}
+{\footnotesize\ttfamily int$\ast$ Transform\+\_\+data\+\_\+to\+\_\+plot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{size\+\_\+t}]{len\+\_\+pts,  }\item[{const int}]{pts\mbox{[}$\,$\mbox{]},  }\item[{char}]{direction }\end{DoxyParamCaption})}
+
+
+
+Fonction interne appelant Transform\+\_\+data\+X\+\_\+to\+\_\+plot ou Transform\+\_\+data\+Y\+\_\+to\+\_\+plot en fonction de la direction spécifiée. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em len\+\_\+pts} & Taille du vecteur X ou Y \\
+\hline
+{\em pts} & Vecteur d\textquotesingle{}entier X ou Y en input \\
+\hline
+{\em direction} & Caractere \textquotesingle{}x\textquotesingle{} ou \textquotesingle{}y\textquotesingle{} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int$\ast$ Tableau d\textquotesingle{}entier dans le réferentiel de la zone de dessin (en pixel) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_a30314d2c4245d3e075b22bee54911310}\label{plotter_8h_a30314d2c4245d3e075b22bee54911310}} 
+\index{plotter.h@{plotter.h}!Transform\_data\_to\_plot\_bar@{Transform\_data\_to\_plot\_bar}}
+\index{Transform\_data\_to\_plot\_bar@{Transform\_data\_to\_plot\_bar}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Transform\_data\_to\_plot\_bar()}{Transform\_data\_to\_plot\_bar()}}
+{\footnotesize\ttfamily int$\ast$ Transform\+\_\+data\+\_\+to\+\_\+plot\+\_\+bar (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{size\+\_\+t}]{nb\+\_\+ctg,  }\item[{const int}]{pts\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée d\textquotesingle{}un Bar\+Data pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin. Cas d\textquotesingle{}un Bar\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers un objet de type Figure \\
+\hline
+{\em nb\+\_\+ctg} & Nombre de catégorie dans le Bardata \\
+\hline
+{\em pts} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int$\ast$ 
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+Malloc fait, desallocation en interne 
+\end{DoxyWarning}
+\begin{DoxyNote}{Note}
+nb\+\_\+ctg peut normalement etre recupéré à partir de fig-\/$>$Bar\+Data 
+\end{DoxyNote}
+\mbox{\Hypertarget{plotter_8h_a18f1b5e03260ca41a3806ba23a310915}\label{plotter_8h_a18f1b5e03260ca41a3806ba23a310915}} 
+\index{plotter.h@{plotter.h}!Transform\_dataX\_to\_plot@{Transform\_dataX\_to\_plot}}
+\index{Transform\_dataX\_to\_plot@{Transform\_dataX\_to\_plot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Transform\_dataX\_to\_plot()}{Transform\_dataX\_to\_plot()}}
+{\footnotesize\ttfamily void Transform\+\_\+data\+X\+\_\+to\+\_\+plot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{size\+\_\+t}]{len\+\_\+pts,  }\item[{const int}]{pts\mbox{[}$\,$\mbox{]},  }\item[{int $\ast$}]{pts\+\_\+dessin }\end{DoxyParamCaption})}
+
+
+
+Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon X (int) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin Cas d\textquotesingle{}un Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em len\+\_\+pts} & Taille du vecteur X \\
+\hline
+{\em pts} & Vecteur d\textquotesingle{}entier X \\
+\hline
+{\em pts\+\_\+dessin} & Pointeur vers un tableau d\textquotesingle{}entier dans le réferentiel de la zone de dessin (en pixel) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_ad7e5fe7a15588a89c08de4479d3b18fe}\label{plotter_8h_ad7e5fe7a15588a89c08de4479d3b18fe}} 
+\index{plotter.h@{plotter.h}!Transform\_dataY\_to\_plot@{Transform\_dataY\_to\_plot}}
+\index{Transform\_dataY\_to\_plot@{Transform\_dataY\_to\_plot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Transform\_dataY\_to\_plot()}{Transform\_dataY\_to\_plot()}}
+{\footnotesize\ttfamily void Transform\+\_\+data\+Y\+\_\+to\+\_\+plot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{size\+\_\+t}]{len\+\_\+pts,  }\item[{const int}]{pts\mbox{[}$\,$\mbox{]},  }\item[{int $\ast$}]{pts\+\_\+dessin }\end{DoxyParamCaption})}
+
+
+
+Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon Y (int) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin Cas d\textquotesingle{}un Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em len\+\_\+pts} & Taille du vecteur Y \\
+\hline
+{\em pts} & Vecteur d\textquotesingle{}entier Y \\
+\hline
+{\em pts\+\_\+dessin} & Pointeur vers un tableau d\textquotesingle{}entier dans le réferentiel de la zone de dessin (en pixel) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{plotter_8h_a71e56b46d46759c040a1654e848ddfd6}\label{plotter_8h_a71e56b46d46759c040a1654e848ddfd6}} 
+\index{plotter.h@{plotter.h}!Transform\_fdataX\_to\_plot@{Transform\_fdataX\_to\_plot}}
+\index{Transform\_fdataX\_to\_plot@{Transform\_fdataX\_to\_plot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Transform\_fdataX\_to\_plot()}{Transform\_fdataX\_to\_plot()}}
+{\footnotesize\ttfamily int$\ast$ Transform\+\_\+fdata\+X\+\_\+to\+\_\+plot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{size\+\_\+t}]{len\+\_\+pts,  }\item[{const int}]{pts\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon X (int) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin Cas d\textquotesingle{}un f\+Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em len\+\_\+pts} & Taille du vecteur X \\
+\hline
+{\em pts} & Vecteur d\textquotesingle{}entier X \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int$\ast$ Vecteur d\textquotesingle{}entier X dans le référentiel de la zone de dessin (en pixel) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{plotter_8h_a725c9b104c3465cd90f3db388baf495a}\label{plotter_8h_a725c9b104c3465cd90f3db388baf495a}} 
+\index{plotter.h@{plotter.h}!Transform\_fdataY\_to\_plot@{Transform\_fdataY\_to\_plot}}
+\index{Transform\_fdataY\_to\_plot@{Transform\_fdataY\_to\_plot}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{Transform\_fdataY\_to\_plot()}{Transform\_fdataY\_to\_plot()}}
+{\footnotesize\ttfamily int$\ast$ Transform\+\_\+fdata\+Y\+\_\+to\+\_\+plot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{plotter_8h_ac2045f881e839525135b0644a4314117}{Figure}} $\ast$}]{fig,  }\item[{size\+\_\+t}]{len\+\_\+pts,  }\item[{const float}]{pts\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Fonction interne permettant de changer le référentiel des données d\textquotesingle{}entrée selon Y (float) pour qu\textquotesingle{}il s\textquotesingle{}adapte à la zone de dessin. Cas d\textquotesingle{}un f\+Line\+Data. Renvoie un vecteur d\textquotesingle{}entier (pixels). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fig} & Pointeur vers objet de type Figure \\
+\hline
+{\em len\+\_\+pts} & Taille du vecteur Y \\
+\hline
+{\em pts} & Vecteur de float Y \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int$\ast$ Vecteur d\textquotesingle{}entier Y dans le référentiel de la zone de dessin 
+\end{DoxyReturn}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{plotter_8h_a6f0f4201318fcbafeff0751a325f84d8}\label{plotter_8h_a6f0f4201318fcbafeff0751a325f84d8}} 
+\index{plotter.h@{plotter.h}!vect\_dateticks@{vect\_dateticks}}
+\index{vect\_dateticks@{vect\_dateticks}!plotter.h@{plotter.h}}
+\doxysubsubsection{\texorpdfstring{vect\_dateticks}{vect\_dateticks}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} vect\+\_\+dateticks\mbox{[}nb\+\_\+rows\mbox{]}}
+

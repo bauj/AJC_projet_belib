@@ -1,0 +1,508 @@
+\hypertarget{getter_8h}{}\doxysection{/home/ajc/\+Projet\+\_\+\+AJC/\+AJC\+\_\+projet\+\_\+belib/plotting\+\_\+data/src/libs/getter.h File Reference}
+\label{getter_8h}\index{/home/ajc/Projet\_AJC/AJC\_projet\_belib/plotting\_data/src/libs/getter.h@{/home/ajc/Projet\_AJC/AJC\_projet\_belib/plotting\_data/src/libs/getter.h}}
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$sqlite3.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}traitement.\+h\char`\"{}}\newline
+Include dependency graph for getter.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{getter_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{getter_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9c}{statuts}} \{ \mbox{\hyperlink{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca3395dd10d4be1a0444111dc807f36f2f}{disponible}}
+, \mbox{\hyperlink{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca85684869813e7f5237b4805647d7dcc7}{occupe}}
+, \mbox{\hyperlink{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca7b3f2a0165ab64439f1164b4e4b6d71a}{en\+\_\+maintenance}}
+, \mbox{\hyperlink{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9caedd271ed9a689455b65c350764cc38dc}{inconnu}}
+ \}
+\begin{DoxyCompactList}\small\item\em Enumeration contenant les statuts récupérés de la db belib. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{getter_8h_a201d83da29d17c9d0bec28c987763d39}{free\+\_\+tab\+\_\+char1}} (char $\ast$$\ast$tableau\+\_\+str, int len\+\_\+tab)
+\begin{DoxyCompactList}\small\item\em Liberation de la memoire allouée pour un tableau de strings de dimension 1. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_ad8752cc93ff6d9503143444e36826895}{Sqlite\+\_\+open\+\_\+check}} (char $\ast$bdd\+\_\+filename, sqlite3 $\ast$$\ast$db\+\_\+belib)
+\begin{DoxyCompactList}\small\item\em Fonction ouvrant la bdd et vérifiant si tout se passe bien à l\textquotesingle{}ouverture (notamment l\textquotesingle{}existence du fichier) \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{getter_8h_a60725f79f3f325023cf118c2cd8f5a9b}{Get\+\_\+nb\+\_\+rows\+\_\+par\+\_\+station}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$table)
+\begin{DoxyCompactList}\small\item\em Recupere le nombre de lignes de données par station. Cette fonction compte le nombre de date\+\_\+recolte distinctes. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a7fb07b8d97ef36806c59c3b6fd5e4888}{Get\+\_\+adresses}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$table, char $\ast$$\ast$tableau\+\_\+adresses, int nb\+\_\+stations)
+\begin{DoxyCompactList}\small\item\em Recupere les adresses uniques dans la table spécifiée. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a6c00b0c79aa158cd1f1e15af5240796c}{Get\+\_\+date\+\_\+recolte}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$table, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$tableau\+\_\+date\+\_\+recolte, int nb\+\_\+rows\+\_\+par\+\_\+station)
+\begin{DoxyCompactList}\small\item\em Récupère les dates de récolte pour l\textquotesingle{}ensemble des stations de la table spécifiée. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a40723bd3f2365197f796fdf7a279e1c5}{Get\+\_\+statuts\+\_\+station}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$table, char $\ast$$\ast$tableau\+\_\+adresses, int nb\+\_\+stations, int nb\+\_\+rows\+\_\+par\+\_\+station, int nb\+\_\+statuts, int tableau\+\_\+statuts\mbox{[}nb\+\_\+stations\mbox{]}\mbox{[}nb\+\_\+rows\+\_\+par\+\_\+station\mbox{]}\mbox{[}nb\+\_\+statuts\mbox{]})
+\begin{DoxyCompactList}\small\item\em Construit le tableau contenant l\textquotesingle{}ensemble des informations qui concernent les stations Belib. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{getter_8h_a1f70d42dfd85daf30f2abe97a1443a23}{Construct\+\_\+req\+\_\+station\+\_\+statuts}} (char $\ast$table, int station, char $\ast$$\ast$tableau\+\_\+adresses)
+\begin{DoxyCompactList}\small\item\em Fonction renvoyant la requete sql permettant de récupérer les nombres de bornes au statut disponible, occupe, en\+\_\+maintenance ou inconnu pour une station donnée, en se basant sur l\textquotesingle{}unicité de son adresse. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{getter_8h_a8a925fe27805f6f05fea5ffd89633628}{Construct\+\_\+req\+\_\+station\+\_\+avg\+\_\+dispo}} (int station, char $\ast$$\ast$tableau\+\_\+adresses\+\_\+fav)
+\begin{DoxyCompactList}\small\item\em Fonction renvoyant la requete sql permettant de récupérer la moyenne horaire des bornes disponibles pour une station donnée, en se basant sur l\textquotesingle{}unicité de son adresse. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_aca1d8ccd04498560e1b133c949099c34}{Get\+\_\+statut\+\_\+station}} (int nb\+\_\+stations, int nb\+\_\+rows, int nb\+\_\+statuts, int vect\+\_\+statut\mbox{[}nb\+\_\+rows\mbox{]}, int tableau\+\_\+statuts\+\_\+fav\mbox{[}nb\+\_\+stations\mbox{]}\mbox{[}nb\+\_\+rows\mbox{]}\mbox{[}nb\+\_\+statuts\mbox{]}, int station, int statut)
+\begin{DoxyCompactList}\small\item\em Construction d\textquotesingle{}un vecteur 1D contenant le nombre de bornes ayant un statut spécifié, pour une station donnée. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{getter_8h_aa58af4538e163addfe5b6778d886478e}{Get\+\_\+nb\+\_\+rows\+\_\+par\+\_\+station\+\_\+unique}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$table, int station, char $\ast$$\ast$tableau\+\_\+adresses)
+\begin{DoxyCompactList}\small\item\em Recupere le nombre de date de récolte pour une station spécifique. Permet de gérer l\textquotesingle{}arrivée de nouvelles stations dans le périmètre en favori. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{getter_8h_ab08e791db6ad321c67aaf1b59a20305b}{Get\+\_\+nb\+\_\+stations}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$table)
+\begin{DoxyCompactList}\small\item\em Recupere le nombre de stations en se basant sur l\textquotesingle{}unicité de l\textquotesingle{}adresse. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a4d00a23f24bda901a988d21a1de42833}{Get\+\_\+avg\+\_\+dispo\+\_\+station}} (sqlite3 $\ast$db\+\_\+belib, char $\ast$$\ast$tableau\+\_\+adresses\+\_\+fav, int nb\+\_\+stations\+\_\+fav, int nb\+\_\+rows\+\_\+hours, float tableau\+\_\+avg\+\_\+dispo\+\_\+station\mbox{[}nb\+\_\+stations\+\_\+fav\mbox{]}\mbox{[}nb\+\_\+rows\+\_\+hours\mbox{]})
+\begin{DoxyCompactList}\small\item\em Construit le tableau des moyennes horaires de diponibilité des bornes pour chaque station favorite. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_ab77d55e9319421338455e459a379f665}{Get\+\_\+avg\+\_\+hours}} (sqlite3 $\ast$db\+\_\+belib, int nb\+\_\+rows\+\_\+hours, int tableau\+\_\+avg\+\_\+hours\mbox{[}nb\+\_\+rows\+\_\+hours\mbox{]})
+\item 
+int \mbox{\hyperlink{getter_8h_ae3949c54bb857ee1078934d5e8c2e361}{Get\+\_\+nb\+\_\+avg\+\_\+hours}} (sqlite3 $\ast$db\+\_\+belib)
+\begin{DoxyCompactList}\small\item\em Recupère le nombre d\textquotesingle{}heures collectées pour calcul de la moyenne horaire. Correspond à la taille du tableau tableau\+\_\+avg\+\_\+hours. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a6c54b42dfba8fcc73721b19fc6260b9b}{Get\+\_\+time\+\_\+vect}} (int nb\+\_\+rows, int vect\+\_\+time\mbox{[}nb\+\_\+rows\mbox{]}, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} tableau\+\_\+date\+\_\+recolte\mbox{[}nb\+\_\+rows\mbox{]})
+\begin{DoxyCompactList}\small\item\em Construit un tableau de temps en secondes à partir de la date de début de récolte. Permet d\textquotesingle{}avoir un référentiel \char`\"{}entier\char`\"{} pour l\textquotesingle{}affichage en pixel. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a9e76ab134aa3555b66c45c5f52359a2b}{Print\+\_\+tableau\+\_\+stations}} (int nb\+\_\+station, int nb\+\_\+date, int nb\+\_\+statuts, int tab\mbox{[}nb\+\_\+station\mbox{]}\mbox{[}nb\+\_\+date\mbox{]}\mbox{[}nb\+\_\+statuts\mbox{]}, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$tableau\+\_\+date\+\_\+recolte, char $\ast$$\ast$tableau\+\_\+adresses)
+\begin{DoxyCompactList}\small\item\em Fonction de debug permettant d\textquotesingle{}afficher le contenu de la bdd. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a39b3f72640123da691d6cf5d28a8eba9}{print\+\_\+farr1D}} (int len\+\_\+tab, float tab\mbox{[}len\+\_\+tab\mbox{]}, char col)
+\begin{DoxyCompactList}\small\item\em Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un vecteur de float. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{getter_8h_a1664e8583358374f40ac7fca7f617f6c}{print\+\_\+arr1D}} (int len\+\_\+tab, int tab\mbox{[}len\+\_\+tab\mbox{]}, char col)
+\begin{DoxyCompactList}\small\item\em Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un vecteur d\textquotesingle{}entiers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9c}\label{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9c}} 
+\index{getter.h@{getter.h}!statuts@{statuts}}
+\index{statuts@{statuts}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{statuts}{statuts}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9c}{statuts}}}
+
+
+
+Enumeration contenant les statuts récupérés de la db belib. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{disponible@{disponible}!getter.h@{getter.h}}\index{getter.h@{getter.h}!disponible@{disponible}}}\mbox{\Hypertarget{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca3395dd10d4be1a0444111dc807f36f2f}\label{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca3395dd10d4be1a0444111dc807f36f2f}} 
+disponible&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{occupe@{occupe}!getter.h@{getter.h}}\index{getter.h@{getter.h}!occupe@{occupe}}}\mbox{\Hypertarget{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca85684869813e7f5237b4805647d7dcc7}\label{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca85684869813e7f5237b4805647d7dcc7}} 
+occupe&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{en\_maintenance@{en\_maintenance}!getter.h@{getter.h}}\index{getter.h@{getter.h}!en\_maintenance@{en\_maintenance}}}\mbox{\Hypertarget{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca7b3f2a0165ab64439f1164b4e4b6d71a}\label{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9ca7b3f2a0165ab64439f1164b4e4b6d71a}} 
+en\+\_\+maintenance&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{inconnu@{inconnu}!getter.h@{getter.h}}\index{getter.h@{getter.h}!inconnu@{inconnu}}}\mbox{\Hypertarget{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9caedd271ed9a689455b65c350764cc38dc}\label{getter_8h_abf52b7ca9ac69dda416ea1319fefcb9caedd271ed9a689455b65c350764cc38dc}} 
+inconnu&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{getter_8h_a8a925fe27805f6f05fea5ffd89633628}\label{getter_8h_a8a925fe27805f6f05fea5ffd89633628}} 
+\index{getter.h@{getter.h}!Construct\_req\_station\_avg\_dispo@{Construct\_req\_station\_avg\_dispo}}
+\index{Construct\_req\_station\_avg\_dispo@{Construct\_req\_station\_avg\_dispo}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Construct\_req\_station\_avg\_dispo()}{Construct\_req\_station\_avg\_dispo()}}
+{\footnotesize\ttfamily char $\ast$ Construct\+\_\+req\+\_\+station\+\_\+avg\+\_\+dispo (\begin{DoxyParamCaption}\item[{int}]{station,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses\+\_\+fav }\end{DoxyParamCaption})}
+
+
+
+Fonction renvoyant la requete sql permettant de récupérer la moyenne horaire des bornes disponibles pour une station donnée, en se basant sur l\textquotesingle{}unicité de son adresse. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em station} & Index de la station favorite dans le tableau des adresses des stations favorites \\
+\hline
+{\em tableau\+\_\+adresses\+\_\+fav} & Tableau des adresses des stations favorites \\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+Utilisé que pour la table Fav 
+\end{DoxyWarning}
+\begin{DoxyReturn}{Returns}
+char$\ast$ Requete SQLite 
+\end{DoxyReturn}
+\mbox{\Hypertarget{getter_8h_a1f70d42dfd85daf30f2abe97a1443a23}\label{getter_8h_a1f70d42dfd85daf30f2abe97a1443a23}} 
+\index{getter.h@{getter.h}!Construct\_req\_station\_statuts@{Construct\_req\_station\_statuts}}
+\index{Construct\_req\_station\_statuts@{Construct\_req\_station\_statuts}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Construct\_req\_station\_statuts()}{Construct\_req\_station\_statuts()}}
+{\footnotesize\ttfamily char $\ast$ Construct\+\_\+req\+\_\+station\+\_\+statuts (\begin{DoxyParamCaption}\item[{char $\ast$}]{table,  }\item[{int}]{station,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses }\end{DoxyParamCaption})}
+
+
+
+Fonction renvoyant la requete sql permettant de récupérer les nombres de bornes au statut disponible, occupe, en\+\_\+maintenance ou inconnu pour une station donnée, en se basant sur l\textquotesingle{}unicité de son adresse. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em table} & Nom de la table \\
+\hline
+{\em station} & Index de la station favorite dans le tableau des adresses des stations \\
+\hline
+{\em tableau\+\_\+adresses} & Tableau des adresses des stations \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ Requete SQLite 
+\end{DoxyReturn}
+\mbox{\Hypertarget{getter_8h_a201d83da29d17c9d0bec28c987763d39}\label{getter_8h_a201d83da29d17c9d0bec28c987763d39}} 
+\index{getter.h@{getter.h}!free\_tab\_char1@{free\_tab\_char1}}
+\index{free\_tab\_char1@{free\_tab\_char1}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{free\_tab\_char1()}{free\_tab\_char1()}}
+{\footnotesize\ttfamily void free\+\_\+tab\+\_\+char1 (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{tableau\+\_\+str,  }\item[{int}]{len\+\_\+tab }\end{DoxyParamCaption})}
+
+
+
+Liberation de la memoire allouée pour un tableau de strings de dimension 1. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tableau\+\_\+str} & Tableau de strings \\
+\hline
+{\em len\+\_\+tab} & Nombre de lignes du tableau 1D \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a7fb07b8d97ef36806c59c3b6fd5e4888}\label{getter_8h_a7fb07b8d97ef36806c59c3b6fd5e4888}} 
+\index{getter.h@{getter.h}!Get\_adresses@{Get\_adresses}}
+\index{Get\_adresses@{Get\_adresses}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_adresses()}{Get\_adresses()}}
+{\footnotesize\ttfamily void Get\+\_\+adresses (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$}]{table,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses,  }\item[{int}]{nb\+\_\+stations }\end{DoxyParamCaption})}
+
+
+
+Recupere les adresses uniques dans la table spécifiée. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em table} & Nom de la table dans la bdd \\
+\hline
+{\em tableau\+\_\+adresses} & Tableau des adresses uniques \\
+\hline
+{\em nb\+\_\+stations} & Nombre de stations associées \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a4d00a23f24bda901a988d21a1de42833}\label{getter_8h_a4d00a23f24bda901a988d21a1de42833}} 
+\index{getter.h@{getter.h}!Get\_avg\_dispo\_station@{Get\_avg\_dispo\_station}}
+\index{Get\_avg\_dispo\_station@{Get\_avg\_dispo\_station}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_avg\_dispo\_station()}{Get\_avg\_dispo\_station()}}
+{\footnotesize\ttfamily void Get\+\_\+avg\+\_\+dispo\+\_\+station (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses\+\_\+fav,  }\item[{int}]{nb\+\_\+stations\+\_\+fav,  }\item[{int}]{nb\+\_\+rows\+\_\+hours,  }\item[{float}]{tableau\+\_\+avg\+\_\+dispo\+\_\+station\mbox{[}nb\+\_\+stations\+\_\+fav\mbox{]}\mbox{[}nb\+\_\+rows\+\_\+hours\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Construit le tableau des moyennes horaires de diponibilité des bornes pour chaque station favorite. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em tableau\+\_\+adresses\+\_\+fav} & Tableau des adresses des stations favorites \\
+\hline
+{\em nb\+\_\+stations\+\_\+fav} & Nombre de stations favorites \\
+\hline
+{\em nb\+\_\+rows\+\_\+hours} & Nombre de ligne de données par station \\
+\hline
+{\em tableau\+\_\+avg\+\_\+dispo\+\_\+station} & Tableau des moyennes horaires de disponibilité pour chaque station favorite \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_ab77d55e9319421338455e459a379f665}\label{getter_8h_ab77d55e9319421338455e459a379f665}} 
+\index{getter.h@{getter.h}!Get\_avg\_hours@{Get\_avg\_hours}}
+\index{Get\_avg\_hours@{Get\_avg\_hours}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_avg\_hours()}{Get\_avg\_hours()}}
+{\footnotesize\ttfamily void Get\+\_\+avg\+\_\+hours (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{int}]{nb\+\_\+rows\+\_\+hours,  }\item[{int}]{tableau\+\_\+avg\+\_\+hours\mbox{[}nb\+\_\+rows\+\_\+hours\mbox{]} }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em nb\+\_\+rows\+\_\+hours} & Nombre d\textquotesingle{}heures collectées pour calcul de la moyenne horaire(fonction Get\+\_\+nb\+\_\+avg\+\_\+hours) \\
+\hline
+{\em tableau\+\_\+avg\+\_\+hours} & Tableau contenant les horaires où les moyennes horaires de disponibilité sont calculées \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a6c00b0c79aa158cd1f1e15af5240796c}\label{getter_8h_a6c00b0c79aa158cd1f1e15af5240796c}} 
+\index{getter.h@{getter.h}!Get\_date\_recolte@{Get\_date\_recolte}}
+\index{Get\_date\_recolte@{Get\_date\_recolte}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_date\_recolte()}{Get\_date\_recolte()}}
+{\footnotesize\ttfamily void Get\+\_\+date\+\_\+recolte (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$}]{table,  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{tableau\+\_\+date\+\_\+recolte,  }\item[{int}]{nb\+\_\+rows\+\_\+par\+\_\+station }\end{DoxyParamCaption})}
+
+
+
+Récupère les dates de récolte pour l\textquotesingle{}ensemble des stations de la table spécifiée. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em table} & Nom de la table dans la bdd \\
+\hline
+{\em tableau\+\_\+date\+\_\+recolte} & Tablea des dates de récolte \\
+\hline
+{\em nb\+\_\+rows\+\_\+par\+\_\+station} & Nombre de lignes de date par station \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_ae3949c54bb857ee1078934d5e8c2e361}\label{getter_8h_ae3949c54bb857ee1078934d5e8c2e361}} 
+\index{getter.h@{getter.h}!Get\_nb\_avg\_hours@{Get\_nb\_avg\_hours}}
+\index{Get\_nb\_avg\_hours@{Get\_nb\_avg\_hours}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_nb\_avg\_hours()}{Get\_nb\_avg\_hours()}}
+{\footnotesize\ttfamily int Get\+\_\+nb\+\_\+avg\+\_\+hours (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib }\end{DoxyParamCaption})}
+
+
+
+Recupère le nombre d\textquotesingle{}heures collectées pour calcul de la moyenne horaire. Correspond à la taille du tableau tableau\+\_\+avg\+\_\+hours. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Nombre d\textquotesingle{}heures collectées pour calcul de la moyenne horaire 
+\end{DoxyReturn}
+\mbox{\Hypertarget{getter_8h_a60725f79f3f325023cf118c2cd8f5a9b}\label{getter_8h_a60725f79f3f325023cf118c2cd8f5a9b}} 
+\index{getter.h@{getter.h}!Get\_nb\_rows\_par\_station@{Get\_nb\_rows\_par\_station}}
+\index{Get\_nb\_rows\_par\_station@{Get\_nb\_rows\_par\_station}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_nb\_rows\_par\_station()}{Get\_nb\_rows\_par\_station()}}
+{\footnotesize\ttfamily int Get\+\_\+nb\+\_\+rows\+\_\+par\+\_\+station (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$}]{table }\end{DoxyParamCaption})}
+
+
+
+Recupere le nombre de lignes de données par station. Cette fonction compte le nombre de date\+\_\+recolte distinctes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+La bdd est construite de maniere a ce que l\textquotesingle{}on ait le meme nombre de date de récolte pour chaque station, et donc le meme nombre de lignes de données. 
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+int Nombre de lignes de données par station
+\end{DoxyReturn}
+Recupere le nombre de lignes de données par station. Cette fonction compte le nombre de date\+\_\+recolte distinctes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+La bdd est construite de maniere a ce que l\textquotesingle{}on ait le meme nombre de date de récolte pour chaque station, et donc le meme nombre de lignes de données. 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em table} & Nom de la table dans la bdd \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int int Nombre de lignes de données par station 
+\end{DoxyReturn}
+\mbox{\Hypertarget{getter_8h_aa58af4538e163addfe5b6778d886478e}\label{getter_8h_aa58af4538e163addfe5b6778d886478e}} 
+\index{getter.h@{getter.h}!Get\_nb\_rows\_par\_station\_unique@{Get\_nb\_rows\_par\_station\_unique}}
+\index{Get\_nb\_rows\_par\_station\_unique@{Get\_nb\_rows\_par\_station\_unique}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_nb\_rows\_par\_station\_unique()}{Get\_nb\_rows\_par\_station\_unique()}}
+{\footnotesize\ttfamily int Get\+\_\+nb\+\_\+rows\+\_\+par\+\_\+station\+\_\+unique (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$}]{table,  }\item[{int}]{station,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses }\end{DoxyParamCaption})}
+
+
+
+Recupere le nombre de date de récolte pour une station spécifique. Permet de gérer l\textquotesingle{}arrivée de nouvelles stations dans le périmètre en favori. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em table} & Nom de la table dans la bdd \\
+\hline
+{\em station} & Index de la station dont on veut récupérer l\textquotesingle{}information \\
+\hline
+{\em tableau\+\_\+adresses} & Tableau des adresses des stations (pour recuperer l\textquotesingle{}adresse a partir de l\textquotesingle{}index) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{getter_8h_ab08e791db6ad321c67aaf1b59a20305b}\label{getter_8h_ab08e791db6ad321c67aaf1b59a20305b}} 
+\index{getter.h@{getter.h}!Get\_nb\_stations@{Get\_nb\_stations}}
+\index{Get\_nb\_stations@{Get\_nb\_stations}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_nb\_stations()}{Get\_nb\_stations()}}
+{\footnotesize\ttfamily int Get\+\_\+nb\+\_\+stations (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$}]{table }\end{DoxyParamCaption})}
+
+
+
+Recupere le nombre de stations en se basant sur l\textquotesingle{}unicité de l\textquotesingle{}adresse. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em table} & Nom de la table dans la bdd \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Nombre de stations unique 
+\end{DoxyReturn}
+\mbox{\Hypertarget{getter_8h_aca1d8ccd04498560e1b133c949099c34}\label{getter_8h_aca1d8ccd04498560e1b133c949099c34}} 
+\index{getter.h@{getter.h}!Get\_statut\_station@{Get\_statut\_station}}
+\index{Get\_statut\_station@{Get\_statut\_station}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_statut\_station()}{Get\_statut\_station()}}
+{\footnotesize\ttfamily void Get\+\_\+statut\+\_\+station (\begin{DoxyParamCaption}\item[{int}]{nb\+\_\+stations,  }\item[{int}]{nb\+\_\+rows,  }\item[{int}]{nb\+\_\+statuts,  }\item[{int}]{vect\+\_\+statut\mbox{[}nb\+\_\+rows\mbox{]},  }\item[{int}]{tableau\+\_\+statuts\+\_\+fav\mbox{[}nb\+\_\+stations\mbox{]}\mbox{[}nb\+\_\+rows\mbox{]}\mbox{[}nb\+\_\+statuts\mbox{]},  }\item[{int}]{station,  }\item[{int}]{statut }\end{DoxyParamCaption})}
+
+
+
+Construction d\textquotesingle{}un vecteur 1D contenant le nombre de bornes ayant un statut spécifié, pour une station donnée. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nb\+\_\+stations} & Nombre de stations favorites \\
+\hline
+{\em nb\+\_\+rows} & Nombre de lignes de données pour chaque station \\
+\hline
+{\em nb\+\_\+statuts} & Nombre de statuts récupérés \\
+\hline
+{\em vect\+\_\+statut} & Vecteur qui contiendra le nombre de bornes ayant un statut particulier pour une station donnée \\
+\hline
+{\em tableau\+\_\+statuts\+\_\+fav} & Tableau contenant l\textquotesingle{}ensemble des données récupérées de la base de données \\
+\hline
+{\em station} & Station prise en compte dans la construction du vecteur vect\+\_\+statut \\
+\hline
+{\em statut} & Les bornes ayant ce statut seront comptabilisées \\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+Fonction différente de Get\+\_\+statuts\+\_\+station. Permet de récupérer l\textquotesingle{}info sur une station dans le tableau complet rempli par Get\+\_\+statuts\+\_\+station. Peut porter à confusion 
+\end{DoxyWarning}
+\mbox{\Hypertarget{getter_8h_a40723bd3f2365197f796fdf7a279e1c5}\label{getter_8h_a40723bd3f2365197f796fdf7a279e1c5}} 
+\index{getter.h@{getter.h}!Get\_statuts\_station@{Get\_statuts\_station}}
+\index{Get\_statuts\_station@{Get\_statuts\_station}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_statuts\_station()}{Get\_statuts\_station()}}
+{\footnotesize\ttfamily void Get\+\_\+statuts\+\_\+station (\begin{DoxyParamCaption}\item[{sqlite3 $\ast$}]{db\+\_\+belib,  }\item[{char $\ast$}]{table,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses,  }\item[{int}]{nb\+\_\+stations,  }\item[{int}]{nb\+\_\+rows\+\_\+par\+\_\+station,  }\item[{int}]{nb\+\_\+statuts,  }\item[{int}]{tableau\+\_\+statuts\mbox{[}nb\+\_\+stations\mbox{]}\mbox{[}nb\+\_\+rows\+\_\+par\+\_\+station\mbox{]}\mbox{[}nb\+\_\+statuts\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Construit le tableau contenant l\textquotesingle{}ensemble des informations qui concernent les stations Belib. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em db\+\_\+belib} & Pointeur type sqlite3 vers la base de donnée \\
+\hline
+{\em table} & Nom de la table dans la bdd (Fav ou Live) \\
+\hline
+{\em tableau\+\_\+adresses} & Tableau des adresses uniques \\
+\hline
+{\em nb\+\_\+stations} & Nombre de stations \\
+\hline
+{\em nb\+\_\+rows\+\_\+par\+\_\+station} & Nombre de date de recolte par station (data par station) \\
+\hline
+{\em nb\+\_\+statuts} & Nombre de statuts récupérés. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyWarning}{Warning}
+Enum \char`\"{}statuts devant etre mis à jour si on veut plus de statuts\char`\"{} 
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em tableau\+\_\+statuts} & Tableau contenant l\textquotesingle{}ensemble des informations souhaitées, de dim \+: nb\+\_\+station x nb\+\_\+rows\+\_\+par\+\_\+station x nb\+\_\+statuts \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a6c54b42dfba8fcc73721b19fc6260b9b}\label{getter_8h_a6c54b42dfba8fcc73721b19fc6260b9b}} 
+\index{getter.h@{getter.h}!Get\_time\_vect@{Get\_time\_vect}}
+\index{Get\_time\_vect@{Get\_time\_vect}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Get\_time\_vect()}{Get\_time\_vect()}}
+{\footnotesize\ttfamily void Get\+\_\+time\+\_\+vect (\begin{DoxyParamCaption}\item[{int}]{nb\+\_\+rows,  }\item[{int}]{vect\+\_\+time\mbox{[}nb\+\_\+rows\mbox{]},  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}}}]{tableau\+\_\+date\+\_\+recolte\mbox{[}nb\+\_\+rows\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Construit un tableau de temps en secondes à partir de la date de début de récolte. Permet d\textquotesingle{}avoir un référentiel \char`\"{}entier\char`\"{} pour l\textquotesingle{}affichage en pixel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nb\+\_\+rows} & Nombre de dates unique \\
+\hline
+{\em vect\+\_\+time} & Tableau d\textquotesingle{}entier rempli avec les temps en secondes depuis la date de récolte initiale \\
+\hline
+{\em tableau\+\_\+date\+\_\+recolte} & Tableau d\textquotesingle{}objet Date contenant les dates de recolte \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a1664e8583358374f40ac7fca7f617f6c}\label{getter_8h_a1664e8583358374f40ac7fca7f617f6c}} 
+\index{getter.h@{getter.h}!print\_arr1D@{print\_arr1D}}
+\index{print\_arr1D@{print\_arr1D}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{print\_arr1D()}{print\_arr1D()}}
+{\footnotesize\ttfamily void print\+\_\+arr1D (\begin{DoxyParamCaption}\item[{int}]{len\+\_\+tab,  }\item[{int}]{tab\mbox{[}len\+\_\+tab\mbox{]},  }\item[{char}]{col }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un vecteur d\textquotesingle{}entiers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em len\+\_\+tab} & Taille du tableau \\
+\hline
+{\em tab} & Tableau d\textquotesingle{}entiers\textquotesingle{} à afficher \\
+\hline
+{\em col} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{} pour l\textquotesingle{}affichage en colonne plutot qu\textquotesingle{}en ligne \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a39b3f72640123da691d6cf5d28a8eba9}\label{getter_8h_a39b3f72640123da691d6cf5d28a8eba9}} 
+\index{getter.h@{getter.h}!print\_farr1D@{print\_farr1D}}
+\index{print\_farr1D@{print\_farr1D}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{print\_farr1D()}{print\_farr1D()}}
+{\footnotesize\ttfamily void print\+\_\+farr1D (\begin{DoxyParamCaption}\item[{int}]{len\+\_\+tab,  }\item[{float}]{tab\mbox{[}len\+\_\+tab\mbox{]},  }\item[{char}]{col }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un vecteur de float. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em len\+\_\+tab} & Taille du tableau \\
+\hline
+{\em tab} & Tableau de float à afficher \\
+\hline
+{\em col} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{} pour l\textquotesingle{}affichage en colonne plutot qu\textquotesingle{}en ligne \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_a9e76ab134aa3555b66c45c5f52359a2b}\label{getter_8h_a9e76ab134aa3555b66c45c5f52359a2b}} 
+\index{getter.h@{getter.h}!Print\_tableau\_stations@{Print\_tableau\_stations}}
+\index{Print\_tableau\_stations@{Print\_tableau\_stations}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Print\_tableau\_stations()}{Print\_tableau\_stations()}}
+{\footnotesize\ttfamily void Print\+\_\+tableau\+\_\+stations (\begin{DoxyParamCaption}\item[{int}]{nb\+\_\+station,  }\item[{int}]{nb\+\_\+date,  }\item[{int}]{nb\+\_\+statuts,  }\item[{int}]{tab\mbox{[}nb\+\_\+station\mbox{]}\mbox{[}nb\+\_\+date\mbox{]}\mbox{[}nb\+\_\+statuts\mbox{]},  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{tableau\+\_\+date\+\_\+recolte,  }\item[{char $\ast$$\ast$}]{tableau\+\_\+adresses }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug permettant d\textquotesingle{}afficher le contenu de la bdd. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nb\+\_\+station} & Nombre de stations \\
+\hline
+{\em nb\+\_\+date} & Nombre de date de recolte (rows) \\
+\hline
+{\em nb\+\_\+statuts} & Nombre de statuts \\
+\hline
+{\em tab} & Tableau des statuts (complet) à afficher \\
+\hline
+{\em tableau\+\_\+date\+\_\+recolte} & Tableau des date de récolte \\
+\hline
+{\em tableau\+\_\+adresses} & Tableau contenant les adresses des stations \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{getter_8h_ad8752cc93ff6d9503143444e36826895}\label{getter_8h_ad8752cc93ff6d9503143444e36826895}} 
+\index{getter.h@{getter.h}!Sqlite\_open\_check@{Sqlite\_open\_check}}
+\index{Sqlite\_open\_check@{Sqlite\_open\_check}!getter.h@{getter.h}}
+\doxysubsubsection{\texorpdfstring{Sqlite\_open\_check()}{Sqlite\_open\_check()}}
+{\footnotesize\ttfamily void Sqlite\+\_\+open\+\_\+check (\begin{DoxyParamCaption}\item[{char $\ast$}]{bdd\+\_\+filename,  }\item[{sqlite3 $\ast$$\ast$}]{db\+\_\+belib }\end{DoxyParamCaption})}
+
+
+
+Fonction ouvrant la bdd et vérifiant si tout se passe bien à l\textquotesingle{}ouverture (notamment l\textquotesingle{}existence du fichier) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bdd\+\_\+filename} & Chemin vers la base de données \\
+\hline
+{\em db\+\_\+belib} & Pointeur de pointeur type sqlite3 vers la bdd \\
+\hline
+\end{DoxyParams}

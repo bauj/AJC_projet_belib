@@ -1,0 +1,229 @@
+\hypertarget{traitement_8h}{}\doxysection{/home/ajc/\+Projet\+\_\+\+AJC/\+AJC\+\_\+projet\+\_\+belib/plotting\+\_\+data/src/libs/traitement.h File Reference}
+\label{traitement_8h}\index{/home/ajc/Projet\_AJC/AJC\_projet\_belib/plotting\_data/src/libs/traitement.h@{/home/ajc/Projet\_AJC/AJC\_projet\_belib/plotting\_data/src/libs/traitement.h}}
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+Include dependency graph for traitement.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=339pt]{traitement_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{traitement_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_date__s}{Date\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure contenant une string {\ttfamily datestr} de type date ainsi que sa valeur {\ttfamily ctime} en temps cpu. Format type d\textquotesingle{}une datestr \+: 2023-\/02-\/01T14\+:00Z. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_datetick__s}{Datetick\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em Structure contenant une Date et permettant de creer le contenu des labels des ticks associés, sur la figure d\textquotesingle{}évolution temporelle du nombre de bornes disponibles. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \mbox{\hyperlink{struct_date__s}{Date\+\_\+s}} \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}}
+\begin{DoxyCompactList}\small\item\em Structure contenant une string {\ttfamily datestr} de type date ainsi que sa valeur {\ttfamily ctime} en temps cpu. Format type d\textquotesingle{}une datestr \+: 2023-\/02-\/01T14\+:00Z. \end{DoxyCompactList}\item 
+typedef struct \mbox{\hyperlink{struct_datetick__s}{Datetick\+\_\+s}} \mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}}
+\begin{DoxyCompactList}\small\item\em Structure contenant une Date et permettant de creer le contenu des labels des ticks associés, sur la figure d\textquotesingle{}évolution temporelle du nombre de bornes disponibles. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{traitement_8h_aef767aae64e21bc8963153be34f176fd}{Init\+\_\+\+Datetick}} (\mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} $\ast$datetick, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$dateobj\+\_\+i, \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$dateobj\+\_\+init)
+\begin{DoxyCompactList}\small\item\em Initialise un objet de type Datetick. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_a7d39e7f7322dbbb672fc3d9675e6bfb0}{Print\+\_\+debug\+\_\+datetick}} (\mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} $\ast$datetick)
+\begin{DoxyCompactList}\small\item\em Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un objet de type Datetick. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_ad6585d4d7de3fb3a81d1c2e3564c3486}{Print\+\_\+debug\+\_\+date}} (\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$dateobj, char debugmode)
+\begin{DoxyCompactList}\small\item\em Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un objet de type Date. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_a3dd0bb4904888c71f203eacdad7c5cc6}{Init\+\_\+date\+\_\+tm}} (\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$dateobj)
+\begin{DoxyCompactList}\small\item\em Initialise l\textquotesingle{}objet tm (time machine) dans un objet de type Date. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_ae1e629bf9afd826be5967d122485a4f2}{Init\+\_\+\+Date}} (\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$dateobj, char date\+\_\+input\mbox{[}20\mbox{]})
+\begin{DoxyCompactList}\small\item\em Initialise un objet de type Date. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_aeb33bb0a06fa3f351443e6039dcdad1e}{Get\+\_\+date\+\_\+element}} (int $\ast$year, int $\ast$mon, int $\ast$mday, int $\ast$hour, int $\ast$min, char date\+\_\+input\mbox{[}20\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction parsant la chaine de caractère date input au format de la date récoltée pour récupérer l\textquotesingle{}année, le mois, le jour, l\textquotesingle{}heure et les minutes. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_a924f73a3dcde49783b911db496d13ba7}{Slice\+\_\+str}} (const char $\ast$str\+\_\+src, char $\ast$str\+\_\+dest, int start, int end)
+\begin{DoxyCompactList}\small\item\em Fonction permettant de slicer une chaine de caractères. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{traitement_8h_aa010273895db98c0326865eb219a1d02}{slice\+\_\+str}} (const char $\ast$str\+\_\+src, char $\ast$src\+\_\+dest, size\+\_\+t start, size\+\_\+t end)
+\begin{DoxyCompactList}\small\item\em 2eme fonction permettant de slicer une chaine de caractères, ajoutant un caractère nul en fin de chaine pour spécifier la fin de chaine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}\label{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}} 
+\index{traitement.h@{traitement.h}!Date@{Date}}
+\index{Date@{Date}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Date}{Date}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_date__s}{Date\+\_\+s}} \mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}}}
+
+
+
+Structure contenant une string {\ttfamily datestr} de type date ainsi que sa valeur {\ttfamily ctime} en temps cpu. Format type d\textquotesingle{}une datestr \+: 2023-\/02-\/01T14\+:00Z. 
+
+\mbox{\Hypertarget{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}\label{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}} 
+\index{traitement.h@{traitement.h}!Datetick@{Datetick}}
+\index{Datetick@{Datetick}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Datetick}{Datetick}}
+{\footnotesize\ttfamily typedef struct \mbox{\hyperlink{struct_datetick__s}{Datetick\+\_\+s}} \mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}}}
+
+
+
+Structure contenant une Date et permettant de creer le contenu des labels des ticks associés, sur la figure d\textquotesingle{}évolution temporelle du nombre de bornes disponibles. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{traitement_8h_aeb33bb0a06fa3f351443e6039dcdad1e}\label{traitement_8h_aeb33bb0a06fa3f351443e6039dcdad1e}} 
+\index{traitement.h@{traitement.h}!Get\_date\_element@{Get\_date\_element}}
+\index{Get\_date\_element@{Get\_date\_element}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Get\_date\_element()}{Get\_date\_element()}}
+{\footnotesize\ttfamily void Get\+\_\+date\+\_\+element (\begin{DoxyParamCaption}\item[{int $\ast$}]{year,  }\item[{int $\ast$}]{mon,  }\item[{int $\ast$}]{mday,  }\item[{int $\ast$}]{hour,  }\item[{int $\ast$}]{min,  }\item[{char}]{date\+\_\+input\mbox{[}20\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Fonction parsant la chaine de caractère date input au format de la date récoltée pour récupérer l\textquotesingle{}année, le mois, le jour, l\textquotesingle{}heure et les minutes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em year} & Pointeur vers un entier où est sauvegardé l\textquotesingle{}année \\
+\hline
+{\em mon} & Pointeur vers un entier où est sauvegardé le mois \\
+\hline
+{\em mday} & Pointeur vers un entier où est sauvegardé le jour \\
+\hline
+{\em hour} & Pointeur vers un entier où est sauvegardé l\textquotesingle{}heure \\
+\hline
+{\em min} & Pointeur vers un entier où est sauvegardé les minutes \\
+\hline
+{\em date\+\_\+input} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_ae1e629bf9afd826be5967d122485a4f2}\label{traitement_8h_ae1e629bf9afd826be5967d122485a4f2}} 
+\index{traitement.h@{traitement.h}!Init\_Date@{Init\_Date}}
+\index{Init\_Date@{Init\_Date}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Init\_Date()}{Init\_Date()}}
+{\footnotesize\ttfamily void Init\+\_\+\+Date (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{dateobj,  }\item[{char}]{date\+\_\+input\mbox{[}20\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Initialise un objet de type Date. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dateobj} & Pointeur vers un objet de type Date \\
+\hline
+{\em date\+\_\+input} & Chaine de caractère de la date dans le format date de récolte \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_a3dd0bb4904888c71f203eacdad7c5cc6}\label{traitement_8h_a3dd0bb4904888c71f203eacdad7c5cc6}} 
+\index{traitement.h@{traitement.h}!Init\_date\_tm@{Init\_date\_tm}}
+\index{Init\_date\_tm@{Init\_date\_tm}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Init\_date\_tm()}{Init\_date\_tm()}}
+{\footnotesize\ttfamily void Init\+\_\+date\+\_\+tm (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{dateobj }\end{DoxyParamCaption})}
+
+
+
+Initialise l\textquotesingle{}objet tm (time machine) dans un objet de type Date. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dateobj} & Pointeur vers un objet de type Date \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_aef767aae64e21bc8963153be34f176fd}\label{traitement_8h_aef767aae64e21bc8963153be34f176fd}} 
+\index{traitement.h@{traitement.h}!Init\_Datetick@{Init\_Datetick}}
+\index{Init\_Datetick@{Init\_Datetick}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Init\_Datetick()}{Init\_Datetick()}}
+{\footnotesize\ttfamily void Init\+\_\+\+Datetick (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} $\ast$}]{datetick,  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{dateobj\+\_\+i,  }\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{dateobj\+\_\+init }\end{DoxyParamCaption})}
+
+
+
+Initialise un objet de type Datetick. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em datetick} & Pointeur vers un objet de type Datetick \\
+\hline
+{\em dateobj\+\_\+i} & Pointeur vers un objet de type Date dont les données sont utilisées pour créer le Datetick \\
+\hline
+{\em dateobj\+\_\+init} & Pointeur vers un objet de type Date qui est l\textquotesingle{}origine des temps \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_ad6585d4d7de3fb3a81d1c2e3564c3486}\label{traitement_8h_ad6585d4d7de3fb3a81d1c2e3564c3486}} 
+\index{traitement.h@{traitement.h}!Print\_debug\_date@{Print\_debug\_date}}
+\index{Print\_debug\_date@{Print\_debug\_date}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_date()}{Print\_debug\_date()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+date (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{traitement_8h_a29a6e9030cc8bd60655e531bb945b455}{Date}} $\ast$}]{dateobj,  }\item[{char}]{debugmode }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un objet de type Date. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dateobj} & Pointeur vers objet de type Date \\
+\hline
+{\em debugmode} & Caractère \textquotesingle{}y\textquotesingle{} ou \textquotesingle{}n\textquotesingle{} permettant d\textquotesingle{}afficher l\textquotesingle{}ensemble des données ou juste la date au format humain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_a7d39e7f7322dbbb672fc3d9675e6bfb0}\label{traitement_8h_a7d39e7f7322dbbb672fc3d9675e6bfb0}} 
+\index{traitement.h@{traitement.h}!Print\_debug\_datetick@{Print\_debug\_datetick}}
+\index{Print\_debug\_datetick@{Print\_debug\_datetick}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Print\_debug\_datetick()}{Print\_debug\_datetick()}}
+{\footnotesize\ttfamily void Print\+\_\+debug\+\_\+datetick (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{traitement_8h_aa551e286ad5b0ab68502a3504e2b13a7}{Datetick}} $\ast$}]{datetick }\end{DoxyParamCaption})}
+
+
+
+Fonction de debug permettant d\textquotesingle{}afficher le contenu d\textquotesingle{}un objet de type Datetick. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em datetick} & Pointeur vers un objet de type Date\+Tick \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_aa010273895db98c0326865eb219a1d02}\label{traitement_8h_aa010273895db98c0326865eb219a1d02}} 
+\index{traitement.h@{traitement.h}!slice\_str@{slice\_str}}
+\index{slice\_str@{slice\_str}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{slice\_str()}{slice\_str()}}
+{\footnotesize\ttfamily void slice\+\_\+str (\begin{DoxyParamCaption}\item[{const char $\ast$}]{str\+\_\+src,  }\item[{char $\ast$}]{src\+\_\+dest,  }\item[{size\+\_\+t}]{start,  }\item[{size\+\_\+t}]{end }\end{DoxyParamCaption})}
+
+
+
+2eme fonction permettant de slicer une chaine de caractères, ajoutant un caractère nul en fin de chaine pour spécifier la fin de chaine. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & Chaine de caractères source \\
+\hline
+{\em src\+\_\+dest} & Chaine de caractères destination \\
+\hline
+{\em start} & Index de début du slicing \\
+\hline
+{\em end} & Index de fin du slicing \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{traitement_8h_a924f73a3dcde49783b911db496d13ba7}\label{traitement_8h_a924f73a3dcde49783b911db496d13ba7}} 
+\index{traitement.h@{traitement.h}!Slice\_str@{Slice\_str}}
+\index{Slice\_str@{Slice\_str}!traitement.h@{traitement.h}}
+\doxysubsubsection{\texorpdfstring{Slice\_str()}{Slice\_str()}}
+{\footnotesize\ttfamily void Slice\+\_\+str (\begin{DoxyParamCaption}\item[{const char $\ast$}]{str\+\_\+src,  }\item[{char $\ast$}]{str\+\_\+dest,  }\item[{int}]{start,  }\item[{int}]{end }\end{DoxyParamCaption})}
+
+
+
+Fonction permettant de slicer une chaine de caractères. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str\+\_\+src} & Chaine de caractères source \\
+\hline
+{\em str\+\_\+dest} & Chaine de caractères destination \\
+\hline
+{\em start} & Index de début du slicing \\
+\hline
+{\em end} & Index de fin du slicing \\
+\hline
+\end{DoxyParams}

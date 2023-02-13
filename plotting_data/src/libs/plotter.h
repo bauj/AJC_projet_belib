@@ -10,8 +10,8 @@
 #define PLOTTER_H
 
 #include "consts.h"
-#include <stdlib.h>
 #include "getter.h"
+#include <stdlib.h>
 #include <gd.h>
 #include <math.h>
 
@@ -654,6 +654,19 @@ void Print_debug_fld(fLineData *flinedata, char w_xy);
  * @param w_cat Caractère 'y' ou 'n'. Affiche les données contenues dans le BarData.
  */
 void Print_debug_bd(BarData *bardata, char w_cat);
+
+/**
+ * @brief Trace un segment de droite avec un LineStyle donné d'un point 1 à un point 2
+ * 
+ * @param im_fig Pointeur vers un objet de type gdImage
+ * @param x1 Abcisse du point 1
+ * @param y1 Ordonnée du point 1
+ * @param x2 Abcisse du point 2
+ * @param y2 Ordonnée du point 2
+ * @param linestyle Pointeur vers objet de type LineStyle donnant le style du trait
+ */
+void ImageLineEpaisseur(gdImagePtr im_fig,const int x1, const int y1, const int x2, const int y2, LineStyle *linestyle)
+
 
 /* --------------------------------------------------------------------------- */
 // Définition des fonctions
