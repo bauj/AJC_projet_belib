@@ -109,15 +109,14 @@ simple de GD.
 
 + Passer un coup de Valgrind + ElectricFence :heavy_check_mark:
 
-## Recuperation map statique avec marqueurs :soon:
+## Recuperation map statique avec marqueurs :heavy_check_mark:
 
 + Utilisation de l'API mapbox
 
 + Recuperation d'une carte statique avec les marqueurs sur les positions GPS 
 des stations.
 
-## Update page HTML et CSS      :soon:
-
+## Update page HTML et CSS      :heavy_check_mark:
 + Un peu d'HTML et de CSS pour mettre en valeur les résultats, décrire le projet, etc ...
 
 ## Mise en place de l'ensemble du projet sur la carte embarquée (voir Overlay_BR)  :heavy_check_mark:
@@ -132,11 +131,12 @@ des stations.
 
 + Automatisation via script Sh dans crontab : done.
 
+## Ajout de la possibilité de trouver des stations autour d'une adresse :heavy_check_mark:
+
++ Script CGI sh permettant d'executer un update des figures live (et de la table Stations_live de la db)
+
 ## Perspectives
 + Moyenne par jour de bornes disponibles, à certaines heures :heavy_check_mark:
-+ Porter sur carte réelle, yocto
++ Porter sur carte réelle, yocto (... en cours)
 
-## To do
-+ Tests nombre de stations (recuperer seulement les 8 premieres)
-+ Doc
-+ Exec pour stations live
+
