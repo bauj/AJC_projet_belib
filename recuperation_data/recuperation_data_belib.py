@@ -33,6 +33,8 @@ import argparse
 import sys
 from datetime import date, timedelta, datetime
 
+
+# Definitions des chemins en fonction des machines utilisées
 global figure_dir, db_dir
 
 # AJC / LENOVO
@@ -49,6 +51,7 @@ mapbox_token_path = "../.mapbox_token"
 # Parametres globaux
 # -----------------------------------------------------------------------------
 
+## Dictionnaire associant les Statuts récupérés aux noms des statuts de la bdd
 dict_labels_statuts = {
         'Disponible'                  :   "disponible"          ,
         'Occupé (en charge)'          :   "occupe"              ,
@@ -65,7 +68,16 @@ dict_labels_statuts = {
 # Fonctions
 # -----------------------------------------------------------------------------
 
+
 def iterator_data_general(data_general):
+    """Iterateur permettant de renvoyer le contenu de data_general
+
+    Args:
+        data_general (dict): Dictionnaire contenant les infos des stations favorites ou live
+
+    Yields:
+        value : Valeur contenue dans la colonne du dictionnaire spécifiée, renvoyée à la volée (generateur)
+    """
     yield \
         data_general["date_recolte"],\
         data_general["disponible"], \
@@ -80,6 +92,16 @@ def iterator_data_general(data_general):
 
 # -----------------------------------------------------------------------------
 def iterator_data_bornes(n, raw_data_all_bornes):
+    """Iterateur permettant de renvoyer le contenu de raw_data_all_bornes pour l'ensemble
+    des bornes
+
+    Args:
+        n (int): Nombre de bornes
+        raw_data_all_bornes (list): Liste de Dictionnaires contenant les données brutes récupérées pour l'ensemble des bornes
+
+    Yields:
+        value : Valeur contenue dans la colonne du dictionnaire spécifiée, renvoyée à la volée (générateur)
+    """
     for i in range(n):
         yield \
             raw_data_all_bornes[i]["last_updated"],\
@@ -92,6 +114,16 @@ def iterator_data_bornes(n, raw_data_all_bornes):
 
 # -----------------------------------------------------------------------------
 def iterator_data_stations(n, list_stations_pref):
+    """Iterateur permettant de renvoyer le contenu de list_stations_pref pour l'ensemble
+    des bornes 
+
+    Args:
+        n (int): Nombre de stations
+        list_stations_pref (list): Liste de Dictionnaires contenant les données relatives aux stations (fav ou live)
+
+    Yields:
+        value : Valeur contenue dans la colonne du dictionnaire spécifiée, renvoyée à la volée (générateur)
+    """
     for i in range(n):
         yield \
             list_stations_pref[i]["date_recolte"],\
@@ -110,6 +142,15 @@ def iterator_data_stations(n, list_stations_pref):
 
 # -----------------------------------------------------------------------------              
 def create_connection(path_db):
+    """Etablit la connexion avec la base de données SQLite3
+
+    Args:
+        path_db (string): Chemin vers la base de données SQLite3
+
+    Returns:
+        conn: Objet sqlite3 représentant une connexion à une db
+    """
+    
     conn = None
     try:
         conn = sqlite3.connect(path_db)
@@ -120,6 +161,11 @@ def create_connection(path_db):
 
 # -----------------------------------------------------------------------------
 def update_all_bornes(path_db):
+    """Mise à jour de la table Bornes de la bdd SQLite3
+
+    Args:
+        path_db (string): Chemin vers la bdd SQLite3
+    """
 
     http = urllib3.PoolManager()
 
@@ -151,7 +197,14 @@ def update_all_bornes(path_db):
 
 # -----------------------------------------------------------------------------
 def get_lon_lat_from_coordxy(str_coordxy):
-    #'[48.84621396660805, 2.27988394908607]'
+    """Transforme le contenu de la colonne coordonnees_xy des data raw en lon, lat
+
+    Args:
+        str_coordxy (string): Chaine de caractere du type "(lon,lat)"
+
+    Returns:
+        tuple : Tuple de taille 2, contenant la longitude et la latitude
+    """
     
     lon, lat = str_coordxy.split(",")
     lon = float(lon[1:])
@@ -163,6 +216,25 @@ def get_lon_lat_from_coordxy(str_coordxy):
 # -----------------------------------------------------------------------------
 def def_station(daterecolte_, adr, lon, lat, n_dispo, n_occup, n_inc, n_main, \
             n_del=0, n_res=0, n_encours_mes=0, n_mes_plan=0, n_nonimp=0):
+    """Construit un dictionnaire contenant l'ensemble des données d'une station belib
+
+    Args:
+        daterecolte_ (string): Chaine de caracteres correspondant à la date de recolte
+        adr (string): Chaine de caracteres correspondant à l'adresse
+        lon (float): Longitude
+        lat (float): Latitude
+        n_dispo (int): Nombre de bornes disponibles
+        n_occup (int): Nombre de bornes occupées
+        n_inc (int): Nombre de bornes au statut inconnu
+        n_main (int): Nombre de bornes en maintenance
+        n_res (int, optional): Nombre de bornes réservées. Defaults to 0.
+        n_encours_mes (int, optional): Nombre de bornes en cours de mise en service. Defaults to 0.
+        n_mes_plan (int, optional): Nombre de bornes avec mise en service planifiée. Defaults to 0.
+        n_nonimp (int, optional): Nombre de bornes au statut non implémentée. Defaults to 0.
+
+    Returns:
+        dict: Dictionnaire regroupant les infos de la station
+    """
 
     return {"date_recolte": daterecolte_, "adresse_station" : adr,
             "lon" : lon, "lat" : lat, "disponible": n_dispo, "occupe": n_occup,
@@ -174,6 +246,23 @@ def def_station(daterecolte_, adr, lon, lat, n_dispo, n_occup, n_inc, n_main, \
 # -----------------------------------------------------------------------------
 def def_row_general(daterecolte_, n_dispo, n_occup, n_inc, n_main, \
             n_del=0, n_res=0, n_encours_mes=0, n_mes_plan=0, n_nonimp=0):
+    """Construit un dictionnaire contenant l'ensemble des données des bornes belib, utiles pour faire
+    des stats globales sur l'ensemble du réseau belib.
+
+    Args:
+        daterecolte_ (string): Chaine de caracteres correspondant à la date de recolte
+        n_dispo (int): Nombre de bornes disponibles
+        n_occup (int): Nombre de bornes occupées
+        n_inc (int): Nombre de bornes au statut inconnu
+        n_main (int): Nombre de bornes en maintenance
+        n_res (int, optional): Nombre de bornes réservées. Defaults to 0.
+        n_encours_mes (int, optional): Nombre de bornes en cours de mise en service. Defaults to 0.
+        n_mes_plan (int, optional): Nombre de bornes avec mise en service planifiée. Defaults to 0.
+        n_nonimp (int, optional): Nombre de bornes au statut non implémentée. Defaults to 0.
+
+    Returns:
+        dict: Dictionnaire contenant les statuts de l'ensemble des bornes belib sur le réseau.
+    """
 
     return {"date_recolte": daterecolte_, "disponible": n_dispo, 
         "occupe": n_occup, "inconnu" : n_inc, "en_maintenance" : n_main, 
@@ -183,6 +272,15 @@ def def_row_general(daterecolte_, n_dispo, n_occup, n_inc, n_main, \
 
 # -----------------------------------------------------------------------------
 def transform_dict_station(list_records):
+    """Fonction transformant les données brutes récupérées sous forme de dictionnaire en une 
+    liste de dictionnaire de stations (avec tous les statuts des bornes par station)
+
+    Args:
+        list_records (list): Liste des dictionnaires de chaque station+statut_unique (data json brute prétraitée)
+
+    Returns:
+        list: Liste des dictionnaires des stations avec statuts concaténés
+    """
 
     now = datetime.now()
     date_recolte = now.strftime("%Y-%m-%dT%H:%MZ")
@@ -243,6 +341,15 @@ def transform_dict_station(list_records):
 
 # -----------------------------------------------------------------------------
 def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
+    """Update de la table de la db SQLite3 avec les données des stations autour d'une position GPS
+
+    Args:
+        path_db (string): Chemin vers la db SQLite3
+        table (string): Nom de la table à compléter
+        pos_lat (float): Latitude de la position de recherche
+        pos_lon (float): Longitude de la position de recherche
+        dist (float): Rayon de recherche en km
+    """
 
     http = urllib3.PoolManager()
 
@@ -296,28 +403,37 @@ def update_bornes_around_pos(path_db, table, pos_lat, pos_lon, dist):
 
 # -----------------------------------------------------------------------------
 def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
-    
+    """Fonctionnant générant une image statique Mapbox contenant des pins au niveau 
+    des stations trouvées, de la couleur des plots obtenus en C.
+
+    Args:
+        table (string): Nombre de la table lue
+        list_stations (list): Liste des dictionnaires de stations
+        http (PoolManager): PoolManager urllib3
+        pos_lat (float): Latitude du point de recherche (point central)
+        pos_lon (float): Longitude du point de recherche (point central)
+        dist (float): Rayon de recherche spécifié. Permet de créer une bounding box de manière grossière.
+    """
+
     colors=['33a02c', 'ff7f00', '1f78b4',\
             'e31a1c', '984ea3', 'b2df8a',\
             'fdbf6f', 'a6cee3', 'fb9a99',\
             'cab2d6']
-    
-    str_lat = f"{pos_lat:.3f}".replace(".","_")
-    str_lon = f"{pos_lon:.3f}".replace(".","_")
+
     unit_dist = "km"
     str_dist = f"{dist:.2f}{unit_dist}"
-    str_dist_ = str_dist.replace(".","-")
-    filename_output = f"mapbox_{table}.png"
-    # filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+str_dist_+".png"
 
+    # str_lat = f"{pos_lat:.3f}".replace(".","_")
+    # str_lon = f"{pos_lon:.3f}".replace(".","_")
+    # str_dist_ = str_dist.replace(".","-")
+    # # filename_output = "mapbox_lat_"+str_lat+"_lon_"+str_lon+"_d_"+str_dist_+".png"
+
+    filename_output = f"mapbox_{table}.png"
+    
     nb_stations = len(list_stations)
 
     ## Construction url api mapbox
-
-    ## Construction des pins sur la carte
-
-    # overlay = f"pin-s+000({lon_center},{lat_center}),pin-s+f74e4e({lon_max},{lat_center})/"
-
+    # ## Construction des pins sur la carte
     pins = ""
     for idx,st in enumerate(list_stations):
         lat_station = list_stations[idx]["lon"]
@@ -332,7 +448,6 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
 
     bbox_sw = [pos-0.009*dist for pos in [pos_lon, pos_lat]] 
     bbox_ne = [pos+0.009*dist for pos in [pos_lon, pos_lat]] 
-
 
     username = "mapbox"
     style_id = "dark-v11"
@@ -357,7 +472,11 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
 
 # -----------------------------------------------------------------------------
 def update_general(path_db):
+    """Mise a jour de la table General de la bdd SQLite3 avec le statut de l'ensemble des bornes
 
+    Args:
+        path_db (string): Chemin vers la db SQLite3
+    """
     http = urllib3.PoolManager()
 
     date_du_jour = date.today().strftime("%Y-%m-%d")
@@ -403,7 +522,15 @@ def update_general(path_db):
 
 # -----------------------------------------------------------------------------
 def adresse_to_lon_lat(adr):
+    """Transformation de l'adresse entrée en live en position lon,lat à l'aide de 
+    l'API adresse.gouv
 
+    Args:
+        adr (string): Adresse postale française
+
+    Returns:
+        tuple: Tuple de taille 2 contenant la lon et la lat
+    """
     http = urllib3.PoolManager()
         
     adr_ = adr.replace(" ", "+")
@@ -437,7 +564,12 @@ def adresse_to_lon_lat(adr):
 
 # -----------------------------------------------------------------------------
 def clean_table(path_db, table):
+    """Fonction permettant de vider une table d'une db SQLite3
 
+    Args:
+        path_db (string): Chemin vers la bdd SQLite3
+        table (string): Nom de la table à traiter
+    """
     conn = create_connection(path_db)
 
     sql_req = f"DELETE FROM {table}"
@@ -449,7 +581,13 @@ def clean_table(path_db, table):
 
 # -----------------------------------------------------------------------------
 def update_bornes_around_adresse_live(path_db, adr, dist):
+    """Mise a jour de la table "Stations_live" de la db SQLite3. On la vide avant de la compléter.
 
+    Args:
+        path_db (string): Chemin vers la bdd SQLite3
+        adr (string): Adresse postale française
+        dist (float): Rayon de recherche en km
+    """
     lon_adr, lat_adr = adresse_to_lon_lat(adr)
 
     table="Stations_live"
@@ -507,7 +645,7 @@ if __name__ == "__main__":
 
     if (not bornes and not general and fav and not live) :
         pos_lat, pos_lon = 48.8401, 2.2780
-        dist=0.5
+        dist = 0.5
         table = "Stations_fav"
         update_bornes_around_pos(path_db,table, pos_lat, pos_lon, dist)
 

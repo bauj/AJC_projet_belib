@@ -1,0 +1,93 @@
+\hypertarget{recuperation__data__belib_8py}{}\doxysection{/home/ajc/\+Projet\+\_\+\+AJC/\+AJC\+\_\+projet\+\_\+belib/recuperation\+\_\+data/recuperation\+\_\+data\+\_\+belib.py File Reference}
+\label{recuperation__data__belib_8py}\index{/home/ajc/Projet\_AJC/AJC\_projet\_belib/recuperation\_data/recuperation\_data\_belib.py@{/home/ajc/Projet\_AJC/AJC\_projet\_belib/recuperation\_data/recuperation\_data\_belib.py}}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacerecuperation__data__belib}{recuperation\+\_\+data\+\_\+belib}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a5c47643b69fd718a3f032d427c38684b}{iterator\+\_\+data\+\_\+general}} (data\+\_\+general)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a14c13e8ef6b07d874b70d783e3d011f3}{iterator\+\_\+data\+\_\+bornes}} (n, raw\+\_\+data\+\_\+all\+\_\+bornes)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_ae250e409a5ddfd4c9f3adc74ed072b2c}{iterator\+\_\+data\+\_\+stations}} (n, list\+\_\+stations\+\_\+pref)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_ab3b3515bcc8aaf4a79e40c3936005474}{create\+\_\+connection}} (path\+\_\+db)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a44f9cf58f4d6140f0f7157417411e17b}{update\+\_\+all\+\_\+bornes}} (path\+\_\+db)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_af7080f2b4e2434a4568f8439083b33d4}{get\+\_\+lon\+\_\+lat\+\_\+from\+\_\+coordxy}} (str\+\_\+coordxy)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_add9c026e0c0de423fa76bba0828fdcb4}{def\+\_\+station}} (daterecolte\+\_\+, adr, lon, lat, n\+\_\+dispo, n\+\_\+occup, n\+\_\+inc, n\+\_\+main, n\+\_\+del=0, n\+\_\+res=0, n\+\_\+encours\+\_\+mes=0, n\+\_\+mes\+\_\+plan=0, n\+\_\+nonimp=0)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_af19de3b642faebacf946cd33eb82ce5c}{def\+\_\+row\+\_\+general}} (daterecolte\+\_\+, n\+\_\+dispo, n\+\_\+occup, n\+\_\+inc, n\+\_\+main, n\+\_\+del=0, n\+\_\+res=0, n\+\_\+encours\+\_\+mes=0, n\+\_\+mes\+\_\+plan=0, n\+\_\+nonimp=0)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_ad4a37e9c51a43b9aae37e7427ce3f671}{transform\+\_\+dict\+\_\+station}} (list\+\_\+records)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a4d60a627f1517f0f0ad8e67cc1f91d1c}{update\+\_\+bornes\+\_\+around\+\_\+pos}} (path\+\_\+db, table, pos\+\_\+lat, pos\+\_\+lon, dist)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a48c24dffede233864b221ac6b417a657}{make\+\_\+mapbox}} (table, list\+\_\+stations, http, pos\+\_\+lat, pos\+\_\+lon, dist)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a5b6a2110097fd80a82aee953a5861388}{update\+\_\+general}} (path\+\_\+db)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_a3dbb95e8c121b590bcf7d0fcab975cbe}{adresse\+\_\+to\+\_\+lon\+\_\+lat}} (adr)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_ac32bffd6501c4cb8a785bfa22c368ed4}{clean\+\_\+table}} (path\+\_\+db, table)
+\item 
+def \mbox{\hyperlink{namespacerecuperation__data__belib_adbfe300747460ce2ca1e63da67261c4c}{update\+\_\+bornes\+\_\+around\+\_\+adresse\+\_\+live}} (path\+\_\+db, adr, dist)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+string \mbox{\hyperlink{namespacerecuperation__data__belib_a46b77ecd1d465d21693a66e52a6bdb6c}{figure\+\_\+dir}} = \char`\"{}./\char`\"{}
+\item 
+string \mbox{\hyperlink{namespacerecuperation__data__belib_adf1b79e095ad5183771a1ba65aa506db}{db\+\_\+dir}} = \char`\"{}../db\+\_\+sqlite/\char`\"{}
+\item 
+string \mbox{\hyperlink{namespacerecuperation__data__belib_a7aa758113796aba669da57d689152fd5}{mapbox\+\_\+token\+\_\+path}} = \char`\"{}../.mapbox\+\_\+token\char`\"{}
+\item 
+dictionary \mbox{\hyperlink{namespacerecuperation__data__belib_a6e0d8b260fabe4ba47a754a43c9fe96c}{dict\+\_\+labels\+\_\+statuts}}
+\begin{DoxyCompactList}\small\item\em Dictionnaire associant les Statuts récupérés aux noms des statuts de la bdd. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a90eee7a4677ca8b1ed116364a24367f9}{parser}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a2f4ab7bf743142dae2e459aa18f9f1d4}{action}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a81ae9faedaa69e3e28e2960a0548df8d}{help}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a7aead736a07eaf25623ad7bfa1f0ee2d}{type}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a4b99ff73a8a869319570237b5c57ab03}{str}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a87f35ac6fa80d957c59e394549aa7e15}{nargs}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_affb1327b18bf08a379d19eef89cf1ed1}{default}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a6a1bb6ed41f44b60e7bd83b0e9945aa7}{float}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a8187411843a6284ffb964ef3fb9fcab3}{args}} = parser.\+parse\+\_\+args()
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a3a27a39b7c24b8afcdcaddd8f77ed5d6}{bornes}} = args.\+bornes
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_ad797829e3284fd15f2780269ce9bb6dc}{general}} = args.\+general
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a607009fa45ee4b1efede68a452cdb791}{fav}} = args.\+favoris
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_ad54f92b21f4db8065bcbf2a6a0b724c9}{live}} = args.\+live
+\item 
+string \mbox{\hyperlink{namespacerecuperation__data__belib_af5244d20512d470d69a594112beb0bc9}{filename\+\_\+db}} = \char`\"{}belib\+\_\+data.\+db\char`\"{}
+\item 
+string \mbox{\hyperlink{namespacerecuperation__data__belib_a36809ad6cf42c75b7260bb30440a70f5}{path\+\_\+db}} = db\+\_\+dir + filename\+\_\+db
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_af1c1b83b389cf652938d47316fc0e815}{pos\+\_\+lat}}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_ab95c9057dcf26e04a376ad2a155c9191}{pos\+\_\+lon}}
+\item 
+float \mbox{\hyperlink{namespacerecuperation__data__belib_a2578b368dad74bcd4a88bbeeb319a833}{dist}} = 0.\+5
+\item 
+string \mbox{\hyperlink{namespacerecuperation__data__belib_acb7d827b2e2e92904507b576c607e6c9}{table}} = \char`\"{}Stations\+\_\+fav\char`\"{}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a02e40c6c996d4bbb80cc88db452d647b}{adresse\+\_\+live}} = args.\+adresse\mbox{[}0\mbox{]}
+\item 
+\mbox{\hyperlink{namespacerecuperation__data__belib_a6f455bbc7ab9e4f7a2b80b320d738bce}{dist\+\_\+live}} = args.\+distance\mbox{[}0\mbox{]}
+\end{DoxyCompactItemize}
