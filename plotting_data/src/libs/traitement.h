@@ -265,9 +265,9 @@ void slice_str(const char *str_src, char *str_dest, size_t start, size_t end)
 {
     size_t j = 0;
     for ( size_t i = start; i <= end; ++i ) {
-        buffer[j++] = str[i];
+        str_dest[j++] = str_src[i];
     }
-    buffer[j] = 0;
+    str_dest[j] = 0;
 }
 
 #endif  /* TRAITEMENT_H */

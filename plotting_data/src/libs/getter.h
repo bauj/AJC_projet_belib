@@ -265,7 +265,7 @@ void Get_time_vect(int nb_rows, int vect_time[nb_rows],\
     {
         Datetick tick_i;
         Init_Datetick(&tick_i,\
-                &tableau_date_recolte_fav[i], &tableau_date_recolte_fav[0]);
+                &tableau_date_recolte[i], &tableau_date_recolte[0]);
 
         vect_time[i] = tick_i.ecart_init;
     }  
@@ -561,7 +561,7 @@ void Get_date_recolte(sqlite3 *db_belib, char *table,\
         {
             Date date_i;
             Init_Date(&date_i, (char *)sqlite3_column_text(stmt, 0));
-            tableau_date_recolte_fav[i] = date_i;
+            tableau_date_recolte[i] = date_i;
         }
         // ELIF STOP
     }
