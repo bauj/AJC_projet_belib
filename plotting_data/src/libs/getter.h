@@ -14,6 +14,10 @@
 #include "traitement.h"
 
 /* --------------------------------------------------------------------------- */
+/**
+ * @brief Enumeration contenant les statuts récupérés de la db belib
+ * 
+ */
 typedef enum {disponible, occupe, en_maintenance, inconnu} statuts;
 
 
@@ -38,15 +42,6 @@ void free_tab_char1(char **tableau_str, int len_tab);
  */
 void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib);
 
-/* --------------------------------------------------------------------------- */
-/**
- * @brief Fonction permettant de récupérer le nombre des stations (uniques) 
- * dans la table "Stations_fav"
- * 
- * @param db_belib Pointeur type sqlite3 vers la bdd
- * @return int Nombre de stations favorites
- */
-// int Get_nb_stations_fav(sqlite3 *db_belib);
 
 
 /* --------------------------------------------------------------------------- */
@@ -60,31 +55,62 @@ void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib);
  * données.
  * @return int Nombre de lignes de données par station
  */
+
+/**
+ * @brief Recupere le nombre de lignes de données par station. Cette fonction 
+ * compte le nombre de date_recolte distinctes. 
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @note La bdd est construite de maniere a ce que l'on ait le meme nombre de 
+ * date de récolte pour chaque station, et donc le meme nombre de lignes de 
+ * données.
+ * @param table Nom de la table dans la bdd
+ * @return int int Nombre de lignes de données par station
+ */
 int Get_nb_rows_par_station(sqlite3 *db_belib, char *table);
 
 /* --------------------------------------------------------------------------- */
 
 
-
-void Get_adresses(sqlite3 *db_belib, char *table, \
-            char **tableau_adresses_fav, int nb_stations_fav);
-
-
-/* --------------------------------------------------------------------------- */
-
-
-
-void Get_date_recolte(sqlite3 *db_belib, char *table,\
-            Date *tableau_date_recolte_fav, int nb_rows_par_station);
+/**
+ * @brief Recupere les adresses uniques dans la table spécifiée
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param table Nom de la table dans la bdd
+ * @param tableau_adresses Tableau des adresses uniques
+ * @param nb_stations Nombre de stations associées
+ */
+void Get_adresses(sqlite3 *db_belib, char *table, char **tableau_adresses, int nb_stations);
 
 
 /* --------------------------------------------------------------------------- */
 
+/**
+ * @brief Récupère les dates de récolte pour l'ensemble des stations de la table spécifiée
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param table Nom de la table dans la bdd
+ * @param tableau_date_recolte Tablea des dates de récolte
+ * @param nb_rows_par_station Nombre de lignes de date par station
+ */
+void Get_date_recolte(sqlite3 *db_belib, char *table, Date *tableau_date_recolte, int nb_rows_par_station);
 
 
-void Get_statuts_station(sqlite3 *db_belib, char *table, char **tableau_adresses_fav,\
-     int nb_stations_fav,int nb_rows_par_station, int nb_statuts,\
-     int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts]);
+/* --------------------------------------------------------------------------- */
+
+/**
+ * @brief Construit le tableau contenant l'ensemble des informations qui concernent les stations Belib
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param table Nom de la table dans la bdd (Fav ou Live)
+ * @param tableau_adresses Tableau des adresses uniques
+ * @param nb_stations Nombre de stations
+ * @param nb_rows_par_station Nombre de date de recolte par station (data par station)
+ * @param nb_statuts Nombre de statuts récupérés.
+ * @warning Enum "statuts devant etre mis à jour si on veut plus de statuts"
+ * @param tableau_statuts Tableau contenant l'ensemble des informations souhaitées, de dim : nb_station x nb_rows_par_station x nb_statuts
+ */
+void Get_statuts_station(sqlite3 *db_belib, char *table, char **tableau_adresses, int nb_stations,int nb_rows_par_station, int nb_statuts, int tableau_statuts[nb_stations][nb_rows_par_station][nb_statuts]);
 
 
 /* --------------------------------------------------------------------------- */
@@ -93,12 +119,13 @@ void Get_statuts_station(sqlite3 *db_belib, char *table, char **tableau_adresses
  * de bornes au statut disponible, occupe, en_maintenance ou inconnu pour une 
  * station donnée, en se basant sur l'unicité de son adresse.
  * 
+ * @param table Nom de la table
  * @param station Index de la station favorite dans le tableau des adresses des 
- * stations favorites
- * @param tableau_adresses_fav Tableau des adresses des stations favorites 
+ * stations 
+ * @param tableau_adresses Tableau des adresses des stations
  * @return char* Requete SQLite
  */
-char *Construct_req_station_statuts(char* table, int station, char **tableau_adresses_fav);
+char *Construct_req_station_statuts(char* table, int station, char **tableau_adresses);
 
 
 
@@ -110,26 +137,12 @@ char *Construct_req_station_statuts(char* table, int station, char **tableau_adr
  * 
  * @param station Index de la station favorite dans le tableau des adresses des 
  * stations favorites
- * @param tableau_adresses_fav Tableau des adresses des stations favorites 
+ * @param tableau_adresses_fav Tableau des adresses des stations favorites
+ * @warning Utilisé que pour la table Fav
  * @return char* Requete SQLite
  */
 char *Construct_req_station_avg_dispo(int station, char **tableau_adresses_fav);
-
-
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief Fonction de debug permettant d'afficher le contenu de la bdd
- * 
- * @param nb_station 
- * @param nb_date 
- * @param nb_statuts 
- * @param tab 
- * @param tableau_date_recolte_fav 
- * @param tableau_adresses_fav 
- */
-void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts, int tab[nb_station][nb_date][nb_statuts],Date *tableau_date_recolte_fav, char** tableau_adresses_fav);
-            
+           
 
 /* --------------------------------------------------------------------------- */
 /**
@@ -146,11 +159,98 @@ void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts, int tab[nb_s
  * @param station Station prise en compte dans la construction du vecteur 
  * vect_statut
  * @param statut Les bornes ayant ce statut seront comptabilisées
+ * @warning Fonction différente de Get_statuts_station. Permet de récupérer l'info sur une station dans le tableau complet rempli par Get_statuts_station. Peut porter à confusion
  */
 void Get_statut_station(int nb_stations, int nb_rows, int nb_statuts,int vect_statut[nb_rows],int tableau_statuts_fav[nb_stations][nb_rows][nb_statuts],int station, int statut);
 
-int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
-            int station, char **tableau_adresses_fav);
+/**
+ * @brief Recupere le nombre de date de récolte pour une station spécifique. Permet de gérer l'arrivée de nouvelles stations dans le périmètre en favori.
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param table Nom de la table dans la bdd
+ * @param station Index de la station dont on veut récupérer l'information
+ * @param tableau_adresses Tableau des adresses des stations (pour recuperer l'adresse a partir de l'index)
+ * @return int 
+ */
+int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table,int station, char **tableau_adresses);
+
+/**
+ * @brief Recupere le nombre de stations en se basant sur l'unicité de l'adresse
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param table Nom de la table dans la bdd
+ * @return int Nombre de stations unique
+ */
+int Get_nb_stations(sqlite3 *db_belib, char* table);
+
+/**
+ * @brief Construit le tableau des moyennes horaires de diponibilité des bornes pour chaque station favorite
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param tableau_adresses_fav Tableau des adresses des stations favorites
+ * @param nb_stations_fav Nombre de stations favorites
+ * @param nb_rows_hours Nombre de ligne de données par station
+ * @param tableau_avg_dispo_station Tableau des moyennes horaires de disponibilité pour chaque station favorite
+ */
+void Get_avg_dispo_station(sqlite3 *db_belib,char **tableau_adresses_fav,int nb_stations_fav, int nb_rows_hours, float tableau_avg_dispo_station[nb_stations_fav][nb_rows_hours]);
+
+/**
+ * @brief 
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @param nb_rows_hours Nombre d'heures collectées pour calcul de la moyenne horaire(fonction Get_nb_avg_hours)
+ * @param tableau_avg_hours Tableau contenant les horaires où les moyennes horaires de disponibilité sont calculées
+ */
+void Get_avg_hours(sqlite3 *db_belib, int nb_rows_hours,int tableau_avg_hours[nb_rows_hours]);
+
+/**
+ * @brief Recupère le nombre d'heures collectées pour calcul de la moyenne horaire. Correspond à la taille du tableau tableau_avg_hours.
+ * 
+ * @param db_belib Pointeur type sqlite3 vers la base de donnée
+ * @return int Nombre d'heures collectées pour calcul de la moyenne horaire
+ */
+int Get_nb_avg_hours(sqlite3 *db_belib);
+
+
+/**
+ * @brief Construit un tableau de temps en secondes à partir de la date de début de récolte. Permet d'avoir un référentiel "entier" pour l'affichage en pixel.
+ * 
+ * @param nb_rows Nombre de dates unique
+ * @param vect_time Tableau d'entier rempli avec les temps en secondes depuis la date de récolte initiale
+ * @param tableau_date_recolte Tableau d'objet Date contenant les dates de recolte
+ */
+void Get_time_vect(int nb_rows, int vect_time[nb_rows], Date tableau_date_recolte[nb_rows]);
+
+/* --------------------------------------------------------------------------- */
+/**
+ * @brief Fonction de debug permettant d'afficher le contenu de la bdd
+ * 
+ * @param nb_station Nombre de stations
+ * @param nb_date Nombre de date de recolte (rows)
+ * @param nb_statuts Nombre de statuts
+ * @param tab Tableau des statuts (complet) à afficher
+ * @param tableau_date_recolte Tableau des date de récolte
+ * @param tableau_adresses Tableau contenant les adresses des stations
+ */
+void Print_tableau_stations(int nb_station, int nb_date, int nb_statuts, int tab[nb_station][nb_date][nb_statuts],Date *tableau_date_recolte, char** tableau_adresses);
+
+/**
+ * @brief Fonction de debug permettant d'afficher le contenu d'un vecteur de float
+ * 
+ * @param len_tab Taille du tableau
+ * @param tab Tableau de float à afficher
+ * @param col Caractère 'y' ou 'n' pour l'affichage en colonne plutot qu'en ligne
+ */
+void print_farr1D(int len_tab, float tab[len_tab], char col);
+
+/**
+ * @brief Fonction de debug permettant d'afficher le contenu d'un vecteur d'entiers
+ * 
+ * @param len_tab Taille du tableau
+ * @param tab Tableau d'entiers' à afficher
+ * @param col Caractère 'y' ou 'n' pour l'affichage en colonne plutot qu'en ligne
+ */
+void print_arr1D(int len_tab, int tab[len_tab], char col);
 
 /* --------------------------------------------------------------------------- */
 // Definition des fonctions
@@ -159,7 +259,7 @@ int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
 
 /* --------------------------------------------------------------------------- */
 void Get_time_vect(int nb_rows, int vect_time[nb_rows],\
-                Date tableau_date_recolte_fav[nb_rows])
+                Date tableau_date_recolte[nb_rows])
 {
     for (int i = 0; i < nb_rows; i++)
     {
@@ -256,7 +356,7 @@ void Get_avg_hours(sqlite3 *db_belib, int nb_rows_hours,\
 }
 
 /* --------------------------------------------------------------------------- */
-char *Construct_req_station_statuts(char* table, int station, char **tableau_adresses_fav)
+char *Construct_req_station_statuts(char* table, int station, char **tableau_adresses)
 {
     char query_statuts_stations[250] = \
             "SELECT disponible, occupe, en_maintenance, inconnu FROM ";
@@ -272,7 +372,7 @@ char *Construct_req_station_statuts(char* table, int station, char **tableau_adr
 
     strcpy(req, query_statuts_stations);
     strcat(req, "\"");
-    strcat(req, tableau_adresses_fav[station]);
+    strcat(req, tableau_adresses[station]);
     strcat(req, "\";");
 
     return req;
@@ -351,23 +451,23 @@ void Get_avg_dispo_station(sqlite3 *db_belib,\
 
 /* --------------------------------------------------------------------------- */
 void Get_statuts_station(sqlite3 *db_belib, char *table,\
-    char **tableau_adresses_fav, int nb_stations_fav, \
+    char **tableau_adresses, int nb_stations, \
     int nb_rows_par_station, int nb_statuts, \
-    int tableau_statuts_fav[nb_stations_fav][nb_rows_par_station][nb_statuts])
+    int tableau_statuts[nb_stations][nb_rows_par_station][nb_statuts])
 {
     
-    for (int station = 0; station < nb_stations_fav; station++)
+    for (int station = 0; station < nb_stations; station++)
     {
 
         int nb_date_station = \
                         Get_nb_rows_par_station_unique(db_belib, table, \
-                            station, tableau_adresses_fav);
+                            station, tableau_adresses);
 
         // Declaration statement
         sqlite3_stmt *stmt_station;
 
         // Construction requete
-        char *req_sql = Construct_req_station_statuts(table, station, tableau_adresses_fav);
+        char *req_sql = Construct_req_station_statuts(table, station, tableau_adresses);
 
         // Test de la requete
         if (sqlite3_prepare_v2(db_belib, req_sql, -1, &stmt_station, NULL))
@@ -384,7 +484,7 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
             // Initialisation
             for (int t = 0; t < nb_rows_par_station; t++) {
                 for (int statut = disponible; statut <= inconnu; statut++) {
-                        tableau_statuts_fav[station][t][statut] = 0;
+                        tableau_statuts[station][t][statut] = 0;
                 }
             }
 
@@ -394,7 +494,7 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
                 if (step == SQLITE_ROW) 
                 {
                     for (int statut = disponible; statut <= inconnu; statut++) {
-                        tableau_statuts_fav[station][t][statut] = \
+                        tableau_statuts[station][t][statut] = \
                         sqlite3_column_int(stmt_station, statut);
                     }
                 }
@@ -406,7 +506,7 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
             // Initialisation a 0 avant le debut de recolte
             for (int t = 0; t < nb_rows_par_station-nb_date_station; t++) {
                 for (int statut = disponible; statut <= inconnu; statut++) {
-                        tableau_statuts_fav[station][t][statut] = 0;
+                        tableau_statuts[station][t][statut] = 0;
                 }
             }
 
@@ -416,7 +516,7 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
                 if (step == SQLITE_ROW) 
                 {
                     for (int statut = disponible; statut <= inconnu; statut++) {
-                        tableau_statuts_fav[station][nb_rows_par_station-nb_date_station+t][statut] = \
+                        tableau_statuts[station][nb_rows_par_station-nb_date_station+t][statut] = \
                         sqlite3_column_int(stmt_station, statut);
                     }
                 }
@@ -433,7 +533,7 @@ void Get_statuts_station(sqlite3 *db_belib, char *table,\
 
 /* --------------------------------------------------------------------------- */
 void Get_date_recolte(sqlite3 *db_belib, char *table,\
-                Date *tableau_date_recolte_fav, int nb_rows_par_station)
+                Date *tableau_date_recolte, int nb_rows_par_station)
 {
     // Declaration statement
     sqlite3_stmt *stmt;
@@ -473,7 +573,7 @@ void Get_date_recolte(sqlite3 *db_belib, char *table,\
 
 /* --------------------------------------------------------------------------- */
 void Get_adresses(sqlite3 *db_belib, char* table,\
-                char **tableau_adresses_fav, int nb_stations_fav)
+                char **tableau_adresses, int nb_stations)
 {
 
     int len_max = 100;
@@ -497,13 +597,13 @@ void Get_adresses(sqlite3 *db_belib, char* table,\
     }
 
     // Application du statement et fermeture de la db
-    for (int i = 0; i < nb_stations_fav; i++) {
+    for (int i = 0; i < nb_stations; i++) {
         int step = sqlite3_step(stmt);
         if (step == SQLITE_ROW) 
         {
-            tableau_adresses_fav[i] = (char *)malloc(len_max*sizeof(char));
+            tableau_adresses[i] = (char *)malloc(len_max*sizeof(char));
             // On supprime " Paris" en fin de chaine
-            strcpy(tableau_adresses_fav[i],\
+            strcpy(tableau_adresses[i],\
                 (char *)sqlite3_column_text(stmt, 0)); 
                 //, strlen((char *)sqlite3_column_text(stmt, 0))-6);
         }
@@ -518,7 +618,7 @@ void Get_adresses(sqlite3 *db_belib, char* table,\
 
 /* --------------------------------------------------------------------------- */
 int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
-            int station, char **tableau_adresses_fav)
+            int station, char **tableau_adresses)
 {
 
     // Declaration statement
@@ -540,7 +640,7 @@ int Get_nb_rows_par_station_unique(sqlite3 *db_belib, char* table, \
 
     strcpy(req, query_nb_row_par_station_unique);
     strcat(req, "\"");
-    strcat(req, tableau_adresses_fav[station]);
+    strcat(req, tableau_adresses[station]);
     strcat(req, "\";");
 
     // Test de la requete
@@ -665,16 +765,16 @@ void Sqlite_open_check(char *bdd_filename, sqlite3 **db_belib)
 }
 
 /* --------------------------------------------------------------------------- */
-void Print_tableau_fav(int nb_station, int nb_date, int nb_statuts,\
+void Print_tableau_stations(int nb_station, int nb_date, int nb_statuts,\
             int tab[nb_station][nb_date][nb_statuts],\
-            Date *tableau_date_recolte_fav, char** tableau_adresses_fav)
+            Date *tableau_date_recolte, char** tableau_adresses)
 {
     for (int s = 0; s < nb_station; s++) {
         printf("--------------------------------------------------------\n");
-        printf("> Adresse de la station : %s\n", tableau_adresses_fav[s]);
+        printf("> Adresse de la station : %s\n", tableau_adresses[s]);
         printf("--------------------------------------------------------\n");
         for (int t = 0; t < nb_date; t++) {
-            printf("|   %s -> %d disponible |", tableau_date_recolte_fav[t].datestr,\
+            printf("|   %s -> %d disponible |", tableau_date_recolte[t].datestr,\
              tab[s][t][disponible]);
             printf(" %d occupe | %d maintenance | %d inconnu |\n",\
             tab[s][t][occupe], tab[s][t][en_maintenance], tab[s][t][inconnu]);
