@@ -41,7 +41,7 @@ int color_lines[10][3] = {\
                     {202, 178, 214}};
 
 /**
- * @brief Liste des couleurs utilisees pour les bar plots
+ * @brief Liste des couleurs utilisees pour les bar plots. Couleur par catégorie.
  * 
  */
 int color_ctg[6][3] = {\

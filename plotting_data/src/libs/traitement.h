@@ -19,7 +19,7 @@
 /**
  * @brief Structure contenant une string `datestr` de type date ainsi que sa valeur 
  * `ctime` en temps cpu. 
- * Format type d'une datestr : 2023-02-01T14-00TZD
+ * Format type d'une datestr : 2023-02-01T14:00Z
  */
 typedef struct Date_s {
     char datestr[20];     /**< Contenu date récupéré de l'api + '\0' */
@@ -43,32 +43,90 @@ typedef struct Datetick_s {
 
 
 // ----------------------------------------------------------------------------
+/**
+ * @brief Initialise un objet de type Datetick
+ * 
+ * @param datetick Pointeur vers un objet de type Datetick
+ * @param dateobj_i Pointeur vers un objet de type Date dont les données sont utilisées pour créer le Datetick
+ * @param dateobj_init Pointeur vers un objet de type Date qui est l'origine des temps
+ */
 void Init_Datetick(Datetick *datetick, Date *dateobj_i, Date *dateobj_init);
 
 // ----------------------------------------------------------------------------
+/**
+ * @brief Fonction de debug permettant d'afficher le contenu d'un objet de type Datetick
+ * 
+ * @param datetick Pointeur vers un objet de type DateTick
+ */
 void Print_debug_datetick(Datetick *datetick);
 
 // ----------------------------------------------------------------------------
+/**
+ * @brief Fonction de debug permettant d'afficher le contenu d'un objet de type Date
+ * 
+ * @param dateobj Pointeur vers objet de type Date
+ * @param debugmode Caractère 'y' ou 'n' permettant d'afficher l'ensemble des données ou juste la date au format humain
+ */
 void Print_debug_date(Date *dateobj, char debugmode);
 
 // ----------------------------------------------------------------------------
+/**
+ * @brief Initialise l'objet tm (time machine) dans un objet de type Date
+ * 
+ * @param dateobj Pointeur vers un objet de type Date
+ */
 void Init_date_tm(Date *dateobj);
 
 // ----------------------------------------------------------------------------
+/**
+ * @brief Initialise un objet de type Date
+ * 
+ * @param dateobj Pointeur vers un objet de type Date
+ * @param date_input Chaine de caractère de la date dans le format date de récolte
+ */
 void Init_Date(Date *dateobj, char date_input[20]);
 
-// ----------------------------------------------------------------------------
-// void Init_tableau_difftime(int *tableau_difftime_init, char** tableau_date_recolte_fav,char* date_init, int nb_rows_par_station);
-
 
 // ----------------------------------------------------------------------------
-void Get_date_element(int *year, int *mon, int *mday, int *hour, int *min,\
-                            char date_input[20]);
+/**
+ * @brief Fonction parsant la chaine de caractère date input au format de la date récoltée pour récupérer l'année, le mois, le jour, l'heure et les minutes
+ * 
+ * @param year Pointeur vers un entier où est sauvegardé l'année
+ * @param mon Pointeur vers un entier  où est sauvegardé le mois
+ * @param mday Pointeur vers un entier où est sauvegardé le jour
+ * @param hour Pointeur vers un entier où est sauvegardé l'heure
+ * @param min Pointeur vers un entier  où est sauvegardé les minutes
+ * @param date_input 
+ */
+void Get_date_element(int *year, int *mon, int *mday, int *hour, int *min,char date_input[20]);
 
 
 // ----------------------------------------------------------------------------
+/**
+ * @brief Fonction permettant de slicer une chaine de caractères
+ * 
+ * @param str_src Chaine de caractères source
+ * @param str_dest Chaine de caractères destination
+ * @param start Index de début du slicing
+ * @param end Index de fin du slicing
+ */
 void Slice_str(const char *str_src, char *str_dest, int start,int end);
 
+// ----------------------------------------------------------------------------
+/**
+ * @brief 2eme fonction permettant de slicer une chaine de caractères, ajoutant un caractère nul en fin de chaine pour spécifier la fin de chaine.
+ * 
+ * @param str Chaine de caractères source
+ * @param src_dest Chaine de caractères destination
+ * @param start Index de début du slicing
+ * @param end Index de fin du slicing
+ */
+void slice_str(const char *str_src, char *src_dest, size_t start, size_t end);
+
+
+/* --------------------------------------------------------------------------- */
+// Definition des fonctions
+/* --------------------------------------------------------------------------- */
 
 // ----------------------------------------------------------------------------
 void Slice_str(const char *str_src, char *str_dest, int start, int end)
@@ -203,7 +261,7 @@ void Print_debug_datetick(Datetick *datetick)
 }
 
 // ----------------------------------------------------------------------------
-void slice_str(const char * str, char * buffer, size_t start, size_t end)
+void slice_str(const char *str_src, char *str_dest, size_t start, size_t end)
 {
     size_t j = 0;
     for ( size_t i = start; i <= end; ++i ) {
