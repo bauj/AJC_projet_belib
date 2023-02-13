@@ -1,1 +1,0 @@
-+ Revoir definition des fonctions (parametres entres) de Get_adresses_fav, Get_date_recolte_fav 
