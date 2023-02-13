@@ -18,11 +18,16 @@
 #define PI 3.141592
 
 /* --------------------------------------------------------------------------- */
+/**
+ * @brief Enumeration permettant d'atteindre les differentes polices pour chaque
+ * élément de la figure : labels, titres, legende, annotation ...
+ * 
+ */
 typedef enum {label_f, annotation_f, title_f, ticklabel_f, subtitle_f, leg_f} fontsFig;
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief Structure stockant des donnees par categorie en les associant a des 
+ * @brief Structure stockant des donnees par categorie et les associent a des 
  * couleurs dans le but de tracer un BarPlot les représentant.
  * Dans le cadre de Belib : un BarData par station.
  * 
@@ -32,7 +37,7 @@ typedef struct BarData_s {
     char **ctg_names;     /**< Labels des categories*/
     size_t nb_tot;        /**< Nombre total d'éléments dans l'ensemble des ctg*/
     int *nb_in_ctg;        /**< Vecteur contenant le nombre d'elements par ctg */
-    int (*colors)[3];        /**< Vecteur contenant une couleur pour chaque ctg*/
+    int (*colors)[3];      /**< Vecteur contenant une couleur pour chaque ctg*/
     char* label;           /**< Label associé au BarData */
     int idx;                /**< Index donné lorsqu'ajouté à la figure (pour posX)*/
 } BarData; 
@@ -42,7 +47,7 @@ typedef struct BarData_s {
 /* --------------------------------------------------------------------------- */
 
 /**
- * @brief Structure definissant un certain style de plot
+ * @brief Structure definissant un style de plot (ligne, point)
  * 
  */
 typedef struct LineStyle_s {
@@ -57,7 +62,7 @@ typedef struct LineStyle_s {
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief Structure associant un vecteur de donnees (int) labelisé à un LineStyle
+ * @brief Structure associant un vecteur de donnees labelisé (int) à un LineStyle
  * 
  */
 typedef struct LineData_s {
@@ -72,7 +77,7 @@ typedef struct LineData_s {
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief Structure associant un vecteur de donnees (float) labelisé à un LineStyle
+ * @brief Structure associant un vecteur de donnees labelisé (float) à un LineStyle
  * 
  */
 typedef struct fLineData_s {
@@ -88,7 +93,7 @@ typedef struct fLineData_s {
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief Structure stockant les infos d'une police
+ * @brief Structure stockant les infos d'une police : chemin, taille et couleur
  * 
  */
 typedef struct Font_s {
@@ -100,8 +105,9 @@ typedef struct Font_s {
 
 /* --------------------------------------------------------------------------- */
 /**
- * @brief Structure stockant un ensemble de LineData et de données relatives à la
- * création d'une figure
+ * @brief Structure stockant un ensemble de structures (Struct bardata, linedata ou flinedata)
+ *  et de données relatives 
+ * à la création d'une figure 
  * 
  */
 typedef struct Figure_s {
@@ -125,340 +131,529 @@ typedef struct Figure_s {
     int color_axes[3];   /**< Couleur des axes*/
 } Figure;
 
-// casser figure en figure_linedata, figure_bardata, figure_flinedata !!
-
 /* --------------------------------------------------------------------------- */
 // Declaration fonctions
 /* --------------------------------------------------------------------------- */
 
 /**
+ * @brief Renvoie le max entre 2 entiers
+ * 
+ * @param x Entier 1
+ * @param y Entier 2
+ * @return int Max des deux entiers
+ */
+int Max_int(int x, int y);
+
+/**
+ * @brief Renvoie le min entre 2 entiers
+ * 
+ * @param x Entier 1
+ * @param y Entier 2
+ * @return int Min des deux entiers
+ */
+int Min_int(int x, int y);
+
+/**
  * @brief 
  * 
- * @param bardata 
- * @param nb_ctg 
- * @param nb_tot 
- * @param nb_in_ctg 
- * @param colors 
- * @param label 
+ * @param x_array Tableau d'entiers 
+ * @param n Taille du tableau d'entiers
+ * @return int Valeur max dans le tableau
  */
-void Init_bardata(BarData *bardata, int nb_ctg, char *labels_ctg[nb_ctg],\
-                    int nb_tot, int nb_in_ctg[nb_ctg], \
-                        int colors[nb_ctg][3], char* label);
+int Maxval_array(const int x_array[], size_t n);
 
 
 /**
- * @brief Transforme les degrés en radians.
+ * @brief 
+ * 
+ * @param x_array Tableau d'entiers 
+ * @param n Taille du tableau d'entiers
+ * @return int Valeur min dans le tableau
+ */
+int Minval_array(const int x_array[], size_t n);
+
+
+/**
+ * @brief Renvoie le max entre 2 float
+ * 
+ * @param x Float 1
+ * @param y Float 2
+ * @return float Max des deux float
+ */
+float Max_float(float x, float y);
+
+/**
+ * @brief Renvoie le max d'un tableau de float
+ * 
+ * @param x_array Tableau de float
+ * @param n Taille du tableau de float
+ * @return float Valeur max dans le tableau
+ */
+float fMaxval_array(const float x_array[], size_t n);
+
+/**
+ * @brief Transforme les degrés en radians
  * 
  * @param angle Angle en degrés
  * @return float Angle en radians
  */
 float Deg2rad(float angle);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Recupere la valeur de la couleur (int) associée à un vecteur d'entier
+ * rgb (0-255) 
  * 
- * @param x_array 
- * @param n 
- * @return int 
- */
-int Maxval_array(const int x_array[], size_t n);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief Get the Couleur object
- * 
- * @param im_fig 
- * @param couleur 
- * @return int 
+ * @param im_fig Pointeur vers un objet de type gdImage
+ * @param couleur Tableau de 3 entiers rgb (0-255)
+ * @return int Valeur entiere associée à la couleur dans im_fig
  */
 int GetCouleur(gdImagePtr im_fig, const int couleur[3]);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Sauvegarde une figure au format png
  * 
- * @param fig 
- * @param dir_figures 
- * @param filename_fig 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param dir_figures Dossier de sauvegarde des figures (output)
+ * @param filename_fig Nom du fichier image à sauvegarder
  */
 void Save_to_png(Figure *fig, const char *dir_figures, const char *filename_fig);
 
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param couleur_bg 
- * @param couleur_canvas_bg 
- */
-void Make_background(Figure *fig, const int couleur_bg[3],\
-        const int couleur_canvas_bg[3]);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Permet d'initialiser un objet de type Figure 
  * 
- * @param fig 
- * @param couleur 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param figsize Vecteur de deux entiers contenant la taille de la figure en pixel selon X et Y (idx 0 et 1 resp.)
+ * @param padX Vecteur de deux entiers contenant la taille en pixel du padding a gauche et a droite de la figure (idx 0 et 1 resp.)
+ * @param padY Vecteur de deux entiers contenant la taille en pixel du padding en haut et en bas de la figure (idx 0 et 1 resp.)
+ * @param margin Vecteur de deux entiers contenant la taille en pixel de la marge aux extremites du canvas, i.e. de la zone de dessin
+ * @param wAxes Caractere 'y' ou 'n'. Spécifier si l'on veut afficher des axes autour de la figure ou pas.
+ */
+void Init_figure(Figure *fig, int figsize[2],int padX[2], int padY[2], int margin[2], char wAxes);
+
+
+/**
+ * @brief Crée le fond et le canvas (zone de dessin) de la figure. Utilisé dans Init_figure.
+ * 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param color_bg Couleur du fond de la figure : vecteur de 3 entiers (0-255) 
+ * @param color_canvas_bg Couleur du fond du canvas (zone de dessin) : vecteur de 3 entiers (0-255)
+ */
+void Make_background(Figure *fig,const int color_bg[3], const int color_canvas_bg[3]);
+
+/**
+ * @brief Crée le support des axes de la figure
+ * 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param couleur Couleur des axes de la figure : vecteur de 3 entiers (0-255) 
  */
 void Make_support_axes(Figure *fig, const int couleur[3]);
 
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param im_fig 
- * @param x1 
- * @param y1 
- * @param x2 
- * @param y2 
- * @param linestyle 
- */
-void ImageLineEpaisseur(gdImagePtr im_fig, const int x1, const int y1, const int x2, \
-            const int y2, LineStyle *linestyle);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Permet de modifier la couleur de fond d'une figure
  * 
- * @param fig 
- * @param x1 
- * @param y1 
- * @param linestyle 
- */
-void PlotPoint(Figure *fig, const int x1, const int y1,LineStyle *linestyle);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param linedata 
- */
-void PlotLine(Figure *fig, LineData *linedata);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param len_pts 
- * @param pts 
- * @param pts_dessin 
- */
-void Transform_dataX_to_plot(Figure *fig, size_t len_pts, const int pts[], \
-            int* pts_dessin);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param len_pts 
- * @param pts 
- * @param pts_dessin 
- */
-void Transform_dataY_to_plot(Figure *fig, size_t len_pts, const int pts[], \
-            int* pts_dessin);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param len_pts 
- * @param pts 
- * @param direction 
- * @return int* 
- */
-int *Transform_data_to_plot(Figure *fig, size_t len_pts, const int pts[], \
-            char direction);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param linestyle 
- * @param style 
- * @param color 
- * @param width 
- * @param marker 
- * @param ms 
- */
-void Init_linestyle(LineStyle *linestyle, char style,const int color[3], int width, \
-            char marker, int ms);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param linedata 
- * @param len_data 
- * @param ptx 
- * @param pty 
- * @param label 
- * @param linestyle 
- */
-void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[], \
-            char* label, LineStyle *linestyle);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param color 
- */
-void Change_fig_axes_color(Figure *fig, int color[3]);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param color 
- */
-void Change_fig_cvs_bg(Figure *fig, int color[3]);
-
-/* --------------------------------------------------------------------------- */
-/**
- * @brief 
- * 
- * @param fig 
- * @param color 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param color Couleur du fond de la figure : vecteur de 3 entiers (0-255) 
  */
 void Change_fig_bg(Figure *fig, int color[3]);
 
-/* --------------------------------------------------------------------------- */
-
 /**
- * @brief 
+ * @brief Permet de modifier la couleur de fond d'un canvas (zone de dessin) d'une figure
  * 
- * @param fig 
- * @param figsize 
- * @param padX 
- * @param padY 
- * @param margin 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param color Couleur du fond du canvas de la figure : vecteur de 3 entiers (0-255) 
  */
-void Init_figure(Figure *fig, int figsize[2],\
-            int padX[2], int padY[2], int margin[2], char wAxes);
+void Change_fig_cvs_bg(Figure *fig, int color[3]);
 
-/* --------------------------------------------------------------------------- */
+
 /**
- * @brief 
+ * @brief Permet de modifier la couleur des axes
  * 
- * @param linestyle 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param color Couleur des axes de la figure : vecteur de 3 entiers (0-255) 
  */
-void Print_debug_ls(LineStyle *linestyle);
+void Change_fig_axes_color(Figure *fig, int color[3]);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Permet de modifier la police d'un des éléments de la figure (voir enum fontsFig)
  * 
- * @param linedata 
- * @param w_xy 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param textType Type d'élément de figure à modifier : index de l'enum fontsFig (labels, title, ...)
+ * @param path_f Chemin vers la police souhaitée
  */
-void Print_debug_ld(LineData *linedata, char w_xy);
+void Change_font(Figure *fig, int textType, char* path_f);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Permet de modifier la police d'un des éléments de la figure (voir enum fontsFig)
  * 
- * @param x_array 
- * @param n 
- * @return int 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param textType Type d'objet de figure à modifier : index de l'enum fontsFig (labels, title, ...)
+ * @param size Taille de la police
  */
-int Maxval_array(const int x_array[], size_t n);
+void Change_fontsize(Figure *fig, int textType, int size);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Permet de modifier la couleur de la police d'un des éléments de la figure (voir enum fontsFig)
  * 
- * @param x 
- * @param y 
- * @return int 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param textType Type d'objet de figure à modifier : index de l'enum fontsFig (labels, title, ...)
+ * @param color Couleur de la police : vecteur de 3 entiers (0-255) 
  */
-int Max_int(int x, int y);
+void Change_fontcolor(Figure *fig, int textType, int color[3]);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Initialise un object de type LineStyle
  * 
- * @param x 
- * @param y 
- * @return int 
+ * @param linestyle Pointeur vers objet de type LineStyle
+ * @param style Type de trait : '-' pour trait plein, ':' pour pointillés, ' ' pour pas de trait
+ * @param color Couleur du style: vecteur de 3 entiers (0-255) 
+ * @param width Epaisseur dans le cas d'un trait
+ * @param marker Type de marker : 'o' pour des points circulaires
+ * @param ms Taille du marker
+ * @note Seul le type de marker 'o' est disponible pour le moment
  */
-int Min_int(int x, int y);
+void Init_linestyle(LineStyle *linestyle, char style,const int color[3], int width, char marker, int ms);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Initialise un objet de type BarData, utilisé pour un Barplot multi-catégories
  * 
- * @param fig 
- * @param xlabel 
- * @param font 
- * @param size 
- * @param color 
- * @param decalage_X 
- * @param decalage_Y 
+ * @param bardata Pointeur vers un objet de type BarData
+ * @param nb_ctg Nombre de catégories dans les données
+ * @param labels_ctg Labels associés à chaque catégorie
+ * @param nb_tot Nombre total d'éléments dans les data
+ * @param nb_in_ctg Nombre d'éléments par catégorie (tableau de taille nb_ctg)
+ * @param colors Couleurs associées à chaque catégorie (tableau de taille nb_ctg)
+ * @param label Label associé a l'object BarData
  */
-void Make_xlabel(Figure *fig, char* xlabel,\
-             int decalage_X, int decalage_Y);
+void Init_bardata(BarData *bardata, int nb_ctg, char *labels_ctg[nb_ctg],int nb_tot, int nb_in_ctg[nb_ctg],int colors[nb_ctg][3], char* label);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Initialise un objet de type LineData, utilisé pour un lineplot de données entières
  * 
- * @param fig 
- * @param ylabel 
- * @param font 
- * @param size 
- * @param color 
- * @param decalage_X 
- * @param decalage_Y 
+ * @param linedata Pointeur vers un objet de type LineData
+ * @param len_data Nombre d'éléments (X,Y) dans les données
+ * @param ptx Vecteur des X
+ * @param pty Vecteur des Y
+ * @param label Label associé au LineData, retrouvé dans la légende
+ * @param linestyle Objet de type LineStyle associé au LineData
  */
-void Make_ylabel(Figure *fig, char* ylabel,\
-             int decalage_X, int decalage_Y);
+void Init_linedata(LineData *linedata, int len_data, int ptx[], int pty[],char* label, LineStyle *linestyle);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Initialise un objet de type fLineData, utilisé pour un lineplot de données de type float en Y
  * 
- * @param fig 
- * @param decal_X 
- * @param decal_Y 
- * @param ecart 
+ * @param flinedata Pointeur vers un objet de type fLineData
+ * @param len_data Nombre d'éléments (X,Y) dans les données
+ * @param ptx Vecteur des X 
+ * @param pty Vecteur des Y 
+ * @param label Label associé au fLineData, retrouvé dans la légende
+ * @param linestyle Objet de type LineStyle associé au LineData
  */
-void Make_legend(Figure *fig, int decal_X, int decal_Y, int ecart);
+void Init_flinedata(fLineData *flinedata, int len_data, int ptx[], float pty[],char* label, LineStyle *linestyle);
 
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Affiche un point dans la zone de dessin d'une figure
  * 
- * @param fig 
- * @param wTicks 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param x1 Abcisse du point
+ * @param y1 Ordonnée du point
+ * @param linestyle Objet de type LineStyle (type de point)
+ */
+void PlotPoint(Figure *fig, const int x1, const int y1,LineStyle *linestyle);
+
+/**
+ * @brief Trace le contenu d'un LineData dans la zone de dessin d'une figure
+ * 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param linedata Objet de type LineData
+ */
+void PlotLine(Figure *fig, LineData *linedata);
+
+/**
+ * @brief Trace le contenu d'un fLineData dans la zone de dessin d'une figure
+ * 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param flinedata Objet de type fLineData
+ */
+void PlotFLine(Figure *fig, fLineData *flinedata);
+
+/**
+ * @brief Trace le contenu d'un BarData dans la zone de dessin d'une figure
+ * 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param bardata Objet de type BarData
+ * @param wlabels Caractère 'y' ou 'n' pour afficher ou non le nombre d'éléments dans chaque catégorie a coté du plot
+ */
+void PlotBarplot(Figure *fig, BarData *bardata, char wlabels);
+
+/**
+ * @brief Fonction interne permettant de changer le référentiel des données d'entrée selon X (int) pour qu'il s'adapte à la zone de dessin
+ * Cas d'un fLineData. Renvoie un vecteur d'entier (pixels).
+ *  
+ * @param fig Pointeur vers objet de type Figure
+ * @param len_pts Taille du vecteur X
+ * @param pts Vecteur d'entier X
+ * @return int* Vecteur d'entier X dans le référentiel de la zone de dessin (en pixel)
+ */
+int *Transform_fdataX_to_plot(Figure *fig, size_t len_pts,const int pts[]);
+
+/**
+ * @brief Fonction interne permettant de changer le référentiel des données d'entrée selon Y (float) pour qu'il s'adapte à la zone de dessin.
+ * Cas d'un fLineData. Renvoie un vecteur d'entier (pixels).
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param len_pts Taille du vecteur Y
+ * @param pts Vecteur de float Y
+ * @return int* Vecteur d'entier Y dans le référentiel de la zone de dessin
+ */
+int *Transform_fdataY_to_plot(Figure *fig, size_t len_pts,const float pts[]);
+
+/**
+ * @brief Fonction interne permettant de changer le référentiel des données d'entrée d'un BarData pour qu'il s'adapte à la zone de dessin.
+ * Cas d'un BarData. Renvoie un vecteur d'entier (pixels).
+ * 
+ * @param fig Pointeur vers un objet de type Figure
+ * @param nb_ctg Nombre de catégorie dans le Bardata
+ * @param pts 
+ * @return int* 
+ * @warning Malloc fait, desallocation en interne
+ * @note nb_ctg peut normalement etre recupéré à partir de fig->BarData
+ */
+int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg,const int pts[]);
+
+/**
+ * @brief Fonction interne permettant de changer le référentiel des données d'entrée selon X (int) pour qu'il s'adapte à la zone de dessin
+ * Cas d'un LineData. Renvoie un vecteur d'entier (pixels).
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param len_pts Taille du vecteur X
+ * @param pts Vecteur d'entier X
+ * @param pts_dessin Pointeur vers un tableau d'entier dans le réferentiel de la zone de dessin (en pixel)
+ */
+void Transform_dataX_to_plot(Figure *fig, size_t len_pts,const int pts[], int* pts_dessin);
+
+/**
+  * @brief Fonction interne permettant de changer le référentiel des données d'entrée selon Y (int) pour qu'il s'adapte à la zone de dessin
+ * Cas d'un LineData. Renvoie un vecteur d'entier (pixels).
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param len_pts Taille du vecteur Y
+ * @param pts Vecteur d'entier Y
+ * @param pts_dessin Pointeur vers un tableau d'entier dans le réferentiel de la zone de dessin (en pixel)
+ */
+void Transform_dataY_to_plot(Figure *fig, size_t len_pts,const int pts[], int* pts_dessin);
+
+/**
+ * @brief Fonction interne appelant Transform_dataX_to_plot ou Transform_dataY_to_plot en fonction de la direction spécifiée
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param len_pts Taille du vecteur X ou Y
+ * @param pts Vecteur d'entier X ou Y en input 
+ * @param direction Caractere 'x' ou 'y'
+ * @return int* Tableau d'entier dans le réferentiel de la zone de dessin (en pixel)
+ */
+int *Transform_data_to_plot(Figure *fig, size_t len_pts,const int pts[], char direction);
+
+
+/**
+ * @brief Ajoute un objet de type LineData à la Figure. Permet un update des maxima et de gérer les tracés
+ * sur la figure.
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param linedata Pointeur vers objet de type LineData à ajouter à la figure
+ */
+void Add_line_to_fig(Figure *fig, LineData *linedata);
+
+/**
+  * @brief Ajoute un objet de type fLineData à la Figure. Permet un update des maxima et de gérer les tracés
+ * sur la figure.
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param flinedata Pointeur vers objet de type fLineData à ajouter à la figure
+ */
+void Add_fline_to_fig(Figure *fig, fLineData *flinedata);
+
+/**
+ * @brief Ajoute un objet de type BarData à la Figure. Permet un update des maxima et de gérer les tracés
+ * sur la figure.
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param bardata Pointeur vers objet de type BarData à ajouter à la figure
+ */
+void Add_barplot_to_fig(Figure *fig, BarData *bardata);
+
+/**
+ * @brief Ajoute une annotation sur la figure
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param text Texte de l'annotation
+ * @param decalage_X Decalage selon X en pixel (vers la droite)
+ * @param decalage_Y Decalage selon Y en pixel (vers le haut)
+ */
+void Make_annotation(Figure *fig, char* text,int decalage_X, int decalage_Y);
+
+/**
+ * @brief Ajoute un titre à la figure, sous l'axe des abcisses par défaut
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param title Texte du titre
+ * @param decalage_X Decalage selon X en pixel (vers la droite)
+ * @param decalage_Y Decalage selon Y en pixel (vers le haut)
+ * @return int* Vecteur de 8 entiers correspondant aux paires de coordonnées x,y des points so,se,ne,no
+ */
+int *Make_title(Figure *fig, char* title,int decalage_X, int decalage_Y);
+
+/**
+ * @brief Ajoute un titre à la figure, sous l'axe des abcisses par défaut
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param subtitle Texte du sous-titre
+ * @param bbox_title Vecteur de 8 entiers correspondant a la bbox du titre. Paires de coordonnées x,y des points so,se,ne,no de la bbox du titre.
+ * @param decalage_X Decalage selon X en pixel (vers la droite)
+ * @param decalage_Y Decalage selon Y en pixel (vers le haut)
+ */
+void Make_subtitle(Figure *fig, char* subtitle,int bbox_title[8], int decalage_X, int decalage_Y);
+
+/**
+ * @brief Fonction permettant de construire une chaine de caractères "Du ... au ..." à partir de deux objets de type Date.
+ * 
+ * @param date1 Objet 1 de type Date
+ * @param date2 Objet 2 de type Date
+ * @param str_out Chaine de caractère du type "Du <Date1> au <Date2>"
+ * @note Fonction à déplacer dans traitement.h
+ */
+void Const_str_dudate1_audate2(Date *date1, Date *date2, char* str_out);
+
+/**
+ * @brief Ajoute un label à l'axe des abcisses
+ * 
+ * @param fig Pointeur vers objet de type figure
+ * @param xlabel Texte du label X
+ * @param decalage_X Decalage selon X en pixel (vers la droite)
+ * @param decalage_Y Decalage selon Y en pixel (vers le haut)
+ */
+void Make_xlabel(Figure *fig, char* xlabel,int decalage_X, int decalage_Y);
+
+/**
+ * @brief Ajoute un label à l'axe des ordonnées
+ * 
+ * @param fig Pointeur vers objet de type figure
+ * @param ylabel Texte du label Y
+ * @param decalage_X Decalage selon X en pixel (vers la droite)
+ * @param decalage_Y Decalage selon Y en pixel (vers le haut)
+ */
+void Make_ylabel(Figure *fig, char* ylabel,int decalage_X, int decalage_Y);
+
+/**
+ * @brief Crée la légende pour un barplot
+ * 
+ * @param fig Pointeur vers un objet de type figure
+ * @param decal_X Decalage selon X en pixel (vers la droite)
+ * @param decal_Y Decalage selon Y en pixel (vers le haut)
+ * @param ecart Ecart vertical entre les éléments de la légende
+ * @note Limité à 4 catégories pour le moment. Servi dans le cas de Belib.
+ */
+void Make_legend_barplot(Figure *fig,int decal_X, int decal_Y, int ecart);
+
+/**
+ * @brief Crée la légende pour un plot
+ * 
+ * @param fig Pointeur vers un objet de type figure
+ * @param decal_X Decalage selon X en pixel (vers la droite)
+ * @param decal_Y Decalage selon Y en pixel (vers le haut)
+ * @param ecart Ecart vertical entre les éléments de la légende
+ * @note Limité à 8 éléments pour le moment.
+ */
+void Make_legend(Figure *fig,int decal_X, int decal_Y, int ecart);
+
+/**
+ * @brief Crée les ticks et les labels associés pour un barplot
+ * 
+ * @param fig Pointeur vers un objet de type figure
+ * @param angle_labels Inclinaison des labels sous l'axe des X
+ */
+void Make_xticks_barplot(Figure *fig, float angle_labels);
+
+/**
+ * @brief Fonction spécifique au projet Belib. Crée les ticks et labels pour la courbe "moyenne horaire"
+ * 
+ * @param fig Pointeur vers un objet de type figure
+ * @param nb_ticks Taille de tableau_avg_hours
+ * @param tableau_avg_hours Tableau des horaires sélectionnés
+ */
+void Make_xticks_xgrid_time_avgH(Figure *fig, int nb_ticks,int tableau_avg_hours[nb_ticks]);
+
+/**
+ * @brief Crée les ticks pour l'axe des X dans le cas d'un axe X représentant des Date
+ * 
+ * @param fig Pointeur vers un objet de type figure
+ * @param date_init Objet de type Date correspondant à l'origine des temps
+ */
+void Make_xticks_xgrid_time(Figure *fig, Date date_init);
+
+/**
+ * @brief Crée les ticks pour l'axe Y dans le cas d'un tracé de fLineData (récup du max flottant)
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param wTicks Caractère 'y' ou 'n'. Affiche ou non les ticks (seuls les labels affichés).
+ */
+void Make_fyticks_ygrid(Figure *fig, char wTicks);
+
+/**
+ * @brief Crée les ticks pour l'axe Y dans le cas d'un tracé de LineData (récup du max entier)
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ * @param wTicks Caractère 'y' ou 'n'. Affiche ou non les ticks (seuls les labels affichés).
  */
 void Make_yticks_ygrid(Figure *fig, char wTicks);
 
-/* --------------------------------------------------------------------------- */
-int *Transform_fdataY_to_plot(Figure *fig, size_t len_pts, \
-                                    const float pts[]);
-
-/* --------------------------------------------------------------------------- */
-int *Transform_fdataX_to_plot(Figure *fig, size_t len_pts,\
-                                    const int pts[]);
-
-
-/* --------------------------------------------------------------------------- */
 /**
- * @brief 
+ * @brief Crée un vecteur de Datetick à partir du tableau des Date
  * 
- * @param nb_rows 
- * @param vect_dateticks 
- * @param tableau_date_recolte_fav 
+ * @param nb_rows Nombre de date dans le tableau des Date
+ * @param vect_dateticks Vecteur des DateTick rempli à partir de tableau_date_recolte_fav
+ * @param tableau_date_recolte_fav Vecteur de Date 
  */
 void Make_dateticks_vect(int nb_rows, Datetick vect_dateticks[nb_rows], Date tableau_date_recolte_fav[nb_rows]);
+
+/**
+ * @brief Fonction de debug affichant des informations sur un objet de type Figure
+ * 
+ * @param fig Pointeur vers objet de type Figure
+ */
+void Print_debug_fig(Figure *fig);
+
+/**
+ * @brief Fonction de debug affichant des informations sur un objet de type LineStyle
+ * 
+ * @param linestyle Pointeur vers objet de type LineStyle
+ */
+void Print_debug_ls(LineStyle *linestyle);
+
+/**
+ * @brief Fonction de debug affichant des informations sur un objet de type LineData
+ * 
+ * @param linedata Pointeur vers objet de type LineData
+ * @param w_xy Caractère 'y' ou 'n'. Affiche les données des vecteurs X et Y.
+ */
+void Print_debug_ld(LineData *linedata, char w_xy);
+
+/**
+ * @brief Fonction de debug affichant des informations sur un objet de type fLineData
+ * 
+ * @param flinedata Pointeur vers objet de type fLineData
+ * @param w_xy Caractère 'y' ou 'n'. Affiche les données des vecteurs X et Y.
+ */
+void Print_debug_fld(fLineData *flinedata, char w_xy);
+
+/**
+ * @brief Fonction de debug affichant des informations sur un objet de type Bardata
+ * 
+ * @param bardata Pointeur vers objet de type BarData
+ * @param w_cat Caractère 'y' ou 'n'. Affiche les données contenues dans le BarData.
+ */
+void Print_debug_bd(BarData *bardata, char w_cat);
 
 /* --------------------------------------------------------------------------- */
 // Définition des fonctions
@@ -732,10 +927,6 @@ int *Transform_fdataY_to_plot(Figure *fig, size_t len_pts, \
     return pts_dessin;
 }
 
-
-/* --------------------------------------------------------------------------- */
-int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
-                                    const int pts[]);
 
 /* --------------------------------------------------------------------------- */
 int *Transform_data_to_plot_bar(Figure *fig, size_t nb_ctg, \
@@ -1378,11 +1569,6 @@ void Make_ylabel(Figure *fig, char* ylabel,\
     gdFontCacheShutdown();
 }
 
-void Make_xticks_barplot(Figure *fig, float angle_labels);
-void Make_legend_barplot(Figure *fig,\
-                    int decal_X, int decal_Y, int ecart);
-
-
 /* --------------------------------------------------------------------------- */
 void Make_legend_barplot(Figure *fig,\
                     int decal_X, int decal_Y, int ecart)
@@ -1745,11 +1931,11 @@ void Make_xticks_xgrid_time(Figure *fig, Date date_init)
                         fig->padY[0],\
                         &style_linegrid);        
 
-        // #if defined(LENOVO) || defined(QEMU)
-        //     time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
-        // #else
+        #if defined(LENOVO) || defined(QEMU)
+            time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
+        #else
             time_t t_tick = date_init.ctime + i*itv_sec;
-        // #endif
+        #endif
 
         struct tm *tm_tick;
         gmtime(&t_tick);

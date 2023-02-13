@@ -332,11 +332,11 @@ int main(int argc, char* argv[])
     // Print_debug_date(&last_date_recolte, 'y');
 
     char subtitle2[70];
-    #ifdef QEMU
-        int hour_hack = last_date_recolte.tm.tm_hour+1;
-    #else
+    // #ifdef QEMU
+    //     int hour_hack = last_date_recolte.tm.tm_hour+1;
+    // #else
     int hour_hack = last_date_recolte.tm.tm_hour;
-    #endif
+    // #endif
 
     sprintf(subtitle2, "le %02d/%02d/%02d à %02d:%02d",\
                      last_date_recolte.tm.tm_mday,\
