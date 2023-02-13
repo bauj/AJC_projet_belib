@@ -1748,7 +1748,7 @@ void Make_xticks_xgrid_time(Figure *fig, Date date_init)
         // #if defined(LENOVO) || defined(QEMU)
         //     time_t t_tick = date_init.ctime + i*itv_sec + 3600; // hack ajout 1h
         // #else
-        time_t t_tick = date_init.ctime + i*itv_sec;
+            time_t t_tick = date_init.ctime + i*itv_sec;
         // #endif
 
         struct tm *tm_tick;
