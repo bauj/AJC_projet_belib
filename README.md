@@ -19,12 +19,13 @@ que la position de recherche (API Mapbox).
 spécifiant une adresse et un rayon de recherche -> renvoie un instantané de la 
 disponibilité des bornes dans ces stations.
 
-L'ensemble du projet est porté sur une carte de type Raspberry Pi3 (aarch64). Une 
-distribution Linux est construite pour cette carte à l'aide de 
-[Buildroot](https://buildroot.org), puis flashée sur la carte. Buildroot génère
- aussi une toolchain de cross-compilation permettant de compiler le code C et 
-de générer les exécutables aarch64.  
-L'ensemble des figures ainsi que la fonctionnalité interactive sont par la suite 
++ L'ensemble du projet est porté sur une carte de type Raspberry Pi3 (aarch64)
+    +  Une distribution Linux est construite pour cette carte à l'aide de 
+[Buildroot](https://buildroot.org), puis flashée sur la carte
+    +  Buildroot génère une toolchain de cross-compilation permettant de compiler le code C et 
+de générer les exécutables aarch64
+  
+    L'ensemble des figures ainsi que la fonctionnalité interactive sont 
 accessibles sur une page web hébergée à l'aide d'un serveur apache (httpd) 
 installé sur la carte. Un script sh est utilisé afin d'exécuter le script Python 
 de récupération des données (étape 1) et la génération de figures (étape 2) 
