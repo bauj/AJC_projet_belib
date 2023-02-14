@@ -208,6 +208,7 @@ dmypy.json
 cython_debug/
 
 # vscode
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
