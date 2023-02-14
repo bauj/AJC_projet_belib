@@ -129,9 +129,10 @@ des stations.
     + **Python** : sqlite3, urllib3 (ssl et CA Certificates), ujson, sqlite3.
     + **C** : libgd, sqlite3.
 
-+ Automatisation via script Sh dans crontab : done.
++ Automatisation via script Sh dans crontab : done. 
 
-## Ajout de la possibilité de trouver des stations autour d'une adresse :heavy_check_mark:
+
+## Ajout de la possibilité de trouver des stations autour d'une adresse  :heavy_check_mark:
 
 + Script CGI sh permettant d'executer un update des figures live (et de la table Stations_live de la db)
 
