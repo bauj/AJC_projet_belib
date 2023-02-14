@@ -36,6 +36,6 @@ Exemple d'interface contenant la mapbox et les figures obtenues avec libgd (lang
 ![figures demo](figs_readme/figs_demo.png "Figures obtenues en C avec libgd")
 
 
-+ Le détail des différentes étapes de dev peuvent être retrouvées dans la 
+Le détail des différentes étapes de dev peuvent être retrouvées dans la 
 [Roadmap](Roadmap.md). Une documentation doxygen est disponible pour chacune 
 des deux étapes du projet : doc python (etape 1) + doc C (etape 2). 
