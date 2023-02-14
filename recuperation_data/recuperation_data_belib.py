@@ -455,8 +455,8 @@ def make_mapbox(table, list_stations, http, pos_lat, pos_lon, dist):
     overlay = pins
     bbox = f"[{bbox_sw[0]:.4f},{bbox_sw[1]:.4f},{bbox_ne[0]:.4f},{bbox_ne[1]:.4f}]"
     # bbox = "auto"
-    width ="300"
-    height ="200"
+    width ="400"
+    height ="350"
     padding = "padding=10,10,10"
     x2 = "@2x"
     # x2 = ""

@@ -2,8 +2,7 @@
 
 Ce projet avait pour but de traiter des données en Open data dynamique sur une 
 carte embarquée de type Raspberry Pi de manière automatique. Le data set 
-choisi :  
-[Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
+choisi : [Statut des bornes Belib' parisiennes](https://parisdata.opendatasoft.com/explore/dataset/belib-points-de-recharge-pour-vehicules-electriques-disponibilite-temps-reel/information/?disjunctive.statut_pdc&disjunctive.arrondissement)
 + Deux besoins créés à partir du dataset :
     1. Disponibilité des bornes de stations en favoris définies autour d'une 
 position dans un périmètre donné par un rayon de recherche
@@ -11,8 +10,8 @@ position dans un périmètre donné par un rayon de recherche
 stations favorites.  
  
 + Deux étapes majeures :
-    + Récolte, traitement et stockage des données : Python (urllib3, ujson, sqlite3)
-    + Génération de figures pour visualiser les données : C (sqlite3, libgd)  
+    1. Récolte, traitement et stockage des données : Python (urllib3, ujson, sqlite3)
+    2. Génération de figures pour visualiser les données : C (sqlite3, libgd)  
 + Pour compléter ce projet : 
     + Ajout d'une carte géographique localisant les stations favorites, ainsi 
 que la position de recherche (API Mapbox).
@@ -20,8 +19,8 @@ que la position de recherche (API Mapbox).
 spécifiant une adresse et un rayon de recherche -> renvoie un instantané de la 
 disponibilité des bornes dans ces stations.
 
-+ Exemple de figures obtenues :
-
++ Exemple de figures obtenues :  
+![figures demo](figs_readme/figs_demo.png "Figures obtenues en C avec libgd")
 
 ## Récupération et traitement des données brutes :heavy_check_mark: 
 
