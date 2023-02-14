@@ -50,8 +50,6 @@ En-tête de la table :
 
 ### Récupération et injection des données dans la BDD (Base de Données) 
 
-** DOC PYTHON A COMPLETER !! **
-
 + Récupération et injection des données `belib_data.db` dans chaque table de la 
 bdd à l'aide du script python `recuperation_data_belib.py`. Bibliothèques 
 python (modules) utilisées : 
@@ -132,7 +130,7 @@ des stations.
 + Automatisation via script Sh dans crontab : done. 
 
 
-## Ajout de la possibilité de trouver des stations autour d'une adresse  :heavy_check_mark:
+## Ajout de la possibilité de trouver des stations autour d'une adresse  :heavy_check_mark:
 
 + Script CGI sh permettant d'executer un update des figures live (et de la table Stations_live de la db)
 
