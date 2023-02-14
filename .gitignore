@@ -224,3 +224,7 @@ cython_debug/
 # Valgrind
 vgcore*
 .mapbox_token
+send_to_qemu.sh
+send_exe64.sh
+compile.sh
+compile_arm64.sh
