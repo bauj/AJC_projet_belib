@@ -31,7 +31,7 @@ cross-compilé (étape 2) toutes les heures
 + L'ensemble des figures ainsi que la fonctionnalité interactive sont 
 accessibles sur une page web hébergée à l'aide d'un serveur apache (httpd) 
 installé sur la carte.  
-Exemple d'interface avec mapbox et figures obtenues avec libgd (langage C) :
+Exemple d'interface contenant la mapbox et les figures obtenues avec libgd (langage C) :
   
 ![figures demo](figs_readme/figs_demo.png "Figures obtenues en C avec libgd")
 
