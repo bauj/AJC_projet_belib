@@ -24,14 +24,14 @@ disponibilité des bornes dans ces stations.
 [Buildroot](https://buildroot.org), puis flashée sur la carte
     +  Buildroot génère une toolchain de cross-compilation permettant de compiler le code C et 
 de générer les exécutables aarch64
-  
-    L'ensemble des figures ainsi que la fonctionnalité interactive sont 
-accessibles sur une page web hébergée à l'aide d'un serveur apache (httpd) 
-installé sur la carte. Un script sh est utilisé afin d'exécuter le script Python 
-de récupération des données (étape 1) et la génération de figures (étape 2) 
-toutes les heures via cron.  
+    + Automatisation via sh script (+ crond): exécution du script Python 
+de récupération des données (étape 1) et génération de figures avec exécutable 
+cross-compilé (étape 2) toutes les heures  
 
-+ Exemple d'interface avec mapbox et figures obtenues avec libgd (langage C) :
++ L'ensemble des figures ainsi que la fonctionnalité interactive sont 
+accessibles sur une page web hébergée à l'aide d'un serveur apache (httpd) 
+installé sur la carte.  
+Exemple d'interface avec mapbox et figures obtenues avec libgd (langage C) :
   
 ![figures demo](figs_readme/figs_demo.png "Figures obtenues en C avec libgd")
 
