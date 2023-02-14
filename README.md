@@ -19,7 +19,8 @@ que la position de recherche (API Mapbox).
 spécifiant une adresse et un rayon de recherche -> renvoie un instantané de la 
 disponibilité des bornes dans ces stations.
 
-+ Exemple de figures obtenues :  
++ Exemple de figures obtenues avec libgd (langage C) :
+  
 ![figures demo](figs_readme/figs_demo.png "Figures obtenues en C avec libgd")
 
 ## Récupération et traitement des données brutes :heavy_check_mark: 
